@@ -253,7 +253,7 @@ const SportsFacilities = () => {
           {activeTab === 'facilities' && (
             <div className={styles.facilitiesList}>
               {facilities.length === 0 ? (
-                <p className={styles.noData}>No facilities available at this time.</p>
+                <p className={styles.noData}>No facilities available at this time</p>
               ) : (
                 facilities.map(facility => (
                   <div key={facility._id} className={styles.facility} style={lightModeStyles.card}>
