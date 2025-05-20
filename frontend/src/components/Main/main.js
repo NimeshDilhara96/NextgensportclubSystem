@@ -52,7 +52,7 @@ const LandingPage = () => {
 
       {/* Testimonials Section */}
       <section className={styles.testimonials}>
-        <h2>What Our Members Say</h2>
+        <h2>What Our Members Say !</h2>
         <div className={styles.testimonialCards}>
           <div className={styles.testimonialCard}>
             <p>"Joining FTC was the best decision I made for my health!"</p>
