@@ -11,7 +11,10 @@ const AddFacility = () => {
         description: '',
         location: '',
         capacity: 0,
-        hours: '',
+        openTime: '09:00',
+        openPeriod: 'AM',
+        closeTime: '09:00',
+        closePeriod: 'PM',
         availability: 'Available',
         image: null,
     });
@@ -50,9 +53,19 @@ const AddFacility = () => {
 
         try {
             const facilityData = new FormData();
+            
+            // Format hours in the required format: "9:00 AM - 9:00 PM"
+            const formattedHours = `${formData.openTime} ${formData.openPeriod} - ${formData.closeTime} ${formData.closePeriod}`;
+            
+            // Add all fields except the separate time fields
             Object.keys(formData).forEach((key) => {
-                facilityData.append(key, formData[key]);
+                if (!['openTime', 'openPeriod', 'closeTime', 'closePeriod'].includes(key)) {
+                    facilityData.append(key, formData[key]);
+                }
             });
+            
+            // Add the formatted hours
+            facilityData.append('hours', formattedHours);
 
             const token = sessionStorage.getItem('adminToken');
             const response = await axios.post('http://localhost:8070/facilities', facilityData, {
@@ -124,36 +137,83 @@ const AddFacility = () => {
                                     />
                                 </div>
                                 <div className={styles.formGroup}>
-                                    <label htmlFor="capacity">Capacity</label>
+                                    <label htmlFor="capacity">Capacity* (Maximum number of concurrent bookings)</label>
                                     <input
                                         type="number"
                                         id="capacity"
                                         name="capacity"
                                         value={formData.capacity}
                                         onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className={styles.formGroup}>
-                                    <label htmlFor="hours">Operating Hours*</label>
-                                    <input
-                                        type="text"
-                                        id="hours"
-                                        name="hours"
-                                        value={formData.hours}
-                                        onChange={handleInputChange}
                                         required
+                                        min="1"
                                     />
                                 </div>
+                                
                                 <div className={styles.formGroup}>
-                                    <label htmlFor="availability">Availability</label>
+                                    <label>Operating Hours*</label>
+                                    <div className={styles.timeInputContainer}>
+                                        <div className={styles.timeInput}>
+                                            <label htmlFor="openTime">Opening Time</label>
+                                            <div className={styles.timeInputGroup}>
+                                                <input
+                                                    type="time"
+                                                    id="openTime"
+                                                    name="openTime"
+                                                    value={formData.openTime}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                />
+                                                <select 
+                                                    name="openPeriod"
+                                                    value={formData.openPeriod}
+                                                    onChange={handleInputChange}
+                                                >
+                                                    <option value="AM">AM</option>
+                                                    <option value="PM">PM</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <span className={styles.timeSeparator}>to</span>
+                                        
+                                        <div className={styles.timeInput}>
+                                            <label htmlFor="closeTime">Closing Time</label>
+                                            <div className={styles.timeInputGroup}>
+                                                <input
+                                                    type="time"
+                                                    id="closeTime"
+                                                    name="closeTime"
+                                                    value={formData.closeTime}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                />
+                                                <select 
+                                                    name="closePeriod"
+                                                    value={formData.closePeriod}
+                                                    onChange={handleInputChange}
+                                                >
+                                                    <option value="AM">AM</option>
+                                                    <option value="PM">PM</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p className={styles.helpText}>Format: "9:00 AM - 9:00 PM" (Will be formatted automatically)</p>
+                                </div>
+                                
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="availability">Availability Status*</label>
                                     <select
                                         id="availability"
                                         name="availability"
                                         value={formData.availability}
                                         onChange={handleInputChange}
+                                        required
                                     >
                                         <option value="Available">Available</option>
-                                        <option value="Unavailable">Unavailable</option>
+                                        <option value="Maintenance">Maintenance</option>
+                                        <option value="Reserved">Reserved</option>
+                                        <option value="Closed">Closed</option>
                                     </select>
                                 </div>
                                 <div className={styles.formGroup}>
