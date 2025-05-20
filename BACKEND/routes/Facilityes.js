@@ -262,10 +262,53 @@ router.post('/book/:id', async (req, res) => {
             });
         }
 
+        // Check if facility is available
         if (facility.availability !== 'Available') {
             return res.status(400).json({
                 status: "error",
                 message: `This facility is currently ${facility.availability}`
+            });
+        }
+
+        // Parse the operating hours
+        // Expected format: "9:00 AM - 9:00 PM" or similar
+        const bookingStartTime = new Date(startTime);
+        const bookingEndTime = new Date(endTime);
+        
+        // Extract hours from the facility operating hours
+        const operatingHours = facility.hours.split('-');
+        if (operatingHours.length !== 2) {
+            return res.status(400).json({
+                status: "error",
+                message: "Invalid facility operating hours format"
+            });
+        }
+
+        // Function to parse time string to Date object
+        const parseTimeString = (timeStr, dateRef) => {
+            const time = new Date(dateRef);
+            const [hourMin, period] = timeStr.trim().split(' ');
+            let [hour, minute] = hourMin.split(':').map(num => parseInt(num));
+            
+            if (period && period.toUpperCase() === 'PM' && hour < 12) {
+                hour += 12;
+            } else if (period && period.toUpperCase() === 'AM' && hour === 12) {
+                hour = 0;
+            }
+            
+            time.setHours(hour, minute, 0, 0);
+            return time;
+        };
+
+        // Parse facility open and close times for the booking date
+        const facilityOpenTime = parseTimeString(operatingHours[0], bookingStartTime);
+        const facilityCloseTime = parseTimeString(operatingHours[1], bookingStartTime);
+
+        // Check if booking is within operating hours
+        if (bookingStartTime < facilityOpenTime || bookingEndTime > facilityCloseTime) {
+            return res.status(400).json({
+                status: "error",
+                message: `Booking must be within facility operating hours: ${facility.hours}`
             });
         }
 
@@ -277,18 +320,49 @@ router.post('/book/:id', async (req, res) => {
             });
         }
 
-        // Check for overlapping bookings
-        const overlappingBooking = user.bookings?.find(booking => 
+        // Check for overlapping bookings for this user
+        const overlappingUserBooking = user.bookings?.find(booking => 
             booking.facility.toString() === req.params.id &&
             new Date(startTime) < new Date(booking.endTime) &&
             new Date(endTime) > new Date(booking.startTime) &&
             booking.status !== 'cancelled'
         );
 
-        if (overlappingBooking) {
+        if (overlappingUserBooking) {
             return res.status(400).json({
                 status: "error",
                 message: "You already have a booking for this facility during this time"
+            });
+        }
+
+        // Check facility capacity - find all active bookings for this time slot
+        const allUsers = await User.find({
+            'bookings': {
+                $elemMatch: {
+                    facility: new mongoose.Types.ObjectId(req.params.id),
+                    startTime: { $lt: new Date(endTime) },
+                    endTime: { $gt: new Date(startTime) },
+                    status: 'confirmed'
+                }
+            }
+        });
+        
+        // Count total bookings for this time slot
+        const concurrentBookings = allUsers.reduce((count, user) => {
+            const activeBookings = user.bookings.filter(booking => 
+                booking.facility.toString() === req.params.id &&
+                new Date(startTime) < new Date(booking.endTime) &&
+                new Date(endTime) > new Date(booking.startTime) &&
+                booking.status === 'confirmed'
+            ).length;
+            return count + activeBookings;
+        }, 0);
+
+        // Check if adding one more booking exceeds capacity
+        if (concurrentBookings >= facility.capacity) {
+            return res.status(400).json({
+                status: "error",
+                message: "This facility is already at full capacity for the requested time slot"
             });
         }
 
