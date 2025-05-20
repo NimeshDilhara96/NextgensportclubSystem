@@ -1,0 +1,168 @@
+:root {
+    --sidebar-width: 260px;
+    --top-bar-height: 70px;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%) !important;
+    color: white !important;
+    height: 100vh !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1) !important;
+    z-index: 100 !important;
+    overflow-y: auto !important;
+}
+
+.logo-container {
+    padding: 20px !important;
+    text-align: center !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.logo {
+    width: 120px !important;
+    height: auto !important;
+    margin-bottom: 10px !important;
+}
+
+.menu-items {
+    padding: 20px 0 !important;
+}
+
+.overview-header {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    padding: 12px 25px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    margin-bottom: 15px !important;
+}
+
+.menu-items ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.menu-items li {
+    padding: 12px 25px !important;
+    cursor: pointer !important;
+    font-size: 15px !important;
+    display: flex !important;
+    align-items: center !important;
+    transition: all 0.3s ease !important;
+}
+
+.menu-items li:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    padding-left: 30px !important;
+}
+
+.top-bar {
+    height: var(--top-bar-height);
+    width: calc(100% - var(--sidebar-width));
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-width);
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.notification-icon {
+    margin-right: 25px !important;
+    cursor: pointer !important;
+    font-size: 20px !important;
+    color: #555 !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    transition: background-color 0.3s ease !important;
+}
+
+.notification-icon:hover {
+    background-color: #f5f5f5 !important;
+}
+
+.admin-profile {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    cursor: pointer !important;
+    padding: 8px 15px !important;
+    border-radius: 30px !important;
+    transition: background-color 0.3s ease !important;
+}
+
+.admin-profile:hover {
+    background-color: #f5f5f5 !important;
+}
+
+.profile-dropdown {
+    position: absolute !important;
+    top: calc(100% + 10px) !important;
+    right: 0 !important;
+    background-color: white !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    padding: 8px !important;
+    min-width: 180px !important;
+    z-index: 1000 !important;
+}
+
+.profile-dropdown button {
+    width: 100% !important;
+    padding: 10px 20px !important;
+    background: none !important;
+    border: none !important;
+    color: #333 !important;
+    text-align: left !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    border-radius: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.profile-dropdown button:hover {
+    background-color: #f5f5f5 !important;
+}
+
+/* Add icons to menu items */
+.menu-items li::before {
+    content: '' !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin-right: 12px !important;
+    opacity: 0.8 !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-280px) !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+    }
+    
+    .top-bar {
+        left: 0 !important;
+    }
+}

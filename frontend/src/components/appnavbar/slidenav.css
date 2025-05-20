@@ -1,0 +1,397 @@
+/* Add these new styles to your existing slidenav.css */
+.nav-left {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.toggle-sidebar {
+  background: none !important;
+  border: none !important;
+  font-size: 1.5rem !important;
+  color: #666 !important;
+  cursor: pointer !important;
+  padding: 10px !important;
+  margin-right: 20px !important;
+}
+
+.toggle-sidebar:hover {
+  color: #333 !important;
+}
+
+/* Update the existing .slide-nav class */
+.slide-nav {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  height: 60px !important;
+  width: 100% !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  z-index: 1000 !important;
+  padding: 0 20px !important;
+}
+
+.sidebar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  height: 100vh !important;
+  width: 280px !important;
+  background: linear-gradient(180deg, #d61010 0%, #0d86bc 100%) !important;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1) !important;
+  transition: transform 0.3s ease !important;
+  z-index: 1001 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.logo-section {
+  height: 70px !important;
+  padding: 0 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 15px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.logo-section img {
+  width: 70px !important;
+  height: 70px !important;
+  border-radius: 8px !important;
+}
+
+.logo-section h2 {
+  color: white !important;
+  margin: 0 !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+}
+
+.sidebar-nav {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 20px 0 !important;
+}
+
+.sidebar-nav ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.sidebar-nav li {
+  margin: 4px 0 !important;
+}
+
+.sidebar-nav a {
+  display: flex !important;
+  align-items: center !important;
+  padding: 12px 20px !important;
+  color: white !important;
+  text-decoration: none !important;
+  transition: all 0.3s ease !important;
+  border-left: 3px solid transparent !important;
+}
+
+.sidebar-nav a:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-left-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.sidebar-nav a.active {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-left-color: white !important;
+}
+
+.sidebar-nav .icon {
+  width: 20px !important;
+  margin-right: 12px !important;
+  font-size: 18px !important;
+}
+
+.dashboard-header {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: 280px !important;
+  height: 70px !important;
+  background: white !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 20px !important;
+  transition: left 0.3s ease !important;
+}
+
+.toggle-sidebar-btn {
+  background: none !important;
+  border: none !important;
+  width: 40px !important;
+  height: 40px !important;
+  font-size: 20px !important;
+  color: #666 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  transition: all 0.3s ease !important;
+}
+
+.toggle-sidebar-btn:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #333 !important;
+}
+
+.search-bar {
+  position: relative !important;
+  width: 300px !important;
+}
+
+.search-bar input {
+  width: 100% !important;
+  padding: 8px 12px 8px 35px !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 20px !important;
+  font-size: 14px !important;
+  transition: all 0.3s ease !important;
+}
+
+.search-bar input:focus {
+  outline: none !important;
+  border-color: #109ad6 !important;
+  box-shadow: 0 0 0 3px rgba(16, 154, 214, 0.1) !important;
+}
+
+.search-icon {
+  position: absolute !important;
+  left: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #666 !important;
+}
+
+.user-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+}
+
+.notification-btn,
+.message-btn {
+  background: none !important;
+  border: none !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  transition: all 0.3s ease !important;
+}
+
+.notification-badge {
+  position: absolute !important;
+  top: -2px !important;
+  right: -2px !important;
+  background: #ff4444 !important;
+  color: white !important;
+  font-size: 12px !important;
+  padding: 2px 6px !important;
+  border-radius: 10px !important;
+  border: 2px solid white !important;
+}
+
+.sidebar.closed {
+  transform: translateX(-280px) !important;
+}
+
+.sidebar.closed + .dashboard-header {
+  left: 0 !important;
+}
+
+.user-profile-container {
+  position: relative !important;
+  margin-left: 1rem !important;
+}
+
+.user-profile {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.8rem !important;
+  cursor: pointer !important;
+  padding: 0.5rem !important;
+  border-radius: 8px !important;
+  transition: background-color 0.2s !important;
+}
+
+.user-profile:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.profile-photo {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+}
+
+.user-info {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.user-name {
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+}
+
+.user-role {
+  font-size: 0.8rem !important;
+  color: #666 !important;
+}
+
+.dropdown-arrow {
+  font-size: 0.8rem !important;
+  color: #666 !important;
+}
+
+.profile-menu {
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+  padding: 0.5rem 0 !important;
+  min-width: 200px !important;
+  margin-top: 0.5rem !important;
+}
+
+.profile-menu a, 
+.profile-menu button {
+  display: block !important;
+  padding: 0.5rem 1rem !important;
+  width: 100% !important;
+  text-align: left !important;
+  border: none !important;
+  background: none !important;
+  color: #333 !important;
+  text-decoration: none !important;
+  font-size: 0.9rem !important;
+}
+
+.profile-menu a:hover, 
+.profile-menu button:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.divider {
+  height: 1px !important;
+  background-color: #e0e0e0 !important;
+  margin: 0.5rem 0 !important;
+}
+
+/* Popup Menus */
+.popup-menu {
+  position: absolute !important;
+  top: calc(100% + 10px) !important;
+  right: -10px !important;
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+  width: 300px !important;
+  margin-top: 0 !important;
+  z-index: 1002 !important;
+}
+
+.popup-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 1rem !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.popup-header h3 {
+  margin: 0 !important;
+  font-size: 1rem !important;
+}
+
+.view-all {
+  background: none !important;
+  border: none !important;
+  color: #109ad6 !important;
+  cursor: pointer !important;
+  font-size: 0.9rem !important;
+}
+
+.popup-content {
+  max-height: 400px !important;
+  overflow-y: auto !important;
+}
+
+/* Messages Styling */
+.message-container,
+.notification-container {
+  position: relative !important;
+  display: inline-block !important;
+}
+
+.message-item {
+  display: flex !important;
+  padding: 1rem !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  cursor: pointer !important;
+}
+
+.message-item:hover {
+  background-color: #f8f8f8 !important;
+}
+
+.sender-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  margin-right: 0.8rem !important;
+}
+
+.message-info {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.message-title {
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+}
+
+.message-time {
+  color: #888 !important;
+  font-size: 0.8rem !important;
+}
+
+.new-message {
+  font-weight: 600 !important;
+  color: #109ad6 !important;
+}
+
+.popup-menu::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -8px !important;
+  right: 15px !important;
+  width: 16px !important;
+  height: 16px !important;
+  background: white !important;
+  transform: rotate(45deg) !important;
+  box-shadow: -2px -2px 2px rgba(0,0,0,0.05) !important;
+}
+

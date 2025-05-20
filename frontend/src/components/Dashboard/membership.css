@@ -1,0 +1,197 @@
+/* Container structure */
+.container {
+  position: fixed !important;
+  top: 70px !important;
+  left: 280px !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  padding: 24px !important;
+  transition: all 0.3s ease !important;
+  background-color: #f8f9fa !important;
+  overflow: hidden !important;
+}
+
+/* When sidebar is closed */
+.container.sidebar-closed {
+  left: 0 !important;
+}
+
+.membership-wrapper {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 20px !important;
+  height: calc(100vh - 120px) !important;
+  overflow-y: auto !important;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.membership-wrapper::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.membership-wrapper {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+
+.page-title {
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  margin-bottom: 10px !important;
+}
+
+/* Subtitle Styling */
+.subtitle {
+  font-size: 16px !important;
+  color: #666 !important;
+  margin-bottom: 30px !important;
+}
+
+/* Membership Cards Container */
+.membership-cards {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(250px, 280px)) !important;
+  gap: 20px !important;
+  padding: 20px 0 !important;
+  justify-content: center !important;
+  align-items: start !important;
+  margin: 0 auto !important;
+  max-width: 900px !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .membership-cards {
+    grid-template-columns: repeat(3, minmax(220px, 260px)) !important;
+    max-width: 800px !important;
+  }
+}
+
+@media (max-width: 992px) {
+  .membership-cards {
+    grid-template-columns: repeat(2, minmax(250px, 300px)) !important;
+    max-width: 620px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .membership-cards {
+    grid-template-columns: minmax(250px, 300px) !important;
+    max-width: 300px !important;
+  }
+}
+
+/* Individual Membership Card */
+.membership-card {
+  background: white !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  position: relative !important;
+}
+
+.membership-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.recommended {
+  border: 2px solid #109ad6 !important;
+}
+
+.recommended-badge {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  background: #109ad6 !important;
+  color: white !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+/* Card Header */
+.card-header {
+  background: #109ad6 !important;
+  color: white !important;
+  padding: 20px !important;
+  text-align: center !important;
+}
+
+.card-header h2 {
+  margin: 0 !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+}
+
+.price {
+  margin-top: 12px !important;
+}
+
+.amount {
+  font-size: 28px !important;
+  font-weight: bold !important;
+}
+
+.period {
+  font-size: 16px !important;
+  opacity: 0.9 !important;
+}
+
+/* Card Content */
+.card-content {
+  padding: 20px !important;
+}
+
+.card-content ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 0 24px 0 !important;
+}
+
+.card-content li {
+  padding: 6px 0 6px 24px !important;
+  position: relative !important;
+  color: #444 !important;
+  font-size: 14px !important;
+}
+
+.card-content li:before {
+  content: "✓" !important;
+  position: absolute !important;
+  left: 0 !important;
+  color: #109ad6 !important;
+  font-weight: bold !important;
+}
+
+/* Select Plan Button */
+.select-plan-btn {
+  width: 100% !important;
+  padding: 12px !important;
+  background: #109ad6 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease !important;
+}
+
+.select-plan-btn:hover {
+  background: #0d86bc !important;
+}
+
+.membership-content {
+  width: 100% !important;
+}
+
+.subtitle {
+  font-size: 16px !important;
+  color: #666 !important;
+  margin-bottom: 30px !important;
+}

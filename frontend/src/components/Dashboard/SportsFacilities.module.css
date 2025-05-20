@@ -1,0 +1,507 @@
+.pageWrapper {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 80px);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+p {
+  font-size: 1.1em;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.facilityInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.status {
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 5px;
+}
+
+.available {
+  color: #28a745;
+}
+
+.unavailable {
+  color: #dc3545;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 20px;
+  margin-left: 250px; /* Width of the sidebar when open */
+  transition: margin-left 0.3s ease;
+  margin-top: 60px; /* Height of the header */
+  background-color: #f9f9f9;
+}
+
+.mainContent.sidebarOpen {
+  margin-left: 250px;
+}
+
+.mainContent.sidebarClosed {
+  margin-left: 70px; /* Width of the collapsed sidebar */
+}
+
+/* Filter styles */
+.filterContainer {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+  gap: 15px;
+}
+
+.filterButton {
+  padding: 10px 20px;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.filterButton:hover {
+  background-color: #f0f0f0;
+}
+
+.filterButton.active {
+  background-color: #1877f2;
+  color: white;
+  border-color: #1877f2;
+}
+
+/* Facilities styles */
+.facilitiesList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.facility {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 20px;
+  color: #333;
+}
+
+.facilityImage {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.facilityDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.facilityName {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0;
+  color: #1877f2;
+}
+
+.facilityDescription {
+  font-size: 1em;
+  color: #666;
+  margin: 0;
+}
+
+.facilityInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.facilityButton {
+  align-self: flex-end;
+  padding: 8px 24px;
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.facilityButton:hover {
+  background-color: #166fe5;
+}
+
+.facilityButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.facilityButton:disabled:hover {
+  background-color: #cccccc;
+}
+
+.facilitiesList, .sportsList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Sports styles */
+.sportsList {
+  margin-top: 20px;
+}
+
+.sportsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.sportCard {
+  background-color: white;
+  color: #333;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+.sportCard:hover {
+  transform: translateY(-5px);
+}
+
+.sportImage {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.sportName {
+  font-size: 1.2em;
+  font-weight: 700;
+  margin: 15px 15px 10px;
+  color: #1877f2;
+}
+
+.sportDescription {
+  font-size: 0.9em;
+  color: #666;
+  padding: 0 15px;
+  flex-grow: 1;
+  margin-bottom: 15px;
+}
+
+.sportMembers {
+  padding: 0 15px 15px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.memberCount {
+  font-weight: bold;
+  color: #1877f2;
+  font-size: 1.1em;
+}
+
+.joinButton {
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+  margin-top: auto;
+}
+
+.joinButton:hover {
+  background-color: #166fe5;
+}
+
+.sportInfoLabel {
+  font-weight: bold;
+  color: #1877f2; /* Change this color as needed */
+  margin-right: 5px;
+}
+
+.sportInfoValue {
+  color: #555; /* Change this color as needed */
+  font-weight: normal;
+}
+
+/* Loading, error, and no data styles */
+.loading, .error, .noData {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.loading p {
+  color: #666;
+  font-size: 18px;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+.error button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error button:hover {
+  background-color: #166fe5;
+}
+
+.noData {
+  color: #666;
+  font-style: italic;
+}
+
+/* Modal styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.bookingForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup input {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.submitButton, .cancelButton {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.submitButton {
+  background-color: #1877f2;
+  color: white;
+}
+
+.cancelButton {
+  background-color: #e4e6eb;
+  color: #333;
+}
+
+.statusMessage {
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.successMessage {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.errorMessage {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 1024px) {
+  .mainContent {
+    margin-left: 0;
+    padding: 10px;
+  }
+
+  .mainContent.sidebarOpen {
+    margin-left: 200px;
+  }
+
+  .mainContent.sidebarClosed {
+    margin-left: 60px;
+  }
+
+  .sportsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .mainContent {
+    padding: 15px;
+    margin-left: 0;
+    margin-top: 50px;
+  }
+
+  .mainContent.sidebarOpen {
+    margin-left: 0;
+  }
+
+  .mainContent.sidebarClosed {
+    margin-left: 0;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  .facility {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .facilityImage {
+    width: 100%;
+    height: 180px;
+  }
+
+  .facilityButton {
+    align-self: center;
+    width: 100%;
+  }
+
+  .sportsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .mainContent {
+    padding: 10px;
+  }
+
+  .container {
+    padding: 5px;
+  }
+
+  .filterButton {
+    padding: 8px 15px;
+    font-size: 0.9em;
+  }
+
+  .sportsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #18191a;
+  }
+
+  h1, p {
+    color: #e4e6eb;
+  }
+
+  .facility, .sportCard {
+    background-color: #242526;
+    color: #e4e6eb;
+  }
+
+  .facilityName {
+    color: #2d88ff;
+  }
+
+  .facilityDescription, .sportDescription {
+    color: #b0b3b8;
+  }
+
+  .filterButton {
+    background-color: #3a3b3c;
+    color: #e4e6eb;
+    border-color: #3a3b3c;
+  }
+
+  .filterButton:hover {
+    background-color: #4a4b4c;
+  }
+
+  .sportName, .memberCount {
+    color: #2d88ff;
+  }
+}

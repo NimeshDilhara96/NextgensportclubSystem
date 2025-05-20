@@ -1,0 +1,248 @@
+/* Global Variables */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #00c6ff;
+  --text-color: #333;
+  --background-color: #eef2f7;
+  --white: #ffffff;
+  --error-color: #dc3545;
+  --button-hover-color: #0056b3;
+  --input-focus-color: #007bff;
+}
+
+/* Signup Container */
+.signup_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--background-color);
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Form Container */
+.signup_form_container {
+  display: flex;
+  max-width: 1200px;
+  width: 100%;
+  background: var(--white);
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Left Side */
+.left {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--white);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+  text-align: center;
+}
+
+.left h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.white_btn {
+  background: var(--white);
+  color: var(--primary-color);
+  border: none; /* Ensures no border */
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.white_btn:hover {
+  background: var(--primary-color);
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+/* Right Side */
+.right {
+  flex: 2;
+  padding: 50px;
+}
+
+/* Form Container */
+.form_container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Form Groups */
+.form_group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form_control, .form_select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 8px;
+  transition: all 0.3s ease;
+}
+
+.form_control:focus, .form_select:focus {
+  border-color: var(--input-focus-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Checkbox */
+.form_check {
+  grid-column: span 2;
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.form_check input[type="checkbox"] {
+  margin-right: 10px;
+  accent-color: var(--primary-color);
+}
+
+/* Submit Button */
+.btn_primary {
+  grid-column: span 2;
+  background: var(--primary-color);
+  color: var(--white);
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.btn_primary:hover {
+  background: var(--button-hover-color);
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .signup_form_container {
+    flex-direction: column;
+  }
+  
+  .form_container {
+    grid-template-columns: 1fr;
+  }
+  
+  .form_check, .btn_primary {
+    grid-column: span 1;
+  }
+  
+  .left, .right {
+    padding: 30px;
+  }
+}
+
+/* Error Handling */
+.error_input {
+  border-color: var(--error-color);
+}
+
+.error_message {
+  color: var(--error-color);
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+/* Google Sign-Up Button */
+.google_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  color: #757575;
+  border: 1px solid #ddd;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  grid-column: span 2;
+  margin-top: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.google_btn img {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.google_btn:hover {
+  background: #f8f8f8;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+
+/* Welcome Back Logo Area */
+.welcome_logo_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.welcome_logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.welcome_logo img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+}
+
+
+/* Separator */
+.or_separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-column: span 2;
+  margin: 20px 0;
+}
+
+.or_separator::before,
+.or_separator::after {
+  content: '';
+  flex-grow: 1;
+  height: 1px;
+  background: #ddd;
+  margin: 0 10px;
+}
+
+.checking {
+  background-color: #f8f9fa;
+}
+
+.checking_message {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 0.25rem;
+}

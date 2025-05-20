@@ -1,0 +1,343 @@
+/* General Container */
+.container {
+    padding: 20px;
+    margin-left: 260px; /* Adjusted for AdminSlideNav width */
+    margin-top: 70px; /* Adjusted for the top bar height */
+    max-width: calc(100% - 260px); /* Ensure the container doesn't exceed the available space */
+    box-sizing: border-box; /* Include padding and border in width calculation */
+}
+
+/* Toggle Buttons */
+.toggleButtons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center; /* Center the buttons */
+}
+
+.toggleButtons button {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.activeButton {
+    background-color: #007bff;
+    color: white;
+}
+
+.toggleButtons button:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+/* Sports Container */
+.sportsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center; /* Center the sports cards */
+}
+
+.sportCard {
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 200px; /* Set a consistent width for all cards */
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    background-color: #fff; /* Ensure a consistent background color */
+}
+
+.sportCard:hover {
+    transform: scale(1.05);
+}
+
+/* Image Styling */
+.sportCard img {
+    width: 100%; /* Make the image take up the full width of the card */
+    height: 150px; /* Set a consistent height for all images */
+    object-fit: cover; /* Ensure the image scales properly without distortion */
+    border-radius: 4px; /* Add slight rounding to match the card's style */
+    margin-bottom: 10px; /* Add spacing below the image */
+}
+
+/* Title and Description */
+.sportCard h3 {
+    font-size: 1.2rem;
+    margin: 10px 0;
+    color: #333;
+}
+
+.sportCard p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* Edit Button */
+.sportCard button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sportCard button:hover {
+    background-color: #0056b3;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px; /* Add padding for smaller screens */
+}
+
+/* Modal Content */
+.modalContent {
+    background: white;
+    padding: 1rem; /* Reduced padding for a smaller modal */
+    border-radius: 5px;
+    width: 100%;
+    max-width: 400px; /* Reduced max-width for a smaller modal */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    max-height: 80%; /* Limit the height of the modal */
+    overflow-y: auto; /* Add vertical scrolling if the content overflows */
+    margin: auto; /* Center the modal */
+    scrollbar-width: thin; /* For modern browsers, make the scrollbar thin */
+    scrollbar-color: #ccc #f9f9f9; /* Customize scrollbar colors */
+}
+
+/* Scrollbar Styling for Webkit Browsers */
+.modalContent::-webkit-scrollbar {
+    width: 8px; /* Set the width of the scrollbar */
+}
+
+.modalContent::-webkit-scrollbar-thumb {
+    background-color: #ccc; /* Color of the scrollbar thumb */
+    border-radius: 4px; /* Rounded corners for the scrollbar thumb */
+}
+
+.modalContent::-webkit-scrollbar-track {
+    background-color: #f9f9f9; /* Background color of the scrollbar track */
+}
+
+/* Form Container */
+.formContainer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align the form to the top */
+    padding: 1rem; /* Padding for spacing */
+    margin-left: var(--sidebar-width); /* Adjust based on the sidebar width */
+    margin-top: var(--top-bar-height); /* Adjust based on the top bar height */
+    width: calc(100% - var(--sidebar-width)); /* Ensure the container doesn't exceed the available space */
+    height: calc(100vh - var(--top-bar-height)); /* Ensure the container fits within the viewport */
+    box-sizing: border-box; /* Include padding and border in width calculation */
+    overflow-y: auto; /* Add vertical scrolling if the content overflows */
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    background-color: #f9f9f9; /* Optional: Add a background color for better visibility */
+    position: absolute; /* Position the form container below the sidebar */
+    top: var(--top-bar-height); /* Start below the top bar */
+    left: var(--sidebar-width); /* Start after the sidebar */
+}
+
+/* Form Card */
+.formCard {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem; /* Reduced padding for a smaller form */
+    width: 100%;
+    max-width: 350px; /* Limit the width for a smaller form container */
+    max-height: 70%; /* Limit the height of the form card */
+    overflow-y: auto; /* Add vertical scrolling inside the form card */
+    margin: auto; /* Center the form card */
+    scrollbar-width: thin; /* For modern browsers, make the scrollbar thin */
+    scrollbar-color: #ccc #f9f9f9; /* Customize scrollbar colors */
+}
+
+/* Scrollbar Styling for Webkit Browsers */
+.formContainer::-webkit-scrollbar,
+.formCard::-webkit-scrollbar {
+    width: 8px; /* Set the width of the scrollbar */
+}
+
+.formContainer::-webkit-scrollbar-thumb,
+.formCard::-webkit-scrollbar-thumb {
+    background-color: #ccc; /* Color of the scrollbar thumb */
+    border-radius: 4px; /* Rounded corners for the scrollbar thumb */
+}
+
+.formContainer::-webkit-scrollbar-track,
+.formCard::-webkit-scrollbar-track {
+    background-color: #f9f9f9; /* Background color of the scrollbar track */
+}
+
+/* Form Card Heading */
+.formCard h2 {
+    color: #333;
+    margin-bottom: 0.75rem; /* Reduced margin for a more compact layout */
+    text-align: center;
+}
+
+/* Form Groups */
+.formGroup {
+    margin-bottom: 1rem; /* Reduced spacing between form groups */
+    display: flex;
+    flex-direction: column;
+}
+
+.formGroup label {
+    margin-bottom: 0.25rem; /* Reduced spacing below labels */
+    font-weight: 500;
+    color: #444;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+    width: 100%;
+    padding: 0.5rem; /* Reduced padding for smaller input fields */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem; /* Slightly smaller font size */
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+}
+
+.formGroup textarea {
+    resize: vertical;
+    min-height: 80px; /* Reduced height for textareas */
+}
+
+/* Image Uploader */
+.imageUploader {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.uploadButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.uploadButton:hover {
+    background-color: #e0e0e0;
+}
+
+.imagePreview {
+    max-width: 300px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.imagePreview img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Submit Button */
+.submitButton {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem; /* Reduced padding for smaller buttons */
+    font-size: 0.9rem; /* Slightly smaller font size */
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: block;
+    margin: 1rem auto 0;
+    width: 100%; /* Make the button full-width for better alignment */
+    max-width: 150px; /* Limit the width for smaller buttons */
+    text-align: center;
+}
+
+.submitButton:hover {
+    background-color: #45a049;
+}
+
+.submitButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Messages */
+.message {
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .formContainer {
+        margin-left: 0; /* Remove sidebar margin for smaller screens */
+        margin-top: 0; /* Remove top bar margin for smaller screens */
+        width: 100%; /* Use full width for smaller screens */
+        height: auto; /* Allow height to adjust based on content */
+        padding: 1rem; /* Add padding for spacing */
+        position: relative; /* Reset position for smaller screens */
+        top: 0; /* Reset top for smaller screens */
+        left: 0; /* Reset left for smaller screens */
+    }
+
+    .formCard {
+        max-width: 90%; /* Use 90% of the screen width for smaller screens */
+        max-height: 80%; /* Adjust height for smaller screens */
+    }
+
+    .modalContent {
+        max-width: 90%; /* Use 90% of the screen width for smaller screens */
+        max-height: 70%; /* Adjust height for smaller screens */
+        padding: 0.75rem; /* Reduce padding for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .formCard {
+        max-width: 95%; /* Use 95% of the screen width for very small screens */
+        padding: 0.75rem; /* Reduce padding for smaller screens */
+    }
+
+    .modalContent {
+        max-width: 95%; /* Use 95% of the screen width for very small screens */
+        padding: 0.5rem; /* Further reduce padding for very small screens */
+    }
+}

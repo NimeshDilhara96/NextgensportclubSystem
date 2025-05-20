@@ -1,0 +1,117 @@
+.createPostContainer {
+    margin-left: 250px;
+    padding: 20px;
+    margin-top: 60px;
+}
+
+.createPostCard {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.createPostCard h2 {
+    margin-bottom: 20px;
+    color: #1a1a1a;
+}
+
+.postContentInput {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 16px;
+}
+
+.mediaPreviewContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.mediaPreview {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.mediaPreview img,
+.mediaPreview video {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.removeMedia {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.postActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid #ddd;
+}
+
+.mediaButtons {
+    display: flex;
+    gap: 16px;
+}
+
+.mediaButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background: #f0f2f5;
+    color: #1877f2;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.mediaButton:hover {
+    background-color: #e4e6eb;
+}
+
+.submitPost {
+    padding: 8px 24px;
+    background-color: #1877f2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submitPost:hover {
+    background-color: #166fe5;
+}
+
+.submitPost:disabled {
+    background-color: #e4e6eb;
+    cursor: not-allowed;
+} 
