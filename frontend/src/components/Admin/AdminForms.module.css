@@ -305,6 +305,177 @@
     border: 1px solid #f5c6cb;
 }
 
+/* Facilities Table */
+.facilitiesTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.facilitiesTable th, 
+.facilitiesTable td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.facilitiesTable th {
+  background-color: #f2f2f2;
+}
+
+.facilitiesTable tr:hover {
+  background-color: #f5f5f5;
+}
+
+.facilityImage {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.previewImage {
+  max-width: 200px;
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+/* Status indicators */
+.available {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+}
+
+.maintenance {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+}
+
+.reserved {
+  background-color: #cce5ff;
+  color: #004085;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+}
+
+.closed {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+}
+
+/* Button styles */
+.editBtn {
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.deleteBtn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.submitBtn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.cancelBtn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.buttonGroup {
+  margin-top: 20px;
+  display: flex;
+}
+
+.addButton {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.timeInputContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timeInputGroup {
+  display: flex;
+}
+
+.timeSeparator {
+  padding: 0 10px;
+}
+
+.helpText {
+  font-size: 0.8em;
+  color: #6c757d;
+  margin-top: 5px;
+}
+
+.currentImage {
+  margin: 10px 0;
+}
+
+.successMessage {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+}
+
+.errorMessage {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .formContainer {
