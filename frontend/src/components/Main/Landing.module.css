@@ -49,7 +49,7 @@
 }
 
 .navLinks li a {
-  color: #007BFF;
+  color: #b4b6b9;
   text-decoration: none;
   font-size: 1.1rem;
   font-weight: 500;
@@ -62,20 +62,20 @@
 }
 
 .loginButton {
-  background: linear-gradient(90deg, #ff4757, #ff6b81); /* Gradient background */
+  background: linear-gradient(90deg, #089ec7, #0236e3); /* Gradient background */
   padding: 12px 30px; /* Slightly larger padding */
   border-radius: 30px; /* More rounded button */
   color: white;
   text-decoration: none;
   font-weight: bold;
   font-size: 1.1rem; /* Slightly larger font size */
-  box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3); /* Subtle shadow */
+  box-shadow: 0 4px 10px rgba(201, 195, 195, 0.3); /* Subtle shadow */
   transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .loginButton:hover {
   background: linear-gradient(90deg, #ff6b81, #ff4757); /* Reverse gradient on hover */
-  color: #ffdd57; /* Highlight text color */
+  color: #0637d9; /* Highlight text color */
   transform: translateY(-3px); /* Lift effect */
   box-shadow: 0 6px 15px rgba(255, 71, 87, 0.5); /* Stronger shadow on hover */
 }
