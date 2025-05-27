@@ -98,42 +98,40 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 20px; /* Add padding for smaller screens */
+    justify-content: center;
+    z-index: 1000;
+    padding-left: 250px; /* Add left padding equal to your AdminSlideNav width */
+}
+
+/* For smaller screens, adjust the padding */
+@media (max-width: 768px) {
+  .modal {
+    padding-left: 0; /* Remove padding on mobile where sidebar is likely collapsed */
+  }
 }
 
 /* Modal Content */
 .modalContent {
-    background: white;
-    padding: 1rem; /* Reduced padding for a smaller modal */
-    border-radius: 5px;
-    width: 100%;
-    max-width: 400px; /* Reduced max-width for a smaller modal */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    max-height: 80%; /* Limit the height of the modal */
-    overflow-y: auto; /* Add vertical scrolling if the content overflows */
-    margin: auto; /* Center the modal */
-    scrollbar-width: thin; /* For modern browsers, make the scrollbar thin */
-    scrollbar-color: #ccc #f9f9f9; /* Customize scrollbar colors */
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Scrollbar Styling for Webkit Browsers */
-.modalContent::-webkit-scrollbar {
-    width: 8px; /* Set the width of the scrollbar */
-}
-
-.modalContent::-webkit-scrollbar-thumb {
-    background-color: #ccc; /* Color of the scrollbar thumb */
-    border-radius: 4px; /* Rounded corners for the scrollbar thumb */
-}
-
-.modalContent::-webkit-scrollbar-track {
-    background-color: #f9f9f9; /* Background color of the scrollbar track */
+/* Adjust the wide modal for bookings view */
+.wideModal {
+  width: 90%;
+  max-width: 900px;
 }
 
 /* Form Container */
@@ -474,6 +472,139 @@
   padding: 10px;
   margin-bottom: 15px;
   border-radius: 4px;
+}
+
+/* New Styles */
+.viewBtn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.wideModal {
+  width: 90%;
+  max-width: 900px;
+}
+
+.tableContainer {
+  max-height: 400px;
+  overflow-y: auto;
+  margin: 15px 0;
+}
+
+.bookingsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bookingsTable th,
+.bookingsTable td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.bookingsTable th {
+  background-color: #f2f2f2;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.status-confirmed {
+  background-color: rgba(212, 237, 218, 0.2);
+}
+
+.status-completed {
+  background-color: rgba(209, 236, 241, 0.2);
+}
+
+.status-cancelled {
+  background-color: rgba(248, 215, 218, 0.2);
+}
+
+.confirmed {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+}
+
+.completed {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+}
+
+.pending {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+}
+
+.cancelled {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+}
+
+.filterButtons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.filterButtons button {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  background-color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.activeFilter {
+  background-color: #e9ecef !important;
+  border-color: #adb5bd !important;
+  font-weight: bold;
+}
+
+.loadingIndicator {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+}
+
+.noData {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.closeBtn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.modalFooter {
+  margin-top: 15px;
+  text-align: right;
 }
 
 /* Responsive Design */
