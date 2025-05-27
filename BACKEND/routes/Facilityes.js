@@ -395,4 +395,50 @@ router.post('/book/:id', async (req, res) => {
     }
 });
 
+// Get all bookings for a facility
+// Admin access only
+router.get('/:id/bookings', async (req, res) => {
+  try {
+    const facilityId = req.params.id;
+    
+    // Find all users with bookings for this facility
+    const users = await User.find({
+      'bookings.facility': new mongoose.Types.ObjectId(facilityId)
+    }).select('name email bookings');
+    
+    // Extract and format bookings
+    let bookings = [];
+    users.forEach(user => {
+      const facilityBookings = user.bookings
+        .filter(booking => booking.facility.toString() === facilityId)
+        .map(booking => ({
+          userName: user.name,
+          userEmail: user.email,
+          startTime: booking.startTime,
+          endTime: booking.endTime,
+          status: booking.status,
+          bookedAt: booking.bookedAt || new Date(booking.startTime).setHours(0, 0, 0, 0) // Fallback if bookedAt isn't available
+        }));
+      
+      bookings = [...bookings, ...facilityBookings];
+    });
+    
+    // Sort bookings by start time (newest first)
+    bookings.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+    
+    return res.status(200).json({
+      status: "success",
+      count: bookings.length,
+      bookings
+    });
+    
+  } catch (error) {
+    console.error('Error fetching facility bookings:', error);
+    return res.status(500).json({
+      status: "error",
+      message: "Server error while fetching facility bookings"
+    });
+  }
+});
+
 module.exports = router;
