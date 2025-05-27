@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [trainingSchedule, setTrainingSchedule] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [workoutGoals, setWorkoutGoals] = useState([]);
+  const [userBookings, setUserBookings] = useState([]);
 
   // Fetch all data
   useEffect(() => {
@@ -82,6 +83,12 @@ const Dashboard = () => {
         setUpcomingEvents(eventsRes.data);
         setWorkoutGoals(goalsRes.data);
 
+        // Fetch user bookings
+        const userBookingsResponse = await axios.get(`http://localhost:8070/user/${userId}/bookings`);
+        if (userBookingsResponse.data.bookings) {
+          setUserBookings(userBookingsResponse.data.bookings);
+        }
+
       } catch (error) {
         console.error('Error fetching data:', error);
         setUserData({
@@ -97,6 +104,37 @@ const Dashboard = () => {
 
     fetchAllData();
   }, []);
+
+  // Effect to check and update booking statuses every minute
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      // Update displayed booking status for completed bookings
+      setUserBookings(prevBookings => 
+        prevBookings.map(booking => {
+          const now = new Date();
+          const endTime = new Date(booking.endTime);
+          
+          // If booking has ended but is still marked as confirmed, update it to completed
+          if (now > endTime && booking.status === 'confirmed') {
+            return { ...booking, status: 'completed' };
+          }
+          return booking;
+        })
+      );
+    }, 60000); // Check every minute
+    
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Function to check if booking is active or expired
+  const getBookingStatus = (booking) => {
+    const now = new Date();
+    const endTime = new Date(booking.endTime);
+    
+    if (booking.status === 'cancelled') return 'cancelled';
+    if (now > endTime) return 'completed';
+    return booking.status;
+  };
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
@@ -211,6 +249,40 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
+
+        {/* Facility Bookings */}
+        <div className="dashboard-card">
+          <h2>My Facility Bookings</h2>
+          <div className="bookings-list">
+            {userBookings.length === 0 ? (
+              <p className="no-bookings">You have no facility bookings.</p>
+            ) : (
+              userBookings.map((booking, index) => {
+                const currentStatus = getBookingStatus(booking);
+                return (
+                  <div key={index} className="booking-item">
+                    <div className="booking-time">
+                      <div className="booking-date">
+                        {new Date(booking.startTime).toLocaleDateString()}
+                      </div>
+                      <div>
+                        {new Date(booking.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {' - '}
+                        {new Date(booking.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </div>
+                    <div className="booking-details">
+                      <h4>{booking.facilityName}</h4>
+                    </div>
+                    <span className={`status ${currentStatus.toLowerCase()}`}>
+                      {currentStatus}
+                    </span>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -235,4 +307,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
