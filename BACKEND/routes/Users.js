@@ -339,4 +339,53 @@ router.get('/:id/bookings', async (req, res) => {
   }
 });
 
+// Get user's bookings by email
+router.get('/bookings/:email', async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.params.email })
+      .populate({
+        path: 'bookings.facility',
+        select: 'name description hours availability'
+      });
+    
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found'
+      });
+    }
+    
+    // Check if user has bookings
+    if (!user.bookings || user.bookings.length === 0) {
+      return res.status(200).json({
+        status: 'success',
+        bookings: []
+      });
+    }
+    
+    // Map bookings to include facility name
+    const bookings = user.bookings.map(booking => {
+      return {
+        _id: booking._id,
+        facilityName: booking.facility ? booking.facility.name : booking.facilityName,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        status: booking.status,
+        bookedAt: booking.bookedAt
+      };
+    });
+    
+    return res.status(200).json({
+      status: 'success',
+      bookings
+    });
+  } catch (error) {
+    console.error('Error fetching user bookings:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Server error while fetching bookings'
+    });
+  }
+});
+
 module.exports = router;
