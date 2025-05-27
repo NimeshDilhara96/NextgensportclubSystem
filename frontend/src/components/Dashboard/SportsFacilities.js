@@ -29,8 +29,10 @@ const SportsFacilities = () => {
   const [activeTab, setActiveTab] = useState('facilities');
   const [facilities, setFacilities] = useState([]);
   const [sports, setSports] = useState([]);
+  const [userBookings, setUserBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bookingsLoading, setBookingsLoading] = useState(false);
   
   // Add these state variables at the top of your component
   const [showBookingModal, setShowBookingModal] = useState(false);
@@ -83,6 +85,49 @@ const SportsFacilities = () => {
     };
 
     fetchData();
+  }, []);
+
+  // Fetch user bookings
+  const fetchUserBookings = async () => {
+    const token = sessionStorage.getItem('token');
+    const userEmail = sessionStorage.getItem('userEmail');
+    
+    if (!token || !userEmail) {
+      setError('Please login to view your bookings');
+      return;
+    }
+    
+    setBookingsLoading(true);
+    setError(null);
+    
+    try {
+      console.log('Fetching bookings for:', userEmail);
+      
+      // Use the new endpoint with email parameter
+      const response = await axios.get(`http://localhost:8070/user/bookings/${userEmail}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      console.log('Bookings response:', response.data);
+      
+      if (response.data && response.data.status === 'success') {
+        setUserBookings(response.data.bookings || []);
+      } else {
+        console.error('Unexpected response format:', response.data);
+        setUserBookings([]);
+      }
+    } catch (err) {
+      console.error('Error fetching user bookings:', err);
+      setError(`Failed to load bookings: ${err.response?.data?.message || err.message}`);
+    } finally {
+      setBookingsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserBookings();
   }, []);
 
   // Handle joining a sport - Updated to match your backend endpoint
@@ -191,6 +236,43 @@ const SportsFacilities = () => {
     setBookingData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Add a function to handle booking cancellation
+  const handleCancelBooking = async (bookingId) => {
+    if (!window.confirm('Are you sure you want to cancel this booking?')) {
+      return;
+    }
+    
+    try {
+      const token = sessionStorage.getItem('token');
+      const userEmail = sessionStorage.getItem('userEmail');
+      
+      if (!token || !userEmail) {
+        alert('Please login to cancel bookings');
+        return;
+      }
+      
+      console.log(`Cancelling booking ${bookingId} for user ${userEmail}`);
+      
+      const response = await axios.delete(`http://localhost:8070/facilities/booking/${bookingId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        data: { email: userEmail }  // Important: pass email in request body
+      });
+      
+      if (response.data.status === 'success') {
+        alert('Booking cancelled successfully');
+        // Refresh the bookings list
+        fetchUserBookings();
+      } else {
+        alert(response.data.message || 'Failed to cancel booking');
+      }
+    } catch (err) {
+      console.error('Error cancelling booking:', err);
+      alert(err.response?.data?.message || 'Failed to cancel booking');
+    }
+  };
+
   // Show loading indicator
   if (loading) {
     return (
@@ -248,8 +330,18 @@ const SportsFacilities = () => {
             >
               Sports
             </button>
+            <button 
+              className={`${styles.filterButton} ${activeTab === 'bookings' ? styles.active : ''}`}
+              onClick={() => {
+                setActiveTab('bookings');
+                fetchUserBookings(); // Refresh bookings when tab is clicked
+              }}
+            >
+              My Bookings
+            </button>
           </div>
           
+          {/* Facilities Tab */}
           {activeTab === 'facilities' && (
             <div className={styles.facilitiesList}>
               {facilities.length === 0 ? (
@@ -287,6 +379,7 @@ const SportsFacilities = () => {
             </div>
           )}
           
+          {/* Sports Tab */}
           {activeTab === 'sports' && (
             <div className={styles.sportsList}>
               <div className={styles.sportsGrid}>
@@ -338,6 +431,58 @@ const SportsFacilities = () => {
                   ))
                 )}
               </div>
+            </div>
+          )}
+          
+          {/* Bookings Tab */}
+          {activeTab === 'bookings' && (
+            <div className={styles.bookingsSection}>
+              <h2>My Facility Bookings</h2>
+              
+              {bookingsLoading ? (
+                <div className={styles.loadingContainer}>
+                  <p>Loading your bookings...</p>
+                </div>
+              ) : userBookings.length === 0 ? (
+                <div className={styles.emptyBookings}>
+                  <p>You don't have any bookings yet.</p>
+                  <button 
+                    className={styles.browseButton} 
+                    onClick={() => setActiveTab('facilities')}
+                  >
+                    Browse Facilities
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.bookingsGrid}>
+                  {userBookings.map(booking => (
+                    <div className={styles.bookingCard} key={booking._id}>
+                      <div className={styles.bookingHeader}>
+                        <h3>{booking.facilityName}</h3>
+                        <span className={`${styles.statusTag} ${styles[booking.status.toLowerCase()]}`}>
+                          {booking.status}
+                        </span>
+                      </div>
+                      
+                      <div className={styles.bookingDetails}>
+                        <div className={styles.bookingTime}>
+                          <p><strong>Start:</strong> {new Date(booking.startTime).toLocaleString()}</p>
+                          <p><strong>End:</strong> {new Date(booking.endTime).toLocaleString()}</p>
+                        </div>
+                        
+                        {booking.status !== 'Cancelled' && (
+                          <button 
+                            className={styles.cancelButton}
+                            onClick={() => handleCancelBooking(booking._id)}
+                          >
+                            Cancel Booking
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

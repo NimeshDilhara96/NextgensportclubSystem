@@ -441,4 +441,56 @@ router.get('/:id/bookings', async (req, res) => {
   }
 });
 
+// Cancel a booking
+// Authenticated users only
+router.delete('/booking/:id', async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'User email is required'
+      });
+    }
+    
+    // Find the user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found'
+      });
+    }
+    
+    // Find the booking in the user's bookings array
+    const bookingIndex = user.bookings.findIndex(b => b._id.toString() === bookingId);
+    
+    if (bookingIndex === -1) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Booking not found'
+      });
+    }
+    
+    // Update the booking status to "Cancelled"
+    user.bookings[bookingIndex].status = 'Cancelled';
+    
+    // Save the updated user document
+    await user.save();
+    
+    return res.status(200).json({
+      status: 'success',
+      message: 'Booking cancelled successfully'
+    });
+  } catch (error) {
+    console.error('Error cancelling booking:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Server error while cancelling booking'
+    });
+  }
+});
+
 module.exports = router;
