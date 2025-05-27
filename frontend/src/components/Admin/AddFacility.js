@@ -4,6 +4,7 @@ import axios from 'axios';
 import styles from './AdminForms.module.css';
 
 const AddFacility = () => {
+    // Existing state variables
     const [facilities, setFacilities] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -22,6 +23,12 @@ const AddFacility = () => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
+    
+    // New state variables for bookings
+    const [showBookingsModal, setShowBookingsModal] = useState(false);
+    const [selectedFacilityBookings, setSelectedFacilityBookings] = useState({ facility: null, bookings: [] });
+    const [bookingsLoading, setBookingsLoading] = useState(false);
+    const [bookingFilter, setBookingFilter] = useState('all'); // 'all', 'active', 'past'
 
     // Fetch facilities on component mount
     useEffect(() => {
@@ -220,6 +227,63 @@ const AddFacility = () => {
         }
     };
 
+    // New function to handle viewing bookings for a facility
+    const handleViewBookings = async (facility) => {
+        setSelectedFacilityBookings({ facility, bookings: [] });
+        setBookingsLoading(true);
+        setShowBookingsModal(true);
+        
+        try {
+            const token = sessionStorage.getItem('adminToken');
+            const response = await axios.get(`http://localhost:8070/facilities/${facility._id}/bookings`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+            
+            setSelectedFacilityBookings({ 
+                facility, 
+                bookings: response.data.bookings || [] 
+            });
+        } catch (error) {
+            console.error('Error fetching facility bookings:', error);
+        } finally {
+            setBookingsLoading(false);
+        }
+    };
+    
+    // Function to filter bookings based on selected filter
+    const getFilteredBookings = () => {
+        if (!selectedFacilityBookings.bookings.length) return [];
+        
+        const now = new Date();
+        
+        switch(bookingFilter) {
+            case 'active':
+                return selectedFacilityBookings.bookings.filter(booking => 
+                    new Date(booking.endTime) > now && booking.status !== 'cancelled'
+                );
+            case 'past':
+                return selectedFacilityBookings.bookings.filter(booking => 
+                    new Date(booking.endTime) < now || booking.status === 'cancelled'
+                );
+            default:
+                return selectedFacilityBookings.bookings;
+        }
+    };
+    
+    // Function to format date and time for display
+    const formatDateTime = (dateTimeString) => {
+        const options = { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        return new Date(dateTimeString).toLocaleDateString(undefined, options);
+    };
+
     return (
         <>
             <AdminSlideNav />
@@ -244,7 +308,7 @@ const AddFacility = () => {
                     </div>
                 )}
                 
-                {/* Facilities List */}
+                {/* Facilities List - Updated with View Bookings button */}
                 <div className={styles.facilitiesList}>
                     {facilities.length === 0 ? (
                         <p>No facilities found. Add a facility to get started.</p>
@@ -281,6 +345,12 @@ const AddFacility = () => {
                                             </span>
                                         </td>
                                         <td>
+                                            <button 
+                                                className={styles.viewBtn}
+                                                onClick={() => handleViewBookings(facility)}
+                                            >
+                                                Bookings
+                                            </button>
                                             <button 
                                                 className={styles.editBtn}
                                                 onClick={() => handleEditClick(facility)}
@@ -601,6 +671,82 @@ const AddFacility = () => {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* New Bookings Modal */}
+                {showBookingsModal && selectedFacilityBookings.facility && (
+                    <div className={styles.modal}>
+                        <div className={`${styles.modalContent} ${styles.wideModal}`}>
+                            <h2>Bookings for {selectedFacilityBookings.facility.name}</h2>
+                            
+                            <div className={styles.filterButtons}>
+                                <button 
+                                    className={bookingFilter === 'all' ? styles.activeFilter : ''}
+                                    onClick={() => setBookingFilter('all')}
+                                >
+                                    All Bookings
+                                </button>
+                                <button 
+                                    className={bookingFilter === 'active' ? styles.activeFilter : ''}
+                                    onClick={() => setBookingFilter('active')}
+                                >
+                                    Active Bookings
+                                </button>
+                                <button 
+                                    className={bookingFilter === 'past' ? styles.activeFilter : ''}
+                                    onClick={() => setBookingFilter('past')}
+                                >
+                                    Past/Cancelled Bookings
+                                </button>
+                            </div>
+                            
+                            {bookingsLoading ? (
+                                <div className={styles.loadingIndicator}>Loading bookings...</div>
+                            ) : getFilteredBookings().length === 0 ? (
+                                <p className={styles.noData}>No bookings found for this filter.</p>
+                            ) : (
+                                <div className={styles.tableContainer}>
+                                    <table className={styles.bookingsTable}>
+                                        <thead>
+                                            <tr>
+                                                <th>User</th>
+                                                <th>Email</th>
+                                                <th>Start Time</th>
+                                                <th>End Time</th>
+                                                <th>Status</th>
+                                                <th>Booked On</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {getFilteredBookings().map((booking, index) => (
+                                                <tr key={index} className={styles[`status-${booking.status.toLowerCase()}`]}>
+                                                    <td>{booking.userName}</td>
+                                                    <td>{booking.userEmail}</td>
+                                                    <td>{formatDateTime(booking.startTime)}</td>
+                                                    <td>{formatDateTime(booking.endTime)}</td>
+                                                    <td>
+                                                        <span className={styles[booking.status.toLowerCase()]}>
+                                                            {booking.status}
+                                                        </span>
+                                                    </td>
+                                                    <td>{formatDateTime(booking.bookedAt)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                            
+                            <div className={styles.modalFooter}>
+                                <button 
+                                    className={styles.closeBtn}
+                                    onClick={() => setShowBookingsModal(false)}
+                                >
+                                    Close
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
