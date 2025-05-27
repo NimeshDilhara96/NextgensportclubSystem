@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; // Assuming you're using React Router for navigation
 import styles from './Landing.module.css';
 import logo from '../../assets/logo.png'; // Import your logo image
 
 const LandingPage = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  React.useEffect(() => {
+    // Prevent body scrolling when mobile menu is open
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <div className={styles.container}>
       {/* Navigation Bar */}
@@ -12,15 +31,28 @@ const LandingPage = () => {
           <img src={logo} alt="Sports Club Logo" className={styles.logo} />
           <span className={styles.logoText}>Club Ftc</span>
         </div>
-        <ul className={styles.navLinks}>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/about">About</Link></li>
-          <li><Link to="/news">News</Link></li>
-          <li><Link to="/gallery">Gallery</Link></li>
-          <li><Link to="/facilities">Facilities</Link></li>
-          <li><Link to="/login" className={styles.loginButton}>Member Login</Link></li>
+        
+        {/* Mobile Menu Toggle */}
+        <div className={styles.menuIcon} onClick={toggleMobileMenu}>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        
+        <ul className={`${styles.navLinks} ${mobileMenuOpen ? styles.active : ''}`}>
+          <li><Link to="/" onClick={toggleMobileMenu}>Home</Link></li>
+          <li><Link to="/about" onClick={toggleMobileMenu}>About</Link></li>
+          <li><Link to="/news" onClick={toggleMobileMenu}>News</Link></li>
+          <li><Link to="/gallery" onClick={toggleMobileMenu}>Gallery</Link></li>
+          <li><Link to="/facilities" onClick={toggleMobileMenu}>Facilities</Link></li>
+          <li><Link to="/login" className={styles.loginButton} onClick={toggleMobileMenu}>Member Login</Link></li>
         </ul>
       </nav>
+
+      <div 
+        className={`${styles.menuOverlay} ${mobileMenuOpen ? styles.active : ''}`} 
+        onClick={toggleMobileMenu}
+      ></div>
 
       {/* Hero Section */}
       <section className={styles.hero}>

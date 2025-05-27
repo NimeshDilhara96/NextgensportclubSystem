@@ -296,3 +296,142 @@
   letter-spacing: 0.5px;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 }
+
+/* Responsive Design */
+/* Mobile Menu Icon (Hamburger) */
+.menuIcon {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  cursor: pointer;
+}
+
+.menuIcon span {
+  width: 100%;
+  height: 3px;
+  background-color: #007BFF;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* Media Queries */
+@media (max-width: 992px) {
+  .features {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .feature {
+    width: 80%;
+    margin-bottom: 20px;
+  }
+
+  .testimonialCard {
+    width: 45%;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Navigation for mobile */
+  .menuIcon {
+    display: flex;
+    z-index: 1001;
+  }
+
+  .navLinks {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 70%;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.95);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: right 0.3s ease;
+    z-index: 1000;
+  }
+
+  .navLinks.active {
+    right: 0;
+  }
+
+  .navLinks li {
+    margin: 15px 0;
+  }
+
+  /* Hero section adjustments */
+  .hero h1 {
+    font-size: 3rem;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+  }
+
+  .heroButtons {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  /* Overlay for mobile menu */
+  .menuOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+
+  .menuOverlay.active {
+    display: block;
+  }
+
+  /* Other sections */
+  .testimonialCard {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .contactForm .inputField, 
+  .contactForm .textareaField {
+    width: 95%;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 15px;
+  }
+
+  .logoText {
+    font-size: 1.5rem;
+  }
+  
+  .logo {
+    height: 40px;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+    margin-bottom: 25px;
+  }
+
+  .ctaButton, .secondaryButton {
+    padding: 12px 25px;
+    font-size: 1rem;
+  }
+
+  .feature {
+    width: 95%;
+  }
+}
