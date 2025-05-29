@@ -12,278 +12,571 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.9); /* White with slight transparency */
-  padding: 15px 30px;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 12px 30px;
   color: rgb(12, 54, 183);
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  backdrop-filter: blur(10px); /* Glass-like effect */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 .logoContainer {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
+  z-index: 1002;
 }
 
 .logo {
-  height: 60px; /* Slightly larger logo */
+  height: 55px;
   width: auto;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
 }
 
 .logoText {
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 1.8rem;
+  font-weight: 800;
   letter-spacing: 1px;
-  color: #007BFF; /* Club branding color */
+  color: #007BFF;
+  background: linear-gradient(135deg, #007BFF, #00C6FF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .navLinks {
   list-style: none;
   display: flex;
-  gap: 25px;
+  gap: 30px;
   margin: 0;
   padding: 0;
+  align-items: center;
 }
 
-.navLinks li a {
-  color: #b4b6b9;
+.navLinks li a:not(.loginButton) {
+  color: #555;
   text-decoration: none;
-  font-size: 1.1rem;
-  font-weight: 500;
-  transition: color 0.3s ease, transform 0.3s ease;
+  font-size: 1rem;
+  font-weight: 600;
+  position: relative;
+  padding: 5px 0;
+  transition: color 0.3s ease;
 }
 
-.navLinks li a:hover {
-  color: #ff4757; /* Highlight color */
-  transform: scale(1.1); /* Slight zoom effect */
+.navLinks li a:not(.loginButton)::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #ff4757;
+  transition: width 0.3s ease;
+}
+
+.navLinks li a:not(.loginButton):hover {
+  color: #ff4757;
+}
+
+.navLinks li a:not(.loginButton):hover::after {
+  width: 100%;
 }
 
 .loginButton {
-  background: linear-gradient(90deg, #089ec7, #0236e3); /* Gradient background */
-  padding: 12px 30px; /* Slightly larger padding */
-  border-radius: 30px; /* More rounded button */
+  background: linear-gradient(90deg, #089ec7, #0236e3);
+  padding: 10px 25px;
+  border-radius: 30px;
   color: white;
   text-decoration: none;
-  font-weight: bold;
-  font-size: 1.1rem; /* Slightly larger font size */
-  box-shadow: 0 4px 10px rgba(201, 195, 195, 0.3); /* Subtle shadow */
-  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(2, 54, 227, 0.3);
+  transition: all 0.3s ease;
 }
 
 .loginButton:hover {
-  background: linear-gradient(90deg, #ff6b81, #ff4757); /* Reverse gradient on hover */
-  color: #0637d9; /* Highlight text color */
-  transform: translateY(-3px); /* Lift effect */
-  box-shadow: 0 6px 15px rgba(255, 71, 87, 0.5); /* Stronger shadow on hover */
+  background: linear-gradient(90deg, #0236e3, #ff4757);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(255, 71, 87, 0.5);
 }
 
-/* Hero Section */
+/* Hero Section - Improved */
 .hero {
-  background-image: url('../../assets/heroimage.jpg'); /* Add your hero image path */
+  background-image: url('../../assets/heroimage.jpg');
   background-size: cover;
   background-position: center;
-  height: 100vh; /* Fullscreen hero section */
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
   text-align: center;
   position: relative;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5); /* Inner shadow for depth */
+  overflow: hidden;
 }
 
-.hero::before {
-  content: '';
+.heroOverlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9)); /* Gradient overlay */
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.8) 100%);
+  z-index: 1;
 }
 
 .heroContent {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  max-width: 800px;
+  padding: 0 20px;
 }
 
-.hero h1 {
-  font-size: 4.5rem; /* Larger font for modern look */
+.animatedTitle {
+  font-size: 4.5rem;
+  font-weight: 800;
   margin-bottom: 15px;
+  line-height: 1.1;
   text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 1s forwards 0.5s;
 }
 
-.hero p {
+.highlight {
+  color: #3686dc;
+}
+
+.heroSubtitle {
   font-size: 1.8rem;
   margin-bottom: 40px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 1s forwards 0.8s;
 }
 
 .heroButtons {
   display: flex;
   gap: 25px;
   justify-content: center;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 1s forwards 1.1s;
 }
 
 .ctaButton {
-  background-color: #007BFF;
+  background: linear-gradient(45deg, #0236e3, #089ec7);
   color: white;
   padding: 15px 35px;
   border: none;
-  border-radius: 30px; /* Rounded button */
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.ctaButton:hover {
-  background-color: #0056b3;
-  transform: translateY(-5px); /* Lift effect */
-}
-
-.secondaryButton {
-  background-color: transparent;
-  color: white;
-  padding: 15px 35px;
-  border: 2px solid white;
   border-radius: 30px;
   font-size: 1.2rem;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(8, 158, 199, 0.3);
+}
+
+.ctaButton:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 25px rgba(8, 158, 199, 0.4);
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 15px 35px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
 }
 
 .secondaryButton:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-5px); /* Lift effect */
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-5px);
 }
 
-/* Features Section */
+.buttonIcon {
+  font-style: normal;
+  font-weight: 800;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Features Section - Improved */
+.featuresSection {
+  padding: 100px 20px;
+  background-color: #f8f9fa;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.sectionHeader h2 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  color: #333;
+  position: relative;
+  display: inline-block;
+}
+
+.sectionHeader h2:after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 3px;
+  background-color: #ff4757;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.sectionHeader p {
+  font-size: 1.2rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 .features {
   display: flex;
-  justify-content: space-around;
-  margin: 60px 0;
-  padding: 0 30px;
-  gap: 20px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .feature {
+  flex: 1;
+  min-width: 300px;
   background-color: white;
   border-radius: 15px;
-  padding: 25px;
-  width: 30%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 40px 30px;
+  text-align: left;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
 }
 
 .feature:hover {
   transform: translateY(-10px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  border-bottom: 3px solid #ff4757;
 }
 
-.feature h2 {
-  color: #007BFF;
-  margin-bottom: 15px;
+.featureIcon {
+  font-size: 2.5rem;
+  margin-bottom: 25px;
+  color: #0236e3;
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+  line-height: 70px;
+  text-align: center;
+  background-color: rgba(2, 54, 227, 0.1);
+  border-radius: 50%;
+}
+
+.feature h3 {
   font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #333;
 }
 
 .feature p {
-  font-size: 1rem;
-  color: #555;
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.6;
 }
 
-/* Testimonials Section */
-.testimonials {
-  background-color: #f4f4f4;
-  padding: 60px 30px;
+.featureLink {
+  display: inline-block;
+  color: #0236e3;
+  font-weight: 600;
+  text-decoration: none;
+  position: relative;
+}
+
+.featureLink:after {
+  content: '→';
+  margin-left: 5px;
+  transition: all 0.3s ease;
+}
+
+.featureLink:hover:after {
+  margin-left: 10px;
+}
+
+/* Testimonials Section - Improved */
+.testimonialsSection {
+  padding: 100px 20px;
+  background-color: white;
   text-align: center;
-}
-
-.testimonials h2 {
-  font-size: 2.5rem;
-  color: #333;
-  margin-bottom: 30px;
 }
 
 .testimonialCards {
   display: flex;
-  justify-content: center;
-  gap: 20px;
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto;
   flex-wrap: wrap;
 }
 
 .testimonialCard {
-  background-color: white;
+  flex: 1;
+  min-width: 300px;
+  background: white;
   border-radius: 15px;
-  padding: 20px;
-  width: 30%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 35px;
+  text-align: left;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
 .testimonialCard:hover {
   transform: translateY(-10px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.testimonialQuote {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 4rem;
+  color: #f0f0f0;
+  font-weight: bold;
+  line-height: 1;
+  z-index: 0;
 }
 
 .testimonialCard p {
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 10px;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 25px;
+  position: relative;
+  z-index: 1;
+  color: #444;
 }
 
-.testimonialCard span {
-  font-size: 0.9rem;
-  color: #007BFF;
-  font-weight: bold;
-}
-
-/* Contact Section */
-.contact {
-  background-color: #0056b3;
-  color: white;
-  padding: 60px 30px;
-  text-align: center;
-}
-
-.contact h2 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-}
-
-.contact p {
-  font-size: 1.2rem;
-  margin-bottom: 30px;
-}
-
-.contactForm {
+.testimonialAuthor {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 15px;
 }
 
-.inputField, .textareaField {
-  width: 80%;
-  max-width: 500px;
-  padding: 15px;
-  border: none;
-  border-radius: 10px;
+.authorAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #0236e3;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.authorInfo h4 {
+  font-size: 1.1rem;
+  margin: 0;
+  color: #333;
+}
+
+.authorInfo p {
+  font-size: 0.9rem;
+  margin: 5px 0 0;
+  color: #888;
+}
+
+.testimonialStars {
+  color: #ffb400;
+  margin-top: 15px;
+  font-size: 1.2rem;
+}
+
+.testimonialDots {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ddd;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background-color: #0236e3;
+  transform: scale(1.2);
+}
+
+/* Contact Section - Improved */
+.contactSection {
+  padding: 100px 20px;
+  background-color: #f8f9fa;
+}
+
+.contactContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 50px;
+}
+
+.contactInfo {
+  flex: 1;
+  min-width: 300px;
+}
+
+.contactInfo h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.contactInfo p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 40px;
+  max-width: 450px;
+}
+
+.contactDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.contactIcon {
+  font-size: 1.5rem;
+  color: #0236e3;
+  background-color: rgba(2, 54, 227, 0.1);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.contactItem p {
+  margin: 0;
   font-size: 1rem;
 }
 
-.textareaField {
-  height: 150px;
-  resize: none;
+.contactForm {
+  flex: 1;
+  min-width: 300px;
+  background-color: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
-.contactForm .ctaButton {
-  width: 80%;
-  max-width: 200px;
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.inputField {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.inputField:focus {
+  outline: none;
+  border-color: #0236e3;
+  box-shadow: 0 0 0 2px rgba(2, 54, 227, 0.1);
+}
+
+.textareaField {
+  width: 100%;
+  min-height: 150px;
+  padding: 15px;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  font-size: 1rem;
+  resize: vertical;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.textareaField:focus {
+  outline: none;
+  border-color: #0236e3;
+  box-shadow: 0 0 0 2px rgba(2, 54, 227, 0.1);
+}
+
+.submitButton {
+  background: linear-gradient(45deg, #0236e3, #089ec7);
+  color: white;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  width: 100%;
+  justify-content: center;
+}
+
+.submitButton:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(2, 54, 227, 0.2);
+}
+
+.buttonArrow {
+  transition: transform 0.3s ease;
+}
+
+.submitButton:hover .buttonArrow {
+  transform: translateX(5px);
 }
 
 /* Footer */
@@ -303,55 +596,80 @@
   display: none;
   flex-direction: column;
   justify-content: space-between;
-  width: 30px;
-  height: 21px;
+  width: 28px;
+  height: 20px;
   cursor: pointer;
+  z-index: 1002;
+  position: relative;
 }
 
 .menuIcon span {
+  display: block;
   width: 100%;
-  height: 3px;
+  height: 2px;
   background-color: #007BFF;
   border-radius: 3px;
   transition: all 0.3s ease;
 }
 
-/* Media Queries */
-@media (max-width: 992px) {
-  .features {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .feature {
-    width: 80%;
-    margin-bottom: 20px;
-  }
-
-  .testimonialCard {
-    width: 45%;
-  }
+/* Animation for hamburger to X */
+.menuIcon.active span:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+  background-color: #ff4757;
 }
 
+.menuIcon.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.menuIcon.active span:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+  background-color: #ff4757;
+}
+
+/* Overlay for mobile menu - improved */
+.menuOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.menuOverlay.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Mobile menu styles */
 @media (max-width: 768px) {
-  /* Navigation for mobile */
   .menuIcon {
     display: flex;
-    z-index: 1001;
   }
 
   .navLinks {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 70%;
+    width: 75%;
     height: 100vh;
-    background-color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.98);
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: right 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.77, 0, 0.175, 1);
     z-index: 1000;
+    box-shadow: -10px 0 20px rgba(0, 0, 0, 0.15);
+    gap: 30px;
+    padding: 50px 0;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
   }
 
   .navLinks.active {
@@ -359,48 +677,57 @@
   }
 
   .navLinks li {
-    margin: 15px 0;
+    opacity: 0;
+    transform: translateY(20px);
   }
 
-  /* Hero section adjustments */
-  .hero h1 {
-    font-size: 3rem;
+  .navLinks.active li {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.4s ease, transform 0.4s ease;
   }
 
-  .hero p {
-    font-size: 1.2rem;
-  }
-
-  .heroButtons {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  /* Overlay for mobile menu */
-  .menuOverlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-  }
-
-  .menuOverlay.active {
-    display: block;
-  }
-
-  /* Other sections */
-  .testimonialCard {
-    width: 100%;
-    margin-bottom: 20px;
+  /* Stagger the animations for each menu item */
+  .navLinks.active li:nth-child(1) {
+    transition-delay: 0.1s;
   }
   
-  .contactForm .inputField, 
-  .contactForm .textareaField {
-    width: 95%;
+  .navLinks.active li:nth-child(2) {
+    transition-delay: 0.2s;
+  }
+  
+  .navLinks.active li:nth-child(3) {
+    transition-delay: 0.3s;
+  }
+  
+  .navLinks.active li:nth-child(4) {
+    transition-delay: 0.4s;
+  }
+  
+  .navLinks.active li:nth-child(5) {
+    transition-delay: 0.5s;
+  }
+  
+  .navLinks.active li:nth-child(6) {
+    transition-delay: 0.6s;
+  }
+
+  .navLinks li a:not(.loginButton) {
+    font-size: 1.3rem;
+    padding: 10px 0;
+  }
+
+  .loginButton {
+    margin-top: 15px;
+    padding: 12px 35px;
+    font-size: 1.1rem;
+  }
+
+  /* Apply a darker background to the navbar when scrolled on mobile */
+  .navbar.scrolled {
+    background-color: rgba(255, 255, 255, 1);
+    padding: 10px 25px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
   }
 }
 
@@ -410,28 +737,39 @@
   }
 
   .logoText {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
   
   .logo {
     height: 40px;
   }
-
-  .hero h1 {
+  
+  .navLinks {
+    width: 85%;
+  }
+  
+  .animatedTitle {
     font-size: 2.5rem;
   }
 
-  .hero p {
-    font-size: 1rem;
-    margin-bottom: 25px;
+  .heroSubtitle {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
   }
 
-  .ctaButton, .secondaryButton {
-    padding: 12px 25px;
-    font-size: 1rem;
+  .sectionHeader {
+    margin-bottom: 40px;
   }
 
-  .feature {
-    width: 95%;
+  .sectionHeader h2 {
+    font-size: 1.8rem;
+  }
+
+  .featuresSection, .testimonialsSection, .contactSection {
+    padding: 60px 15px;
+  }
+
+  .contactForm {
+    padding: 30px 20px;
   }
 }
