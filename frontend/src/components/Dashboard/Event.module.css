@@ -1,0 +1,340 @@
+.mainContent {
+  transition: margin-left 0.3s;
+  padding: 10px;
+  margin-left: 250px;
+  margin-top: 60px;
+}
+
+.mainContent.sidebarOpen {
+  margin-left: 250px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 80px);
+  padding: 10px;
+}
+
+.pageTitle {
+  text-align: center;
+  margin: 20px 0;
+  color: #1a73e8;
+  font-size: 28px;
+}
+
+.events {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.event {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 100%;
+}
+
+.eventHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.eventImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.eventInfo {
+  flex: 1;
+}
+
+.eventInfo h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a73e8;
+}
+
+.eventMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 5px;
+  color: #65676b;
+  font-size: 14px;
+}
+
+.eventDate, .eventTime {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.eventContent {
+  margin: 12px 0;
+}
+
+.eventLocation {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #65676b;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.eventDescription {
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.showMoreBtn {
+  background: none;
+  border: none;
+  color: #1a73e8;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.showMoreBtn:hover {
+  text-decoration: underline;
+}
+
+.eventStats {
+  padding: 12px 0;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  color: #65676b;
+  font-size: 14px;
+}
+
+.attendeeCount {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.eventActions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12px;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 16px;
+  border: none;
+  background-color: #eaeff7;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #1a73e8;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.actionButton:hover {
+  background-color: #d2e3fc;
+}
+
+.actionButton.active {
+  background-color: #1a73e8;
+  color: white;
+  cursor: default;
+}
+
+.actionButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.loading {
+  text-align: center;
+  margin: 30px 0;
+  font-size: 18px;
+  color: #666;
+}
+
+.error {
+  text-align: center;
+  margin: 30px 0;
+  padding: 10px;
+  background-color: #fee;
+  color: #d33;
+  border-radius: 4px;
+}
+
+.noEvents {
+  text-align: center;
+  margin: 30px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: #666;
+}
+
+/* Responsive breakpoints */
+@media screen and (max-width: 1024px) {
+  .mainContent {
+    margin-left: 0;
+    padding: 10px;
+  }
+
+  .mainContent.sidebarOpen {
+    margin-left: 200px;
+  }
+
+  .container {
+    padding: 8px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .mainContent {
+    margin-left: 0;
+    margin-top: 50px;
+  }
+
+  .mainContent.sidebarOpen {
+    margin-left: 0;
+  }
+
+  .container {
+    padding: 5px;
+  }
+
+  .pageTitle {
+    font-size: 24px;
+    margin: 15px 0;
+  }
+
+  .event {
+    padding: 12px;
+  }
+
+  .eventHeader {
+    gap: 10px;
+  }
+
+  .eventImage {
+    width: 60px;
+    height: 60px;
+  }
+
+  .eventInfo h3 {
+    font-size: 18px;
+  }
+
+  .eventMeta {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .mainContent {
+    padding: 5px;
+  }
+
+  .container {
+    padding: 3px;
+  }
+
+  .pageTitle {
+    font-size: 20px;
+    margin: 12px 0;
+  }
+
+  .event {
+    padding: 10px;
+  }
+
+  .eventHeader {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .eventImage {
+    width: 50px;
+    height: 50px;
+  }
+
+  .eventInfo h3 {
+    font-size: 16px;
+  }
+
+  .eventMeta, .eventLocation, .eventDescription {
+    font-size: 13px;
+  }
+
+  .eventActions {
+    justify-content: center;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #f5f7f8;
+  }
+
+  .event {
+    background-color: #242526;
+    color: #e4e6eb;
+  }
+
+  .eventHeader {
+    background-color: #3a3b3c;
+  }
+
+  .eventInfo h3 {
+    color: #2d88ff;
+  }
+
+  .eventMeta, .eventLocation, .eventStats {
+    color: #b0b3b8;
+  }
+
+  .eventStats {
+    border-color: #3e4042;
+  }
+
+  .actionButton {
+    background-color: #3a3b3c;
+    color: #2d88ff;
+  }
+
+  .actionButton:hover {
+    background-color: #4e4f50;
+  }
+
+  .actionButton.active {
+    background-color: #2d88ff;
+    color: #e4e6eb;
+  }
+
+  .showMoreBtn {
+    color: #2d88ff;
+  }
+
+  .noEvents {
+    background-color: #3a3b3c;
+    color: #b0b3b8;
+  }
+}
