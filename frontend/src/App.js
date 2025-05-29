@@ -13,6 +13,7 @@ import CreatePost from './components/Admin/CreatePost';
 import AddSport from './components/Admin/AddSport';  // Add this import
 import AddFacility from './components/Admin/AddFacility';
 import Event from './components/Dashboard/Event';  // Add this import
+import ClubStore from './components/Dashboard/clubstore';
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -136,7 +137,7 @@ function App() {
           
           <Route path="/store" element={
             <ProtectedRoute>
-              <div>Store Page</div>
+              <ClubStore />
             </ProtectedRoute>
           } />
           
