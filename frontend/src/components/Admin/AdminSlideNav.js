@@ -7,6 +7,7 @@ const AdminSlideNav = () => {
     const navigate = useNavigate();
     const adminUsername = sessionStorage.getItem('adminUsername');
     const [showDropdown, setShowDropdown] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const handleLogout = () => {
         sessionStorage.removeItem('adminId');
@@ -15,9 +16,19 @@ const AdminSlideNav = () => {
         navigate('/admin/login');
     };
 
+    const toggleSidebar = () => {
+        setSidebarOpen(!sidebarOpen);
+    };
+
     return (
         <>
-            <div className="sidebar">
+            <button className="mobile-toggle" onClick={toggleSidebar}>
+                {sidebarOpen ? '✕' : '☰'}
+            </button>
+
+            <div 
+                className={`sidebar ${sidebarOpen ? 'open' : ''}`}
+            >
                 <div className="logo-container">
                     <img src={logo} alt="Club FTC" className="logo" />
                 </div>
@@ -38,6 +49,11 @@ const AdminSlideNav = () => {
                 </div>
             </div>
 
+            <div 
+                className={`sidebar-overlay ${sidebarOpen ? 'active' : ''}`} 
+                onClick={() => setSidebarOpen(false)}
+            ></div>
+
             <div className="top-bar">
                 <div className="notification-icon">
                     <i className="fas fa-bell"></i>
@@ -55,4 +71,4 @@ const AdminSlideNav = () => {
     );
 };
 
-export default AdminSlideNav; 
+export default AdminSlideNav;
