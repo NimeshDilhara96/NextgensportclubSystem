@@ -314,8 +314,7 @@ const SportsFacilities = () => {
       
       <div className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
         <div className={styles.container} style={lightModeStyles.container}>
-          <h1 style={lightModeStyles.text}>Sports & Facilities</h1>
-          <p style={lightModeStyles.description}>Welcome to Next Gen Sport Club's sports programs and facilities. Explore our offerings and join today!</p>
+         
           
           <div className={styles.filterContainer}>
             <button 
