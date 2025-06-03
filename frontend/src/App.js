@@ -12,6 +12,7 @@ import AdminDashboard from './components/Admin/adminDashboard';  // Add this imp
 import AdminMemberManagement from './components/Admin/adminMemberManagement';
 import CreatePost from './components/Admin/CreatePost';
 import AddSport from './components/Admin/AddSport';  // Add this import
+import AddEventSponser from './components/Admin/addEventsponser';
 import AddFacility from './components/Admin/AddFacility';
 import Event from './components/Dashboard/Event';  // Add this import
 import ClubStore from './components/Dashboard/clubstore';
@@ -90,6 +91,12 @@ function App() {
           <Route path="/admin/add-sport" element={
             <AdminProtectedRoute>
               <AddSport />
+            </AdminProtectedRoute>
+          } />
+
+          <Route path="/admin/add-event-sponsor" element={
+            <AdminProtectedRoute>
+              <AddEventSponser />
             </AdminProtectedRoute>
           } />
 
