@@ -473,7 +473,7 @@ const Dashboard = () => {
               <div className={styles.footerCredits}>
                 <p>Powered by <span className={styles.highlight}>MommentX</span></p>
                 <p>Developed by <span className={styles.highlight}>Nimeshdilhara96</span></p>
-                <p className={styles.versionBadge}>UI v2.3</p>
+                <p className={styles.versionBadge}>UI v2.3.1</p>
               </div>
             </div>
           </div>
