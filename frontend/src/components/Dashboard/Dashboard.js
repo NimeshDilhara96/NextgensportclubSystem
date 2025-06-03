@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Dashboard.css';
 import SlideNav from '../appnavbar/slidenav';
@@ -19,6 +19,7 @@ const Dashboard = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [workoutGoals, setWorkoutGoals] = useState([]);
   const [userBookings, setUserBookings] = useState([]);
+  const navigate = useNavigate();
 
   // Fetch all data
   useEffect(() => {
@@ -139,6 +140,44 @@ const Dashboard = () => {
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
+
+  // Add this to your main App or Dashboard component
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    if (!token) return;
+    
+    // Function to check if account is blocked
+    const checkBlockStatus = async () => {
+      try {
+        const response = await axios.get('http://localhost:8070/user/checkStatus', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        if (response.data.isBlocked) {
+          // Clear session data and redirect to login with message
+          sessionStorage.clear();
+          navigate('/login', { 
+            state: { message: "Your account has been blocked. Please contact the administrator." }
+          });
+        }
+      } catch (error) {
+        if (error.response?.status === 403) {
+          // 403 Forbidden - account is blocked
+          sessionStorage.clear();
+          navigate('/login', { 
+            state: { message: "Your account has been blocked. Please contact the administrator." }
+          });
+        }
+        console.error("Status check error:", error);
+      }
+    };
+    
+    // Check status immediately and then every 5 minutes
+    checkBlockStatus();
+    const intervalId = setInterval(checkBlockStatus, 5 * 60 * 1000);
+    
+    return () => clearInterval(intervalId);
+  }, [navigate]);
 
   if (isLoading) {
     return (

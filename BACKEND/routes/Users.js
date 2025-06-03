@@ -3,6 +3,7 @@ let User = require("../models/User");
 const multer = require('multer');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const auth = require('../middleware/auth');
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
@@ -491,6 +492,24 @@ router.post("/login", async (req, res) => {
     res.status(500).json({
       status: "error",
       message: "Server error during login"
+    });
+  }
+});
+
+// Check if user account is blocked
+router.get("/checkStatus", auth, async (req, res) => {
+  try {
+    // req.user is set by the auth middleware
+    res.json({
+      status: "success",
+      membershipStatus: req.user.membershipStatus,
+      isBlocked: req.user.membershipStatus === 'blocked'
+    });
+  } catch (err) {
+    console.error("Status check error:", err);
+    res.status(500).json({
+      status: "error",
+      message: "Server error during status check"
     });
   }
 });

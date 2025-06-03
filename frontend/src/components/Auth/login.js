@@ -17,21 +17,21 @@ const useLogin = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Changed the URL to match your backend route
-            const response = await axios.post('http://localhost:8070/auth/login', {
+            // Change this URL to match your blocking-checking route
+            const response = await axios.post('http://localhost:8070/user/login', {
                 email: data.email,
                 password: data.password,
             });
 
             if (response.data.token) {
-                // Store in sessionStorage instead of localStorage
+                // Store token AND membership status
                 sessionStorage.setItem('userEmail', data.email);
                 sessionStorage.setItem('token', response.data.token);
+                sessionStorage.setItem('membershipStatus', response.data.user.membershipStatus);
                 
                 setSuccessMessage('Login successful! Redirecting...');
                 setError('');
                 
-                // Navigate after a short delay to show the success message
                 setTimeout(() => {
                     navigate("/dashboard");
                 }, 1500);
