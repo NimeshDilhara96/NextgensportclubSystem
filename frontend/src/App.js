@@ -9,6 +9,7 @@ import Community from './components/Dashboard/PostsCommunity';
 import SportsFacilities from './components/Dashboard/SportsFacilities';  // Add this import
 import Profile from './components/Myprofile/profile';
 import AdminDashboard from './components/Admin/adminDashboard';  // Add this import
+import AdminMemberManagement from './components/Admin/adminMemberManagement';
 import CreatePost from './components/Admin/CreatePost';
 import AddSport from './components/Admin/AddSport';  // Add this import
 import AddFacility from './components/Admin/AddFacility';
@@ -73,6 +74,13 @@ function App() {
               <AdminDashboard />
             </AdminProtectedRoute>
           } />
+
+          <Route path="/admin/member-management" element={
+            <AdminProtectedRoute>
+              <AdminMemberManagement />
+            </AdminProtectedRoute>
+          } />
+
           <Route path="/admin/create-post" element={
             <AdminProtectedRoute>
               <CreatePost />
