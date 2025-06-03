@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styles from './Landing.module.css';
 import logo from '../../assets/logo.png';
 
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
   // Handle scrolling effects
   useEffect(() => {
@@ -24,6 +25,18 @@ const LandingPage = () => {
     };
   }, []);
 
+  // Check for hash in URL on page load and scroll to section
+  useEffect(() => {
+    if (location.hash === '#news') {
+      const newsSection = document.getElementById('news');
+      if (newsSection) {
+        setTimeout(() => {
+          newsSection.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      }
+    }
+  }, [location]);
+
   // Toggle mobile menu
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -32,6 +45,18 @@ const LandingPage = () => {
   // Close mobile menu when clicking outside
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
+  };
+
+  // Handle news link click - scroll if on home page, navigate if elsewhere
+  const handleNewsClick = (e) => {
+    if (location.pathname === '/') {
+      e.preventDefault();
+      const newsSection = document.getElementById('news');
+      if (newsSection) {
+        newsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      closeMobileMenu();
+    }
   };
 
   // Prevent body scrolling when mobile menu is open
@@ -69,7 +94,7 @@ const LandingPage = () => {
         <ul className={`${styles.navLinks} ${mobileMenuOpen ? styles.active : ''}`}>
           <li><Link to="/" onClick={closeMobileMenu}>Home</Link></li>
           <li><Link to="/about" onClick={closeMobileMenu}>About</Link></li>
-          <li><Link to="/news" onClick={closeMobileMenu}>News</Link></li>
+          <li><Link to="/#news" onClick={handleNewsClick}>News</Link></li>
           <li><Link to="/gallery" onClick={closeMobileMenu}>Gallery</Link></li>
           <li><Link to="/facilities" onClick={closeMobileMenu}>Facilities</Link></li>
           <li><Link to="/login" className={styles.loginButton} onClick={closeMobileMenu}>Member Login</Link></li>
@@ -90,7 +115,11 @@ const LandingPage = () => {
           </h1>
           <p className={styles.heroSubtitle}>Your path to fitness, health, and community starts here.</p>
           <div className={styles.heroButtons}>
-            <button className={styles.ctaButton}>
+            <button
+              className={styles.ctaButton}
+              onClick={() => window.location.href = '/signup'}
+              type="button"
+            >
               Join Us Today
               <i className={styles.buttonIcon}>→</i>
             </button>
@@ -195,6 +224,73 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* News Section */}
+      <section id="news" className={styles.newsSection}>
+        <div className={styles.sectionHeader}>
+          <h2>Latest News & Updates</h2>
+          <p>Stay updated with what's happening at FTC</p>
+        </div>
+        
+        <div className={styles.newsGrid}>
+          <div className={styles.newsCard}>
+            <div className={styles.newsImage}>
+              <div className={styles.newsDate}>
+                <span className={styles.day}>15</span>
+                <span className={styles.month}>May</span>
+              </div>
+            </div>
+            <div className={styles.newsContent}>
+              <div className={styles.newsTag}>Event</div>
+              <h3>Summer Sports Camp Registration Now Open</h3>
+              <p>Join our annual summer sports camp for kids aged 7-15. Learn new skills and make friends in a fun environment.</p>
+              <Link to="/news/summer-camp" className={styles.newsLink}>
+                Read More <span>→</span>
+              </Link>
+            </div>
+          </div>
+          
+          <div className={styles.newsCard}>
+            <div className={styles.newsImage}>
+              <div className={styles.newsDate}>
+                <span className={styles.day}>10</span>
+                <span className={styles.month}>May</span>
+              </div>
+            </div>
+            <div className={styles.newsContent}>
+              <div className={styles.newsTag}>Facility</div>
+              <h3>New Swimming Pool Opening Next Month</h3>
+              <p>We're excited to announce the opening of our new Olympic-sized swimming pool with state-of-the-art facilities.</p>
+              <Link to="/news/new-pool" className={styles.newsLink}>
+                Read More <span>→</span>
+              </Link>
+            </div>
+          </div>
+          
+          <div className={styles.newsCard}>
+            <div className={styles.newsImage}>
+              <div className={styles.newsDate}>
+                <span className={styles.day}>03</span>
+                <span className={styles.month}>May</span>
+              </div>
+            </div>
+            <div className={styles.newsContent}>
+              <div className={styles.newsTag}>Community</div>
+              <h3>FTC Wins Regional Sports Club Award</h3>
+              <p>We're proud to announce that FTC has been recognized as the Best Community Sports Club in the region.</p>
+              <Link to="/news/award" className={styles.newsLink}>
+                Read More <span>→</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+        
+        <div className={styles.newsViewAll}>
+          <Link to="/news" className={styles.viewAllLink}>
+            View All News <span className={styles.viewAllIcon}>→</span>
+          </Link>
+        </div>
+      </section>
+
       {/* Contact Section - Improved */}
       <section className={styles.contactSection}>
         <div className={styles.contactContent}>
@@ -238,8 +334,9 @@ const LandingPage = () => {
 
       {/* Footer */}
       <footer className={styles.footer}>
-        <p>&copy; 2025 FTC v2.1. All rights reserved.</p>
+        <p>&copy; 2025 FTC.All rights reserved.</p>
         <p>Powered by MommentX</p>
+        <p>v2.2 Test</p>
       </footer>
     </div>
   );

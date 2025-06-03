@@ -590,6 +590,154 @@
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* News Section Styles */
+.newsSection {
+  padding: 80px 20px;
+  background-color: #f9f9f9;
+}
+
+.newsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 50px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.newsCard {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.newsCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.newsImage {
+  height: 180px;
+  background-color: #1a73e8;
+  position: relative;
+}
+
+.newsDate {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  width: 50px;
+}
+
+.day {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a73e8;
+  line-height: 1;
+}
+
+.month {
+  display: block;
+  font-size: 14px;
+  color: #666;
+}
+
+.newsContent {
+  padding: 25px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.newsTag {
+  display: inline-block;
+  padding: 5px 12px;
+  background-color: rgba(26, 115, 232, 0.1);
+  color: #1a73e8;
+  font-size: 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.newsContent h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.newsContent p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #666;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.newsLink {
+  display: inline-flex;
+  align-items: center;
+  color: #1a73e8;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  margin-top: auto;
+}
+
+.newsLink span {
+  margin-left: 5px;
+  transition: transform 0.2s ease;
+}
+
+.newsLink:hover {
+  color: #0d47a1;
+}
+
+.newsLink:hover span {
+  transform: translateX(5px);
+}
+
+.newsViewAll {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.viewAllLink {
+  display: inline-flex;
+  align-items: center;
+  background-color: #1a73e8;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.viewAllLink:hover {
+  background-color: #0d47a1;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.viewAllIcon {
+  margin-left: 8px;
+}
+
 /* Responsive Design */
 /* Mobile Menu Icon (Hamburger) */
 .menuIcon {
@@ -771,5 +919,16 @@
 
   .contactForm {
     padding: 30px 20px;
+  }
+
+  .newsGrid {
+    grid-template-columns: 1fr;
+    padding: 0 15px;
+  }
+  
+  .newsCard {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
