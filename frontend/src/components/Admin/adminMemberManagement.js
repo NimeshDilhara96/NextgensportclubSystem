@@ -43,24 +43,54 @@ const AdminMemberManagement = () => {
 
     const handleMemberClick = async (email) => {
         try {
+            setActionMessage('Loading member details...');
             console.log("Fetching details for member with email:", email);
-            const response = await axios.get(`http://localhost:8070/user/getByEmail/${email}`);
-            console.log("Received member data:", response.data);
             
-            if (response.data.status === "success") {
-                // Make sure all required fields are present, especially _id
-                if (!response.data.user._id) {
-                    console.error("Member data is missing _id field:", response.data.user);
-                    setActionMessage("Error: Member data is incomplete");
-                    return;
+            // Find the member in the existing data first as a fallback
+            const memberFromState = members.find(m => m.email === email);
+            
+            try {
+                const response = await axios.get(`http://localhost:8070/user/getByEmail/${email}`);
+                console.log("Received member data:", response.data);
+                
+                // Check if response data has user data either directly or in a nested 'user' property
+                let userData = null;
+                if (response.data.status === "success" && response.data.user) {
+                    userData = response.data.user;
+                } else if (response.data._id) {
+                    userData = response.data;
+                } else if (Array.isArray(response.data) && response.data.length > 0) {
+                    userData = response.data[0];
                 }
                 
-                setSelectedMember(response.data.user);
-                setShowModal(true);
+                if (userData && userData._id) {
+                    setSelectedMember(userData);
+                    setShowModal(true);
+                    setActionMessage('');
+                } else if (memberFromState) {
+                    // Fallback to using the data we already have
+                    console.log("Using member data from state:", memberFromState);
+                    setSelectedMember(memberFromState);
+                    setShowModal(true);
+                    setActionMessage('');
+                } else {
+                    throw new Error("Could not retrieve complete member data");
+                }
+            } catch (apiError) {
+                console.error("API error:", apiError);
+                // If API call fails, use the data from state
+                if (memberFromState) {
+                    console.log("Using member data from state as fallback:", memberFromState);
+                    setSelectedMember(memberFromState);
+                    setShowModal(true);
+                    setActionMessage('');
+                } else {
+                    setActionMessage(`Error: Could not retrieve member details`);
+                }
             }
         } catch (error) {
-            console.error('Error fetching member details:', error);
-            setActionMessage(`Error fetching member details: ${error.message}`);
+            console.error('Error in handleMemberClick:', error);
+            setActionMessage(`Error: ${error.message}`);
         }
     };
 

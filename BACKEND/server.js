@@ -28,7 +28,7 @@ connection.once("open", () => {
 
 // Importing both UserRouter and AuthRouter
 const UserRouter = require("./routes/Users.js");
-const AuthRouter = require("./routes/auth.js"); // Assuming auth.js is in the routes folder
+const AuthRouter = require("./routes/Auth.js"); // Assuming Auth.js is in the routes folder
 const adminRouter = require('./routes/admins');
 
 // Create uploads directory if it doesn't exist
