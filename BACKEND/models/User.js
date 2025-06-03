@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema({
     },
     membershipStatus: {
         type: String,
-        enum: ["active", "inactive", "suspended", "expired"],
+        enum: ["active", "inactive", "suspended", "expired", "blocked"],
         default: "inactive"
     },
     joinedDate: { type: Date, default: Date.now },
