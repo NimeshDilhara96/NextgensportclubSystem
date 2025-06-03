@@ -59,17 +59,55 @@ const AdminSlideNav = () => {
                     <img src={logo} alt="Club FTC" className="logo" />
                 </div>
                 <div className="menu-items">
-                    <div className="overview-header">Overview</div>
+                    <Link 
+                        to="/admin/dashboard" 
+                        className="overview-header" 
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
+                        Overview
+                    </Link>
                     <nav>
                         <ul>
-                            <li>Manage Members</li>
-                            <li><Link to="/admin/add-sport">Manage Sports</Link></li>
-                            <li><Link to="/admin/facilities">Manage Facilities</Link></li>
-                            <li>Manage Coaches</li>
-                            <li>Events & Sponsorships</li>
-                            <li>Club Store</li>
-                            <li><Link to="/admin/create-post">Create Post</Link></li>
-                            <li>FeedBacks</li>
+                            <li>
+                                <Link to="/admin/member-management" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    Manage Members
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/admin/add-sport" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    Manage Sports
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/admin/facilities" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    Manage Facilities
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/admin/manage-coaches" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    Manage Coaches
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/admin/events-sponsorships" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    Events & Sponsorships
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/admin/club-store" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    Club Store
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/admin/create-post" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    Create Post
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/admin/feedbacks" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    FeedBacks
+                                </Link>
+                            </li>
                         </ul>
                     </nav>
                 </div>
