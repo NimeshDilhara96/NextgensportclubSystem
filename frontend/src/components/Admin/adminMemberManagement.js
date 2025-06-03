@@ -43,13 +43,24 @@ const AdminMemberManagement = () => {
 
     const handleMemberClick = async (email) => {
         try {
+            console.log("Fetching details for member with email:", email);
             const response = await axios.get(`http://localhost:8070/user/getByEmail/${email}`);
+            console.log("Received member data:", response.data);
+            
             if (response.data.status === "success") {
+                // Make sure all required fields are present, especially _id
+                if (!response.data.user._id) {
+                    console.error("Member data is missing _id field:", response.data.user);
+                    setActionMessage("Error: Member data is incomplete");
+                    return;
+                }
+                
                 setSelectedMember(response.data.user);
                 setShowModal(true);
             }
         } catch (error) {
             console.error('Error fetching member details:', error);
+            setActionMessage(`Error fetching member details: ${error.message}`);
         }
     };
 
@@ -65,10 +76,16 @@ const AdminMemberManagement = () => {
             setActionInProgress(true);
             const newStatus = currentStatus === 'blocked' ? 'active' : 'blocked';
             
+            console.log("Toggling access for member:", memberId);
+            console.log("Current status:", currentStatus);
+            console.log("New status:", newStatus);
+            
             // Send request to update member status
             const response = await axios.patch(`http://localhost:8070/user/updateStatus/${memberId}`, {
                 membershipStatus: newStatus
             });
+            
+            console.log("Response received:", response.data);
             
             if (response.data.status === "success") {
                 // Update the member in the local state
@@ -90,7 +107,8 @@ const AdminMemberManagement = () => {
             }
         } catch (error) {
             console.error('Error updating member status:', error);
-            setActionMessage('An error occurred. Please try again.');
+            console.error('Error details:', error.response?.data || 'No response data');
+            setActionMessage(`An error occurred: ${error.message}`);
         } finally {
             setActionInProgress(false);
         }
