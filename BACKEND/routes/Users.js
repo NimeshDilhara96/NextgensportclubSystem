@@ -2,6 +2,7 @@ const router = require("express").Router();
 let User = require("../models/User");
 const multer = require('multer');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 
 // Configure multer for file upload
 const storage = multer.diskStorage({
@@ -384,6 +385,112 @@ router.get('/bookings/:email', async (req, res) => {
     return res.status(500).json({
       status: 'error',
       message: 'Server error while fetching bookings'
+    });
+  }
+});
+
+// Update user membership status
+router.patch("/updateStatus/:id", async (req, res) => {
+  try {
+    const { membershipStatus } = req.body;
+    
+    // Validate the membership status
+    if (!membershipStatus || !["active", "inactive", "suspended", "expired", "blocked"].includes(membershipStatus)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid membership status provided"
+      });
+    }
+    
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { membershipStatus },
+      { new: true }
+    );
+    
+    if (!user) {
+      return res.status(404).json({
+        status: "error",
+        message: "User not found"
+      });
+    }
+    
+    res.json({
+      status: "success",
+      message: `User status updated to ${membershipStatus}`,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        membershipStatus: user.membershipStatus
+      }
+    });
+  } catch (err) {
+    console.error("Error updating user status:", err);
+    res.status(500).json({
+      status: "error",
+      message: "Server error while updating user status"
+    });
+  }
+});
+
+// User login
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    // Find the user by email
+    const user = await User.findOne({ email });
+    
+    // Check if user exists
+    if (!user) {
+      return res.status(401).json({
+        status: "error",
+        message: "Invalid email or password"
+      });
+    }
+    
+    // Check if user is blocked
+    if (user.membershipStatus === 'blocked') {
+      return res.status(403).json({
+        status: "error",
+        message: "Your account has been blocked. Please contact the administrator."
+      });
+    }
+    
+    // Check if password is correct
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({
+        status: "error",
+        message: "Invalid email or password"
+      });
+    }
+    
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET || 'your_jwt_secret_key',
+      { expiresIn: '24h' }
+    );
+    
+    res.json({
+      status: "success",
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        membershipStatus: user.membershipStatus
+      }
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({
+      status: "error",
+      message: "Server error during login"
     });
   }
 });
