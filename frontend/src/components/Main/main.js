@@ -305,7 +305,7 @@ const LandingPage = () => {
               </div>
               <div className={styles.contactItem}>
                 <span className={styles.contactIcon}>📱</span>
-                <p>(123) 456-7890</p>
+                <p>(123) 356-7890</p>
               </div>
               <div className={styles.contactItem}>
                 <span className={styles.contactIcon}>✉️</span>
