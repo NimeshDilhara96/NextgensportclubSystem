@@ -34,7 +34,7 @@ const Health = () => {
   // AI Chat States
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([
-    { type: 'ai', message: 'Hello! I\'m your AI health assistant powered by Google Gemini. How can I help you with your fitness and health goals today?' }
+    { type: 'ai', message: 'Hello! I\'m flexi powered by Google Gemini X MommentX. How can I help you with your fitness and health goals today?' }
   ]);
   const [chatInput, setChatInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -451,7 +451,7 @@ Please provide personalized, helpful health and fitness advice based on this mem
         }
       });
       
-      alert('Gemini AI Test Successful!\n\nResponse: ' + response.text);
+      alert('Gemini + MommentX AI Test Successful!\n\nResponse: ' + response.text);
       
     } catch (error) {
       console.error('Gemini Test failed:', error);
@@ -779,7 +779,7 @@ Please provide personalized, helpful health and fitness advice based on this mem
         {isChatOpen && (
           <div className={styles.chatModal}>
             <div className={styles.chatHeader}>
-              <h3><FaRobot /> Personal Health Assistant {aiError && '(Limited)'}</h3>
+              <h3><FaRobot /> Flexi {aiError && '(Limited)'}</h3>
               <button className={styles.closeChat} onClick={toggleChat}>
                 <FaTimes />
               </button>
