@@ -48,6 +48,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Add this line with other route configurations
 app.use("/posts", require("./routes/posts"));
 app.use("/sports", require("./routes/sports"));
+app.use("/events", require("./routes/events"));
+app.use("/sponsors", require("./routes/sponsors"));
 app.use("/facilities", require("./routes/Facilityes"));
 
 
