@@ -272,12 +272,8 @@ const AddEventSponser = () => {
     const handleDeleteEvent = async (eventId) => {
         if (window.confirm('Are you sure you want to delete this event?')) {
             try {
-                const token = sessionStorage.getItem('adminToken');
-                await axios.delete(`http://localhost:8070/events/${eventId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    }
-                });
+                // Simplified request without auth token (like CreatePost)
+                await axios.delete(`http://localhost:8070/events/${eventId}`);
                 
                 setMessage({ type: 'success', text: 'Event deleted successfully!' });
                 fetchEvents(); // Refresh the list
@@ -288,35 +284,68 @@ const AddEventSponser = () => {
         }
     };
 
-    // Handle adding a new sponsor
+    // Handle adding a new sponsor - simplified like CreatePost
     const handleAddSponsor = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         setMessage({ type: '', text: '' });
 
         try {
-            const sponsorData = new FormData();
-            Object.keys(sponsorFormData).forEach((key) => {
-                if (sponsorFormData[key] !== null) {
-                    sponsorData.append(key, sponsorFormData[key]);
+            // Validate form data
+            if (!sponsorFormData.name || !sponsorFormData.type || !sponsorFormData.contactName || 
+                !sponsorFormData.email || !sponsorFormData.phone || !sponsorFormData.startDate || 
+                !sponsorFormData.endDate || !sponsorFormData.description) {
+                setMessage({ type: 'error', text: 'All required fields must be filled' });
+                setIsSubmitting(false);
+                return;
+            }
+            
+            const formData = new FormData();
+            
+            // Append all form fields - similar to CreatePost
+            formData.append('name', sponsorFormData.name);
+            formData.append('type', sponsorFormData.type);
+            formData.append('contactName', sponsorFormData.contactName);
+            formData.append('email', sponsorFormData.email);
+            formData.append('phone', sponsorFormData.phone);
+            formData.append('website', sponsorFormData.website);
+            formData.append('startDate', sponsorFormData.startDate);
+            formData.append('endDate', sponsorFormData.endDate);
+            formData.append('amount', sponsorFormData.amount);
+            formData.append('description', sponsorFormData.description);
+            
+            // Only append logo if provided
+            if (sponsorFormData.logo) {
+                formData.append('logo', sponsorFormData.logo);
+            }
+            
+            // Log FormData contents for debugging
+            console.log('Sending sponsor data:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value instanceof File ? value.name : value}`);
+            }
+
+            // Simplified request without auth token (like CreatePost)
+            const response = await axios.post(
+                'http://localhost:8070/sponsors',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
                 }
-            });
+            );
 
-            const token = sessionStorage.getItem('adminToken');
-            await axios.post('http://localhost:8070/sponsors', sponsorData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
+            console.log('Add sponsor response:', response.data);
+            
             setMessage({ type: 'success', text: 'Sponsor added successfully!' });
             await fetchSponsors(); // Refresh the list
             setShowAddSponsorModal(false);
             resetSponsorForm();
         } catch (error) {
             console.error('Error adding sponsor:', error);
-            setMessage({ type: 'error', text: 'Failed to add sponsor' });
+            const errorMsg = error.response?.data?.msg || error.response?.data?.error || 'Failed to add sponsor';
+            setMessage({ type: 'error', text: errorMsg });
         } finally {
             setIsSubmitting(false);
         }
@@ -349,39 +378,52 @@ const AddEventSponser = () => {
         setMessage({ type: '', text: '' });
 
         try {
-            const sponsorData = new FormData();
+            const formData = new FormData();
             
-            // Add all form fields
-            Object.keys(sponsorFormData).forEach((key) => {
-                if (key === 'logo' && !sponsorFormData[key]) {
-                    // Don't send logo if not changed
-                    return;
-                }
-                if (sponsorFormData[key] !== null) {
-                    sponsorData.append(key, sponsorFormData[key]);
-                }
-            });
+            // Append all form fields - similar to CreatePost
+            formData.append('name', sponsorFormData.name);
+            formData.append('type', sponsorFormData.type);
+            formData.append('contactName', sponsorFormData.contactName);
+            formData.append('email', sponsorFormData.email);
+            formData.append('phone', sponsorFormData.phone);
+            formData.append('website', sponsorFormData.website);
+            formData.append('startDate', sponsorFormData.startDate);
+            formData.append('endDate', sponsorFormData.endDate);
+            formData.append('amount', sponsorFormData.amount);
+            formData.append('description', sponsorFormData.description);
+            
+            // Only append logo if a new one is selected
+            if (sponsorFormData.logo && sponsorFormData.logo instanceof File) {
+                formData.append('logo', sponsorFormData.logo);
+            }
+            
+            // Log FormData for debugging
+            console.log('Sending sponsor update data:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value instanceof File ? value.name : value}`);
+            }
 
-            const token = sessionStorage.getItem('adminToken');
-            await axios.put(
+            // Simplified request without auth token (like CreatePost)
+            const response = await axios.put(
                 `http://localhost:8070/sponsors/${selectedSponsor._id}`,
-                sponsorData,
+                formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${token}`,
-                    },
+                        'Content-Type': 'multipart/form-data'
+                    }
                 }
             );
 
+            console.log('Update sponsor response:', response.data);
+            
             setMessage({ type: 'success', text: 'Sponsor updated successfully!' });
             await fetchSponsors(); // Refresh the list
             setShowEditSponsorModal(false);
-            setSelectedSponsor(null);
             resetSponsorForm();
         } catch (error) {
             console.error('Error updating sponsor:', error);
-            setMessage({ type: 'error', text: 'Failed to update sponsor' });
+            const errorMsg = error.response?.data?.msg || error.response?.data?.error || 'Failed to update sponsor';
+            setMessage({ type: 'error', text: errorMsg });
         } finally {
             setIsSubmitting(false);
         }
@@ -391,12 +433,8 @@ const AddEventSponser = () => {
     const handleDeleteSponsor = async (sponsorId) => {
         if (window.confirm('Are you sure you want to delete this sponsor?')) {
             try {
-                const token = sessionStorage.getItem('adminToken');
-                await axios.delete(`http://localhost:8070/sponsors/${sponsorId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    }
-                });
+                // Simplified request without auth token (like CreatePost)
+                await axios.delete(`http://localhost:8070/sponsors/${sponsorId}`);
                 
                 setMessage({ type: 'success', text: 'Sponsor deleted successfully!' });
                 fetchSponsors(); // Refresh the list
