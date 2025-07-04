@@ -16,6 +16,7 @@ import AddEventSponser from './components/Admin/addEventsponser';
 import AddFacility from './components/Admin/AddFacility';
 import Event from './components/Dashboard/Event';  // Add this import
 import ClubStore from './components/Dashboard/clubstore';
+import Health from './components/Dashboard/health';
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -158,7 +159,7 @@ function App() {
           
           <Route path="/health" element={
             <ProtectedRoute>
-              <div>Health Page</div>
+              <Health />
             </ProtectedRoute>
           } />
           
