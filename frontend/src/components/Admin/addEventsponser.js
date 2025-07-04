@@ -88,7 +88,12 @@ const AddEventSponser = () => {
     };
 
     const handleEventImageChange = (e) => {
-        setEventFormData({ ...eventFormData, image: e.target.files[0] });
+        if (e.target.files && e.target.files[0]) {
+            setEventFormData({
+                ...eventFormData,
+                image: e.target.files[0]
+            });
+        }
     };
 
     const resetEventForm = () => {
@@ -129,35 +134,64 @@ const AddEventSponser = () => {
         });
     };
 
-    // Handle adding a new event
+    // Handle adding a new event - simplified like CreatePost
     const handleAddEvent = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         setMessage({ type: '', text: '' });
 
         try {
-            const eventData = new FormData();
-            Object.keys(eventFormData).forEach((key) => {
-                if (eventFormData[key] !== null) {
-                    eventData.append(key, eventFormData[key]);
+            // Validate form data
+            if (!eventFormData.title || !eventFormData.description || 
+                !eventFormData.date || !eventFormData.startTime || 
+                !eventFormData.endTime || !eventFormData.location) {
+                setMessage({ type: 'error', text: 'All fields are required' });
+                setIsSubmitting(false);
+                return;
+            }
+            
+            const formData = new FormData();
+            
+            // Append all form fields - similar to CreatePost
+            formData.append('title', eventFormData.title);
+            formData.append('description', eventFormData.description);
+            formData.append('date', eventFormData.date);
+            formData.append('startTime', eventFormData.startTime);
+            formData.append('endTime', eventFormData.endTime);
+            formData.append('location', eventFormData.location);
+            
+            // Only append image if provided
+            if (eventFormData.image) {
+                formData.append('image', eventFormData.image);
+            }
+            
+            // Log FormData contents for debugging
+            console.log('Sending event data:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value instanceof File ? value.name : value}`);
+            }
+
+            // Simplified request without auth token (like CreatePost)
+            const response = await axios.post(
+                'http://localhost:8070/events',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
                 }
-            });
+            );
 
-            const token = sessionStorage.getItem('adminToken');
-            await axios.post('http://localhost:8070/events', eventData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
+            console.log('Add event response:', response.data);
+            
             setMessage({ type: 'success', text: 'Event added successfully!' });
             await fetchEvents(); // Refresh the list
             setShowAddEventModal(false);
             resetEventForm();
         } catch (error) {
             console.error('Error adding event:', error);
-            setMessage({ type: 'error', text: 'Failed to add event' });
+            const errorMsg = error.response?.data?.msg || error.response?.data?.error || 'Failed to add event';
+            setMessage({ type: 'error', text: errorMsg });
         } finally {
             setIsSubmitting(false);
         }
@@ -167,17 +201,18 @@ const AddEventSponser = () => {
     const handleEditEventClick = (event) => {
         setSelectedEvent(event);
         setEventFormData({
-            title: event.title || '',
-            description: event.description || '',
-            date: event.date ? new Date(event.date).toISOString().split('T')[0] : '',
-            startTime: event.startTime || '',
-            endTime: event.endTime || '',
-            location: event.location || '',
-            image: null, // Reset image for editing
+            title: event.title,
+            description: event.description,
+            date: event.date ? event.date.substring(0, 10) : '',
+            startTime: event.startTime,
+            endTime: event.endTime,
+            location: event.location,
+            image: null // Don't set the image here, just keep it null until a new one is selected
         });
         setShowEditEventModal(true);
     };
 
+    // Update the handleUpdateEvent function - simplified like CreatePost
     const handleUpdateEvent = async (e) => {
         e.preventDefault();
         if (!selectedEvent) return;
@@ -186,39 +221,48 @@ const AddEventSponser = () => {
         setMessage({ type: '', text: '' });
 
         try {
-            const eventData = new FormData();
+            const formData = new FormData();
             
-            // Add all form fields
-            Object.keys(eventFormData).forEach((key) => {
-                if (key === 'image' && !eventFormData[key]) {
-                    // Don't send image if not changed
-                    return;
-                }
-                if (eventFormData[key] !== null) {
-                    eventData.append(key, eventFormData[key]);
-                }
-            });
+            // Append all form fields - similar to CreatePost
+            formData.append('title', eventFormData.title);
+            formData.append('description', eventFormData.description);
+            formData.append('date', eventFormData.date);
+            formData.append('startTime', eventFormData.startTime);
+            formData.append('endTime', eventFormData.endTime);
+            formData.append('location', eventFormData.location);
+            
+            // Only append image if a new one is selected
+            if (eventFormData.image && eventFormData.image instanceof File) {
+                formData.append('image', eventFormData.image);
+            }
+            
+            // Log FormData for debugging
+            console.log('Sending update data:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value instanceof File ? value.name : value}`);
+            }
 
-            const token = sessionStorage.getItem('adminToken');
-            await axios.put(
+            // Simplified request without auth token (like CreatePost)
+            const response = await axios.put(
                 `http://localhost:8070/events/${selectedEvent._id}`,
-                eventData,
+                formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${token}`,
-                    },
+                        'Content-Type': 'multipart/form-data'
+                    }
                 }
             );
 
+            console.log('Update response:', response.data);
+            
             setMessage({ type: 'success', text: 'Event updated successfully!' });
-            await fetchEvents(); // Refresh the list
+            await fetchEvents(); // Refresh the events list
             setShowEditEventModal(false);
-            setSelectedEvent(null);
             resetEventForm();
         } catch (error) {
             console.error('Error updating event:', error);
-            setMessage({ type: 'error', text: 'Failed to update event' });
+            const errorMsg = error.response?.data?.msg || error.response?.data?.error || 'Failed to update event';
+            setMessage({ type: 'error', text: errorMsg });
         } finally {
             setIsSubmitting(false);
         }
