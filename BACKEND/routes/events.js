@@ -263,44 +263,69 @@ router.delete('/:id', async (req, res) => {
 // @access  Public (Any logged in user)
 router.post('/:id/rsvp', async (req, res) => {
   try {
-    const { userId, userName, userEmail } = req.body;
+    const { userEmail } = req.body;
     
-    if (!userId || !userName || !userEmail) {
-      return res.status(400).json({ msg: 'Missing required user information' });
+    // Validate required fields
+    if (!userEmail) {
+      return res.status(400).json({ 
+        msg: 'User email is required' 
+      });
     }
     
-    // Find event by ID
+    // Find the user by email
+    const User = require('../models/User');
+    const user = await User.findOne({ email: userEmail });
+    
+    if (!user) {
+      return res.status(404).json({ 
+        msg: 'User not found' 
+      });
+    }
+    
+    // Find the event
     const event = await Event.findById(req.params.id);
     
     if (!event) {
       return res.status(404).json({ msg: 'Event not found' });
     }
     
-    // Check if user already RSVP'd
-    const alreadyRSVPd = event.attendees.some(attendee => 
-      attendee.userEmail === userEmail || attendee.userId.toString() === userId
+    // Check if user is already registered
+    const existingAttendee = event.attendees.find(
+      attendee => attendee.userEmail === userEmail
     );
     
-    if (alreadyRSVPd) {
-      return res.status(400).json({ msg: 'User already RSVP\'d to this event' });
+    if (existingAttendee) {
+      return res.status(400).json({ 
+        msg: 'You are already registered for this event' 
+      });
     }
     
-    // Add user to attendees
-    event.attendees.push({
-      userId,
-      userName,
-      userEmail,
-      registeredAt: Date.now()
+    // Add user to attendees using found user data
+    const newAttendee = {
+      userId: user._id,
+      userName: user.name || `${user.firstName} ${user.lastName}`,
+      userEmail: user.email,
+      registeredAt: new Date()
+    };
+    
+    event.attendees.push(newAttendee);
+    
+    // Save the event
+    await event.save();
+    
+    console.log(`User ${newAttendee.userName} (${userEmail}) registered for event: ${event.title}`);
+    
+    res.json({
+      msg: 'Successfully registered for event',
+      event: event
     });
     
-    await event.save();
-    res.json(event);
   } catch (err) {
-    console.error(err.message);
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Event not found' });
-    }
-    res.status(500).send('Server Error');
+    console.error('Error registering for event:', err);
+    res.status(500).json({ 
+      msg: 'Server Error', 
+      error: err.message 
+    });
   }
 });
 
@@ -311,28 +336,50 @@ router.delete('/:id/rsvp', async (req, res) => {
   try {
     const { userEmail } = req.body;
     
+    // Validate required fields
     if (!userEmail) {
-      return res.status(400).json({ msg: 'Missing required user information' });
+      return res.status(400).json({ 
+        msg: 'User email is required' 
+      });
     }
     
-    // Find event by ID
+    // Find the event
     const event = await Event.findById(req.params.id);
     
     if (!event) {
       return res.status(404).json({ msg: 'Event not found' });
     }
     
-    // Remove user from attendees
-    event.attendees = event.attendees.filter(attendee => attendee.userEmail !== userEmail);
+    // Check if user is registered
+    const attendeeIndex = event.attendees.findIndex(
+      attendee => attendee.userEmail === userEmail
+    );
     
-    await event.save();
-    res.json(event);
-  } catch (err) {
-    console.error(err.message);
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Event not found' });
+    if (attendeeIndex === -1) {
+      return res.status(400).json({ 
+        msg: 'You are not registered for this event' 
+      });
     }
-    res.status(500).send('Server Error');
+    
+    // Remove user from attendees
+    event.attendees.splice(attendeeIndex, 1);
+    
+    // Save the event
+    await event.save();
+    
+    console.log(`User ${userEmail} cancelled registration for event: ${event.title}`);
+    
+    res.json({
+      msg: 'Successfully cancelled registration',
+      event: event
+    });
+    
+  } catch (err) {
+    console.error('Error cancelling registration:', err);
+    res.status(500).json({ 
+      msg: 'Server Error', 
+      error: err.message 
+    });
   }
 });
 

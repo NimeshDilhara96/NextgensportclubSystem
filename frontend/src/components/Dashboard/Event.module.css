@@ -311,17 +311,26 @@
 .actionButton.active {
   background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
   box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
-  cursor: default;
 }
 
 .actionButton.active:hover {
-  transform: none;
-  box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+  transform: translateY(-3px);
 }
 
-.actionButton:disabled {
-  opacity: 0.8;
-  cursor: not-allowed;
+.actionButton.active:hover::after {
+  content: 'Cancel RSVP';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.actionButton.active:hover .actionButton span {
+  opacity: 0;
 }
 
 /* Loading and Error States */

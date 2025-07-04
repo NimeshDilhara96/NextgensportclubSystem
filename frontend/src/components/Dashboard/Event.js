@@ -14,6 +14,7 @@ const Event = () => {
   const [error, setError] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [activeTab, setActiveTab] = useState('events'); // 'events' or 'sponsors'
+  const [rsvpLoading, setRsvpLoading] = useState(null); // Track which event is being processed
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -65,25 +66,63 @@ const Event = () => {
     }
   }, [activeTab]);
 
+  // Simplified handleRSVP function using only email
+
   const handleRSVP = async (eventId) => {
     try {
-      if (!userData) {
+      // Get the logged-in user's email from sessionStorage
+      const userEmail = sessionStorage.getItem('userEmail');
+      
+      if (!userEmail) {
         alert('Please log in to RSVP for events');
         return;
       }
 
-      const response = await axios.post(`http://localhost:8070/events/${eventId}/rsvp`, {
-        userId: userData._id,
-        userName: userData.name,
-        userEmail: userData.email
-      });
+      setRsvpLoading(eventId); // Set loading state
 
-      setEvents(events.map(event => 
-        event._id === eventId ? response.data : event
-      ));
+      // Check if user is already attending
+      const event = events.find(e => e._id === eventId);
+      const isAlreadyAttending = event.attendees?.some(
+        attendee => attendee.userEmail === userEmail
+      );
+
+      if (isAlreadyAttending) {
+        // Cancel RSVP
+        const response = await axios.delete(`http://localhost:8070/events/${eventId}/rsvp`, {
+          data: {
+            userEmail: userEmail
+          }
+        });
+
+        if (response.data.event) {
+          // Update the events state with the updated event
+          setEvents(events.map(event => 
+            event._id === eventId ? response.data.event : event
+          ));
+          alert('Successfully cancelled your RSVP!');
+        }
+      } else {
+        // Make RSVP - send only email, let backend find user
+        const response = await axios.post(`http://localhost:8070/events/${eventId}/rsvp`, {
+          userEmail: userEmail
+        });
+
+        if (response.data.event) {
+          // Update the events state with the updated event
+          setEvents(events.map(event => 
+            event._id === eventId ? response.data.event : event
+          ));
+          alert('Successfully registered for the event!');
+        }
+      }
     } catch (error) {
-      console.error('Error RSVPing to event:', error);
-      alert('Failed to RSVP. Please try again.');
+      console.error('Error handling RSVP:', error);
+      
+      // Show specific error message from server
+      const errorMessage = error.response?.data?.msg || 'Failed to process RSVP. Please try again.';
+      alert(errorMessage);
+    } finally {
+      setRsvpLoading(null); // Clear loading state
     }
   };
 
@@ -200,15 +239,25 @@ const Event = () => {
                         <button 
                           onClick={() => handleRSVP(event._id)} 
                           className={`${styles.actionButton} ${
-                            event.attendees?.some(attendee => attendee.userEmail === userData?.email) 
+                            event.attendees?.some(attendee => attendee.userEmail === sessionStorage.getItem('userEmail')) 
                               ? styles.active 
                               : ''
                           }`}
-                          disabled={event.attendees?.some(attendee => attendee.userEmail === userData?.email)}
+                          disabled={rsvpLoading === event._id}
                         >
-                          <FaCheck /> {event.attendees?.some(attendee => attendee.userEmail === userData?.email) 
-                            ? 'Attending' 
-                            : 'RSVP'}
+                          {rsvpLoading === event._id ? (
+                            <>
+                              <FaClock /> Processing...
+                            </>
+                          ) : event.attendees?.some(attendee => attendee.userEmail === sessionStorage.getItem('userEmail')) ? (
+                            <>
+                              <FaCheck /> Attending
+                            </>
+                          ) : (
+                            <>
+                              <FaCalendarAlt /> RSVP
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>
