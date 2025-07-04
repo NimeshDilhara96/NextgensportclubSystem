@@ -58,6 +58,7 @@ const Health = () => {
   const [recentWorkouts, setRecentWorkouts] = useState([]);
   const [nutritionPlan, setNutritionPlan] = useState([]);
   const [userBookings, setUserBookings] = useState([]);
+  const [waterGlasses, setWaterGlasses] = useState([]);
 
   // Calculate user's age from DOB
   const calculateAge = useCallback((dob) => {
@@ -261,6 +262,111 @@ const Health = () => {
     }
   };
 
+  // Fetch real health data from backend
+  const fetchTodayHealthData = async () => {
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) return;
+
+      const response = await axios.get(`http://localhost:8070/health/today/${userEmail}`);
+      
+      if (response.data.status === "success") {
+        const healthData = response.data.data;
+        
+        // Update state with real data
+        setTodayStats({
+          calories: healthData.calories.burned,
+          water: healthData.waterIntake.current,
+          steps: healthData.steps.current,
+          workoutTime: healthData.workout.currentMinutes
+        });
+        
+        // Set water glasses state for UI
+        setWaterGlasses(healthData.waterIntake.glasses);
+        
+        console.log('Health data loaded:', healthData);
+      }
+    } catch (error) {
+      console.error('Error fetching health data:', error);
+      // If health data doesn't exist, initialize with default water glasses
+      setWaterGlasses(Array.from({length: 8}, (_, i) => ({
+        glassNumber: i + 1,
+        completed: false
+      })));
+    }
+  };
+
+  // Update water intake
+  const updateWaterIntake = async (glassNumber, completed) => {
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) return;
+
+      const response = await axios.put(`http://localhost:8070/health/water/${userEmail}`, {
+        glassNumber,
+        completed
+      });
+      
+      if (response.data.status === "success") {
+        // Update local state
+        setTodayStats(prev => ({
+          ...prev,
+          water: response.data.data.current
+        }));
+        
+        setWaterGlasses(response.data.data.glasses);
+        
+        console.log('Water intake updated:', response.data);
+      }
+    } catch (error) {
+      console.error('Error updating water intake:', error);
+      
+      // Fallback: Update local state only
+      setWaterGlasses(prev => prev.map(glass => 
+        glass.glassNumber === glassNumber 
+          ? { ...glass, completed } 
+          : glass
+      ));
+      
+      const newWaterCount = waterGlasses.filter(g => 
+        g.glassNumber === glassNumber ? completed : g.completed
+      ).length;
+      
+      setTodayStats(prev => ({
+        ...prev,
+        water: newWaterCount
+      }));
+    }
+  };
+
+  // Add workout session
+  const addWorkoutSession = async (workoutData) => {
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) return;
+
+      const response = await axios.post(`http://localhost:8070/health/workout/${userEmail}`, workoutData);
+      
+      if (response.data.status === "success") {
+        // Update local state
+        setTodayStats(prev => ({
+          ...prev,
+          workoutTime: response.data.data.currentMinutes
+        }));
+        
+        console.log('Workout added:', response.data);
+      }
+    } catch (error) {
+      console.error('Error adding workout:', error);
+      
+      // Fallback: Update local state only
+      setTodayStats(prev => ({
+        ...prev,
+        workoutTime: prev.workoutTime + (workoutData.duration || 0)
+      }));
+    }
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -273,6 +379,7 @@ const Health = () => {
 
         console.log('Fetching user data for:', userEmail);
         
+        // Updated to use /user prefix
         const response = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
         
         if (response.data.status === "success") {
@@ -301,6 +408,7 @@ const Health = () => {
       try {
         const userEmail = sessionStorage.getItem('userEmail');
         if (userEmail) {
+          // Updated to use /user prefix
           const response = await axios.get(`http://localhost:8070/user/bookings/${userEmail}`);
           if (response.data.status === "success") {
             setUserBookings(response.data.bookings);
@@ -315,6 +423,7 @@ const Health = () => {
       setLoading(true);
       await fetchUserData();
       await fetchUserBookings();
+      await fetchTodayHealthData();
       setLoading(false);
     };
 
@@ -562,10 +671,10 @@ Please provide personalized, helpful health and fitness advice based on this mem
                       </div>
                       <div className={styles.membershipBadge}>
                         <span className={`${styles.status} ${styles[userData.membershipStatus]}`}>
-                          {userData.membershipStatus.toUpperCase()}
+                          {userData.membershipStatus?.toUpperCase()}
                         </span>
                         <span className={`${styles.package} ${styles[userData.membershipPackage]}`}>
-                          {userData.membershipPackage.toUpperCase()} MEMBER
+                          {userData.membershipPackage?.toUpperCase()} MEMBER
                         </span>
                       </div>
                     </div>
@@ -583,7 +692,7 @@ Please provide personalized, helpful health and fitness advice based on this mem
                     <h3>{todayStats.calories}</h3>
                     <p>Calories Burned</p>
                     <div className={styles.progress}>
-                      <div className={styles.progressBar} style={{width: `${(todayStats.calories / weeklyGoals.calories) * 100}%`}}></div>
+                      <div className={styles.progressBar} style={{width: `${Math.min(100, (todayStats.calories / weeklyGoals.calories) * 100)}%`}}></div>
                     </div>
                     <small>Target: {weeklyGoals.calories} cal</small>
                   </div>
@@ -611,7 +720,7 @@ Please provide personalized, helpful health and fitness advice based on this mem
                     <h3>{todayStats.steps.toLocaleString()}</h3>
                     <p>Steps Today</p>
                     <div className={styles.progress}>
-                      <div className={styles.progressBar} style={{width: `${(todayStats.steps / 10000) * 100}%`}}></div>
+                      <div className={styles.progressBar} style={{width: `${Math.min(100, (todayStats.steps / 10000) * 100)}%`}}></div>
                     </div>
                     <small>Target: 10,000 steps</small>
                   </div>
@@ -625,7 +734,7 @@ Please provide personalized, helpful health and fitness advice based on this mem
                     <h3>{todayStats.workoutTime}min</h3>
                     <p>Workout Time</p>
                     <div className={styles.progress}>
-                      <div className={styles.progressBar} style={{width: `${(todayStats.workoutTime / 60) * 100}%`}}></div>
+                      <div className={styles.progressBar} style={{width: `${Math.min(100, (todayStats.workoutTime / 60) * 100)}%`}}></div>
                     </div>
                     <small>Target: 60 min</small>
                   </div>
@@ -671,6 +780,36 @@ Please provide personalized, helpful health and fitness advice based on this mem
                   </div>
                 </div>
               )}
+
+              {/* Water Tracking Section */}
+              <div className={styles.waterSection}>
+                <h2>💧 Daily Water Intake</h2>
+                <div className={styles.waterTracker}>
+                  <div className={styles.waterProgress}>
+                    <span>{todayStats.water}/8 glasses today</span>
+                    <div className={styles.progressBar}>
+                      <div 
+                        className={styles.progressFill} 
+                        style={{width: `${(todayStats.water / 8) * 100}%`}}
+                      ></div>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.waterGlasses}>
+                    {waterGlasses.map((glass, index) => (
+                      <div 
+                        key={glass.glassNumber} 
+                        className={`${styles.waterGlass} ${glass.completed ? styles.completed : ''}`}
+                        onClick={() => updateWaterIntake(glass.glassNumber, !glass.completed)}
+                      >
+                        <FaWater />
+                        <span>{glass.glassNumber}</span>
+                        {glass.completed && <span className={styles.checkMark}>✓</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </>
           )}
 
@@ -679,6 +818,25 @@ Please provide personalized, helpful health and fitness advice based on this mem
             <>
               <h1 className={styles.pageTitle}>Personalized Workout Plans</h1>
               <p className={styles.subtitle}>Based on your profile: {calculateAge(userData?.dob)} years old, {userData?.gender}, {userData?.membershipStatus} member</p>
+              
+              {/* Add workout button */}
+              <div className={styles.addWorkoutContainer}>
+                <button 
+                  className={styles.addWorkoutButton}
+                  onClick={() => {
+                    // Example workout data
+                    const newWorkout = {
+                      name: "Quick Exercise",
+                      duration: 15,
+                      calories: 120
+                    };
+                    addWorkoutSession(newWorkout);
+                    alert("Workout added: 15 minutes, 120 calories");
+                  }}
+                >
+                  <FaDumbbell /> Add Quick Workout
+                </button>
+              </div>
               
               <div className={styles.workouts}>
                 {recentWorkouts.map((workout) => (
@@ -753,7 +911,7 @@ Please provide personalized, helpful health and fitness advice based on this mem
                   <div className={styles.chartPlaceholder}>
                     <FaWeight />
                     <p>Chart will display here</p>
-                    <small>Based on your {userData?.age} age and {userData?.gender} profile</small>
+                    <small>Based on your {calculateAge(userData?.dob)} age and {userData?.gender} profile</small>
                   </div>
                 </div>
                 <div className={styles.chartCard}>

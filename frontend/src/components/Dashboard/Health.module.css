@@ -621,6 +621,70 @@
   box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
 }
 
+/* Water Tracker Section */
+.waterSection {
+  margin: 20px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.waterTracker {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.waterProgress {
+  text-align: center;
+}
+
+.waterGlasses {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.waterGlass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+  position: relative;
+}
+
+.waterGlass:hover {
+  border-color: #2196F3;
+  transform: scale(1.05);
+}
+
+.waterGlass.completed {
+  background: #E3F2FD;
+  border-color: #2196F3;
+  color: #1976D2;
+}
+
+.checkMark {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #4CAF50;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
 /* Responsive Design */
 @media screen and (max-width: 1024px) {
   .mainContent {
