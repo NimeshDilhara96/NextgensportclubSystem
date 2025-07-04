@@ -137,93 +137,51 @@ router.get('/:id', async (req, res) => {
 
 // @route   PUT /events/:id
 // @desc    Update an event
-// @access  Private (Admin only)
+// @access  Public (like CreatePost)
 router.put('/:id', upload.single('image'), async (req, res) => {
   try {
     console.log('Update event request body:', req.body);
     console.log('Update event file:', req.file);
     
-    // Find event by ID first
-    const event = await Event.findById(req.params.id);
-    
-    if (!event) {
-      return res.status(404).json({ msg: 'Event not found' });
-    }
-    
     const { title, description, date, startTime, endTime, location } = req.body;
     
-    // Parse date if provided
-    let eventDate = event.date; // Keep existing date if not provided
-    if (date) {
-      try {
-        eventDate = new Date(date);
-        if (isNaN(eventDate.getTime())) {
-          return res.status(400).json({ msg: 'Invalid date format' });
-        }
-      } catch (err) {
-        console.error('Date parsing error:', err);
-        return res.status(400).json({ msg: 'Invalid date format' });
-      }
-    }
-    
-    // Create update object with all fields
-    const updateFields = {
-      title: title || event.title,
-      description: description || event.description,
-      date: eventDate,
-      startTime: startTime || event.startTime,
-      endTime: endTime || event.endTime,
-      location: location || event.location,
-      updatedAt: Date.now()
-    };
+    // Create update object
+    const updateFields = {};
+    if (title) updateFields.title = title;
+    if (description) updateFields.description = description;
+    if (date) updateFields.date = date;
+    if (startTime) updateFields.startTime = startTime;
+    if (endTime) updateFields.endTime = endTime;
+    if (location) updateFields.location = location;
     
     // Handle image update
     if (req.file) {
-      console.log('New image being uploaded:', req.file.filename);
-      // Remove old image if it exists
-      if (event.image) {
-        const oldImagePath = path.join(__dirname, '..', event.image);
+      // Find existing event to remove old image
+      const existingEvent = await Event.findById(req.params.id);
+      if (existingEvent && existingEvent.image) {
+        const oldImagePath = path.join(__dirname, '..', existingEvent.image);
         if (fs.existsSync(oldImagePath)) {
-          try {
-            fs.unlinkSync(oldImagePath);
-            console.log('Old image removed:', oldImagePath);
-          } catch (err) {
-            console.error('Error removing old image:', err);
-          }
+          fs.unlinkSync(oldImagePath);
         }
       }
       updateFields.image = `uploads/events/${req.file.filename}`;
     }
     
-    console.log('Final update fields:', updateFields);
+    updateFields.updatedAt = Date.now();
     
-    // Use findByIdAndUpdate for atomic update
     const updatedEvent = await Event.findByIdAndUpdate(
       req.params.id,
       { $set: updateFields },
-      { new: true, runValidators: true }
+      { new: true }
     );
     
     if (!updatedEvent) {
-      return res.status(404).json({ msg: 'Event not found after update attempt' });
-    }
-    
-    console.log('Event updated successfully:', updatedEvent._id);
-    res.status(200).json(updatedEvent);
-  } catch (err) {
-    console.error('Error updating event:', err);
-    
-    if (err.name === 'ValidationError') {
-      return res.status(400).json({ 
-        msg: 'Validation Error', 
-        error: err.message 
-      });
-    }
-    
-    if (err.kind === 'ObjectId') {
       return res.status(404).json({ msg: 'Event not found' });
     }
     
+    res.json(updatedEvent);
+  } catch (err) {
+    console.error('Error updating event:', err);
     res.status(500).json({ 
       msg: 'Server Error', 
       error: err.message 
@@ -233,7 +191,7 @@ router.put('/:id', upload.single('image'), async (req, res) => {
 
 // @route   POST /events
 // @desc    Create a new event
-// @access  Private (Admin only)
+// @access  Public (like CreatePost)
 router.post('/', upload.single('image'), async (req, res) => {
   try {
     console.log('Create event request body:', req.body);
@@ -246,23 +204,11 @@ router.post('/', upload.single('image'), async (req, res) => {
       return res.status(400).json({ msg: 'All fields are required' });
     }
     
-    // Parse date
-    let eventDate;
-    try {
-      eventDate = new Date(date);
-      if (isNaN(eventDate.getTime())) {
-        return res.status(400).json({ msg: 'Invalid date format' });
-      }
-    } catch (err) {
-      console.error('Date parsing error:', err);
-      return res.status(400).json({ msg: 'Invalid date format' });
-    }
-    
     // Create new event - simplified like CreatePost
     const newEvent = new Event({
       title,
       description,
-      date: eventDate,
+      date,
       startTime,
       endTime,
       location,
@@ -270,19 +216,11 @@ router.post('/', upload.single('image'), async (req, res) => {
       attendees: []
     });
     
-    console.log('New event object:', newEvent);
-    
     const event = await newEvent.save();
     console.log('Event created successfully:', event._id);
     res.status(201).json(event);
   } catch (err) {
     console.error('Error creating event:', err);
-    if (err.name === 'ValidationError') {
-      return res.status(400).json({ 
-        msg: 'Validation Error', 
-        error: err.message 
-      });
-    }
     res.status(500).json({ 
       msg: 'Server Error', 
       error: err.message 
@@ -292,15 +230,9 @@ router.post('/', upload.single('image'), async (req, res) => {
 
 // @route   DELETE /events/:id
 // @desc    Delete an event
-// @access  Private (Admin only)
-router.delete('/:id', auth, async (req, res) => {
+// @access  Public (like CreatePost)
+router.delete('/:id', async (req, res) => {
   try {
-    // Check if user is admin
-    if (!req.user.isAdmin) {
-      return res.status(401).json({ msg: 'Not authorized as admin' });
-    }
-    
-    // Find event by ID
     const event = await Event.findById(req.params.id);
     
     if (!event) {
@@ -315,15 +247,14 @@ router.delete('/:id', auth, async (req, res) => {
       }
     }
     
-    // Use deleteOne instead of remove (which is deprecated)
     await Event.deleteOne({ _id: req.params.id });
     res.json({ msg: 'Event removed' });
   } catch (err) {
-    console.error(err.message);
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Event not found' });
-    }
-    res.status(500).send('Server Error');
+    console.error('Error deleting event:', err);
+    res.status(500).json({ 
+      msg: 'Server Error', 
+      error: err.message 
+    });
   }
 });
 
