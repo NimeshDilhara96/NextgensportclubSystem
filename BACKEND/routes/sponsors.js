@@ -257,38 +257,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// @route   GET /sponsors/with-details
-// @desc    Get all sponsors with formatted date ranges and full details
-// @access  Private (Admin only)
-router.get('/with-details', auth, async (req, res) => {
-  try {
-    // Check if user is admin
-    if (!req.user.isAdmin) {
-      return res.status(401).json({ msg: 'Not authorized as admin' });
-    }
-    
-    const sponsors = await Sponsor.find().sort({ name: 1 });
-    
-    // Format sponsor details for easier display
-    const formattedSponsors = sponsors.map(sponsor => {
-      // Format dates
-      const startDate = new Date(sponsor.startDate).toLocaleDateString();
-      const endDate = new Date(sponsor.endDate).toLocaleDateString();
-      
-      return {
-        ...sponsor._doc,
-        formattedStartDate: startDate,
-        formattedEndDate: endDate,
-        duration: `${startDate} - ${endDate}`,
-        formattedAmount: `$${sponsor.amount.toLocaleString()}`
-      };
-    });
-    
-    res.json(formattedSponsors);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
 module.exports = router;
