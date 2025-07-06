@@ -1,70 +1,218 @@
-# Getting Started with Create React App
+# NextGen Sports Club - Biometric Authentication System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern sports club management system with secure biometric authentication powered by MommentX.
 
-## Available Scripts
+## 🚀 Quick Start Guide
 
-In the project directory, you can run:
+### Step 1: Clone & Install Dependencies
 
-### `npm start`
+```bash
+git clone <your-repo-url>
+cd nextgensportclub
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+# Backend dependencies
+cd BACKEND
+npm install
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Frontend dependencies
+cd ../frontend
+npm install
+```
 
-### `npm test`
+### Step 2: Setup Environment Variables
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Create `.env` file inside `BACKEND/` folder:
 
-### `npm run build`
+```env
+# Database
+MONGODB_URL=mongodb+srv://ftc:ndklanka@nextgensport.q1nxq.mongodb.net/nextgensportsclub?retryWrites=true&w=majority&appName=nextgensport
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Cloudflare Tunnel URL (will update after starting tunnel)
+PUBLIC_URL=https://your-tunnel-url.trycloudflare.com
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Email Configuration for MommentX Auth
+EMAIL_USER=slcfcricinfo@gmail.com
+EMAIL_PASS=muce ujjq qwfh ltez
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# JWT Secret (use a strong random key)
+JWT_SECRET=your_super_secret_jwt_key_here_make_it_strong_and_random_2024
 
-### `npm run eject`
+# Server Port
+PORT=8070
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Step 3: Start Cloudflare Tunnel
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Important**: Start this FIRST before starting your backend server.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Open a new terminal (any folder) and run:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+# Option 1: Using cloudflared (if installed)
+cloudflared tunnel --url http://localhost:8070
 
-## Learn More
+# Option 2: Using npx (no installation needed)
+npx cloudflared tunnel --url http://localhost:8070
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Wait until you see output like:
+```
+┌──────────────────────────────────────────────────┐
+│ Your quick Tunnel has been created! Visit it at: │
+│  https://brooklyn-page-dennis-bible.trycloudflare.com  │
+└──────────────────────────────────────────────────┘
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Step 4: Update .env with Tunnel URL
 
-### Code Splitting
+1. Copy the full public URL you got (e.g., `https://brooklyn-page-dennis-bible.trycloudflare.com`)
+2. Open `BACKEND/.env`
+3. Replace the `PUBLIC_URL` value:
+   ```env
+   PUBLIC_URL=https://brooklyn-page-dennis-bible.trycloudflare.com
+   ```
+4. Save the file
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Step 5: Start Backend Server
 
-### Analyzing the Bundle Size
+In a new terminal:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```bash
+cd BACKEND
+npm run dev
+# or
+node server.js
+```
 
-### Making a Progressive Web App
+Backend will run on:
+- Local: `http://localhost:8070`
+- External: `https://your-tunnel-url.trycloudflare.com`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Step 6: Start Frontend Server
 
-### Advanced Configuration
+In another terminal:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```bash
+cd frontend
+npm start
+```
 
-### Deployment
+Frontend will run on `http://localhost:3000`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🔐 Biometric Authentication Flow
 
-### `npm run build` fails to minify
+### For Users:
+1. **Desktop Login**: Enter email → Click "Login with Biometric"
+2. **Mobile Email**: Check email for biometric link
+3. **Mobile Auth**: Click link → Use Face ID/Fingerprint
+4. **Auto Login**: Desktop automatically logs in
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### For Developers:
+1. **Send Link**: `POST /biometric/send-biometric-link`
+2. **Mobile Auth**: `POST /biometric/confirm-biometric`
+3. **Desktop Poll**: `GET /biometric/check-status/:sessionId`
+
+## 📁 Project Structure
+
+```
+nextgensportclub/
+├── BACKEND/
+│   ├── models/
+│   │   └── User.js              # User schema with biometric support
+│   ├── routes/
+│   │   ├── Users.js             # User authentication routes
+│   │   └── biometricAuth.js     # Biometric authentication routes
+│   ├── public/
+│   │   └── biometric-login.html # Mobile biometric page
+│   ├── server.js                # Main server file
+│   └── .env                     # Environment variables
+├── frontend/
+│   ├── src/
+│   │   └── components/
+│   │       └── Auth/
+│   │           ├── login.js     # Login component with biometric
+│   │           └── login.module.css
+│   └── package.json
+└── README.md
+```
+
+## 🌟 Features
+
+- **Traditional Login**: Email/password authentication
+- **Biometric Login**: Face ID/Fingerprint via mobile
+- **Real-time Polling**: Desktop automatically logs in after mobile auth
+- **MommentX Security**: Enterprise-grade biometric authentication
+- **Responsive Design**: Works on desktop and mobile
+- **Session Management**: Secure JWT tokens with expiration
+
+## 🔧 API Endpoints
+
+### Authentication
+- `POST /user/login` - Traditional login
+- `POST /user/add` - User registration
+
+### Biometric Authentication
+- `POST /biometric/send-biometric-link` - Send biometric link to email
+- `POST /biometric/confirm-biometric` - Confirm mobile biometric auth
+- `GET /biometric/check-status/:sessionId` - Poll for auth completion
+
+## 🛠️ Technologies Used
+
+- **Backend**: Node.js, Express.js, MongoDB, JWT
+- **Frontend**: React.js, Axios, CSS Modules
+- **Biometric**: WebAuthn API, MommentX Security
+- **Email**: Nodemailer, Gmail SMTP
+- **Tunnel**: Cloudflare Tunnel
+- **Authentication**: bcryptjs, JWT tokens
+
+## 🔒 Security Features
+
+- **Password Hashing**: bcryptjs for secure password storage
+- **JWT Tokens**: Secure session management
+- **Biometric Auth**: WebAuthn API for biometric verification
+- **Session Expiry**: 10-minute biometric session timeout
+- **Account Protection**: Blocked user detection
+- **Secure Email**: MommentX branded authentication emails
+
+## 📱 Mobile Support
+
+The biometric authentication works on mobile devices with:
+- **iOS**: Face ID, Touch ID
+- **Android**: Fingerprint, Face Unlock
+- **WebAuthn**: Modern browsers with biometric support
+
+## 🚨 Troubleshooting
+
+### Common Issues:
+
+1. **"Server configuration error"**
+   - Make sure `PUBLIC_URL` is set in `.env`
+   - Restart backend after updating `.env`
+
+2. **"Email authentication failed"**
+   - Check `EMAIL_USER` and `EMAIL_PASS` in `.env`
+   - Ensure Gmail app password is correct
+
+3. **"Biometric not supported"**
+   - Use HTTPS (Cloudflare tunnel provides this)
+   - Test on mobile device with biometric hardware
+
+4. **"Session expired"**
+   - Biometric links expire in 10 minutes
+   - Request a new link if expired
+
+### Environment Variables Check:
+```bash
+# In BACKEND directory
+node -e "console.log('PUBLIC_URL:', process.env.PUBLIC_URL)"
+```
+
+## 🆘 Support
+
+For issues or questions:
+- Email: support@nextgensportsclub.com
+- Security: Powered by MommentX
+
+---
+
+**Note**: Always keep your Cloudflare tunnel running while using biometric authentication, as mobile devices need to access your local server through the tunnel.
