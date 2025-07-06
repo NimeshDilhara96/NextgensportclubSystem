@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextGen Sports Club - Biometric Login</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .logo {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #0888e3;
+        }
+        .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        .title {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1em;
+        }
+        .biometric-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+        .biometric-btn:hover {
+            background: #0056b3;
+        }
+        .biometric-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        .loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .success-animation {
+            font-size: 6em;
+            color: #28a745;
+            animation: bounce 1s ease-in-out;
+        }
+        @keyframes bounce {
+            0%, 20%, 60%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            80% { transform: translateY(-15px); }
+        }
+        .instruction {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #007bff;
+        }
+        .close-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .club-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0888e3;
+        }
+        .user-info {
+            background: #e8f4f8;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #0c5460;
+            font-weight: 500;
+        }
+        
+        /* MommentX Branding - Cloudflare Style */
+        .security-branding {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-size: 12px;
+            color: #666;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .security-branding:hover {
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+            color: #333;
+        }
+        
+        .security-icon {
+            font-size: 14px;
+            color: #0888e3;
+        }
+        
+        .security-text {
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .security-brand {
+            font-weight: 700;
+            color: #0888e3;
+            background: linear-gradient(135deg, #0888e3, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Mobile responsiveness for branding */
+        @media (max-width: 768px) {
+            .security-branding {
+                bottom: 10px;
+                right: 10px;
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+            
+            .security-icon {
+                font-size: 12px;
+            }
+        }
+        
+        /* Pulse animation for security icon */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .security-branding:hover .security-icon {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="authScreen">
+            <div class="logo">🏆</div>
+            <h1 class="title">NextGen Sports Club</h1>
+            <div class="club-info">
+                <h3>Secure Biometric Login</h3>
+                <p>Authenticate using your device's Face ID or fingerprint</p>
+            </div>
+            
+            <div id="userInfo" class="user-info" style="display: none;">
+                <p>Welcome back, <span id="userName"></span>!</p>
+            </div>
+            
+            <div class="icon">🔐</div>
+            
+            <button id="biometricBtn" class="biometric-btn">
+                🔓 Authenticate with Biometric
+            </button>
+            
+            <div id="status" class="status" style="display: none;"></div>
+            <div id="spinner" class="spinner" style="display: none;"></div>
+        </div>
+
+        <div id="successScreen" style="display: none;">
+            <div class="logo">🏆</div>
+            <div class="success-animation">✅</div>
+            <h2 class="title" style="color: #28a745;">Authentication Successful!</h2>
+            <div class="instruction">
+                <p><strong>🎉 Welcome to NextGen Sports Club!</strong></p>
+                <p>You've successfully authenticated with biometric verification.</p>
+                <p>Your desktop/laptop will now be logged in automatically.</p>
+                <p>You can safely close this page on your mobile device.</p>
+            </div>
+            <button id="closeBtn" class="close-btn" onclick="window.close()">
+                Close This Page
+            </button>
+        </div>
+    </div>
+
+    <!-- MommentX Security Branding -->
+    <a href="https://momentx.com" target="_blank" class="security-branding">
+        <span class="security-icon">🔒</span>
+        <span class="security-text">Secured by</span>
+        <span class="security-brand">MommentX</span>
+    </a>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const biometricBtn = document.getElementById('biometricBtn');
+        const statusDiv = document.getElementById('status');
+        const spinner = document.getElementById('spinner');
+        const authScreen = document.getElementById('authScreen');
+        const successScreen = document.getElementById('successScreen');
+        const userInfo = document.getElementById('userInfo');
+        const userName = document.getElementById('userName');
+
+        // Get the base URL for API calls (same as current page)
+        const BASE_URL = window.location.origin;
+
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+        }
+
+        function showSpinner(show) {
+            spinner.style.display = show ? 'block' : 'none';
+        }
+
+        function showSuccessScreen() {
+            authScreen.style.display = 'none';
+            successScreen.style.display = 'block';
+        }
+
+        // Extract user info from token (if available)
+        function extractUserInfo() {
+            if (token) {
+                try {
+                    // Decode JWT token (just the payload, don't verify signature here)
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    console.log('Token payload:', payload);
+                    if (payload.name) {
+                        userName.textContent = payload.name;
+                        userInfo.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.log('Could not extract user info from token:', error);
+                }
+            }
+        }
+
+        async function authenticateWithBiometric() {
+            if (!token) {
+                showStatus('Invalid or missing authentication token', 'error');
+                return;
+            }
+
+            try {
+                biometricBtn.disabled = true;
+                showSpinner(true);
+                showStatus('Preparing biometric authentication...', 'loading');
+
+                // Check if WebAuthn is supported
+                if (!window.PublicKeyCredential) {
+                    showStatus('Biometric authentication not supported on this device', 'error');
+                    return;
+                }
+
+                // Create a challenge for WebAuthn
+                const challenge = new Uint8Array(32);
+                crypto.getRandomValues(challenge);
+
+                // Get user info from token for WebAuthn
+                let userEmail = 'user@nextgensportsclub.com';
+                let displayName = 'NextGen Sports Club Member';
+                
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    userEmail = payload.email || userEmail;
+                    displayName = payload.name || displayName;
+                    console.log('Using email:', userEmail, 'displayName:', displayName);
+                } catch (error) {
+                    console.log('Using default user info for WebAuthn');
+                }
+
+                showStatus('Please authenticate with your biometric sensor...', 'loading');
+
+                // WebAuthn credential creation for biometric authentication
+                const credential = await navigator.credentials.create({
+                    publicKey: {
+                        challenge: challenge,
+                        rp: {
+                            name: "NextGen Sports Club",
+                            id: window.location.hostname,
+                        },
+                        user: {
+                            id: new TextEncoder().encode(userEmail),
+                            name: userEmail,
+                            displayName: displayName,
+                        },
+                        pubKeyCredParams: [
+                            {alg: -7, type: "public-key"}, // ES256
+                            {alg: -257, type: "public-key"} // RS256
+                        ],
+                        authenticatorSelection: {
+                            authenticatorAttachment: "platform",
+                            userVerification: "required"
+                        },
+                        timeout: 60000,
+                        attestation: "direct"
+                    }
+                });
+
+                if (credential) {
+                    showStatus('Biometric verification successful! Confirming login...', 'loading');
+                    
+                    console.log('Sending confirmation to:', `${BASE_URL}/biometric/confirm-biometric`);
+                    
+                    // Send confirmation to backend using the full URL
+                    const response = await fetch(`${BASE_URL}/biometric/confirm-biometric`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ token })
+                    });
+
+                    console.log('Response status:', response.status);
+                    const result = await response.json();
+                    console.log('Response result:', result);
+
+                    if (result.success) {
+                        showSpinner(false);
+                        showSuccessScreen();
+                        
+                        console.log('✅ NextGen Sports Club biometric authentication completed successfully');
+                        
+                        // Optional: Auto-close after success
+                        setTimeout(() => {
+                            window.close();
+                        }, 5000);
+                        
+                    } else {
+                        showStatus('Login failed: ' + (result.message || 'Unknown error'), 'error');
+                    }
+                } else {
+                    showStatus('Biometric authentication was cancelled', 'error');
+                }
+
+            } catch (error) {
+                console.error('Biometric authentication error:', error);
+                
+                if (error.name === 'NotAllowedError') {
+                    showStatus('Biometric authentication was cancelled or denied. Please try again.', 'error');
+                } else if (error.name === 'NotSupportedError') {
+                    showStatus('Biometric authentication not supported on this device', 'error');
+                } else if (error.name === 'SecurityError') {
+                    showStatus('Security error. Please ensure you\'re on a secure connection.', 'error');
+                } else if (error.name === 'InvalidStateError') {
+                    showStatus('Please try again. Device may be locked or unavailable.', 'error');
+                } else if (error.message && error.message.includes('fetch')) {
+                    showStatus('Network error. Please check your connection and try again.', 'error');
+                } else {
+                    showStatus('Authentication failed: ' + error.message, 'error');
+                }
+            } finally {
+                biometricBtn.disabled = false;
+                showSpinner(false);
+            }
+        }
+
+        // Initialize the page
+        function initialize() {
+            console.log('Current URL:', window.location.href);
+            console.log('Token:', token);
+            console.log('Base URL:', BASE_URL);
+            
+            if (!token) {
+                showStatus('Invalid or missing authentication token. Please request a new login link.', 'error');
+                biometricBtn.disabled = true;
+            } else {
+                extractUserInfo();
+                
+                // Check if the token is expired (basic check)
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    const now = Date.now() / 1000;
+                    console.log('Token expires at:', payload.exp, 'Current time:', now);
+                    if (payload.exp && payload.exp < now) {
+                        showStatus('Authentication link has expired. Please request a new one.', 'error');
+                        biometricBtn.disabled = true;
+                        return;
+                    }
+                } catch (error) {
+                    console.log('Could not verify token expiration:', error);
+                }
+                
+                showStatus('Ready for biometric authentication', 'loading');
+                
+                // Auto-trigger biometric authentication on page load (optional)
+                // setTimeout(() => {
+                //     if (!biometricBtn.disabled) {
+                //         authenticateWithBiometric();
+                //     }
+                // }, 1000);
+            }
+        }
+
+        // Event listeners
+        biometricBtn.addEventListener('click', authenticateWithBiometric);
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initialize);
+        
+        // Handle page visibility changes (when user comes back to tab)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && token && !biometricBtn.disabled) {
+                console.log('Page became visible, ready for authentication');
+            }
+        });
+    </script>
+</body>
+</html>

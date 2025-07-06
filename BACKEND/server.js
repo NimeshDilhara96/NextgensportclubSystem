@@ -30,6 +30,7 @@ connection.once("open", () => {
 const UserRouter = require("./routes/Users.js");
 const AuthRouter = require("./routes/Auth.js"); // Assuming Auth.js is in the routes folder
 const adminRouter = require('./routes/admins');
+const biometricAuthRouter = require('./routes/biometricAuth'); // Add biometric auth router
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -37,10 +38,14 @@ if (!fs.existsSync(uploadsDir)){
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+// Serve static files from public directory (for biometric-login.html)
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Use the routers for specific routes
 app.use("/user", UserRouter);  // All user-related routes will now be under /user
 app.use("/auth", AuthRouter);  // All auth-related routes will now be under /auth
 app.use('/api/admins', adminRouter);
+app.use("/biometric", biometricAuthRouter); // All biometric-related routes will now be under /biometric
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -52,10 +57,12 @@ app.use("/events", require("./routes/events"));
 app.use("/sponsors", require("./routes/sponsors"));
 app.use("/facilities", require("./routes/Facilityes"));
 
-
-
-
+// Serve biometric login page directly at root level (for email links)
+app.get('/biometric-login.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'biometric-login.html'));
+});
 
 app.listen(PORT, () => {
     console.log(`server is up and running on port ${PORT}`);
+    console.log(`Biometric login page available at: ${process.env.NGROK_URL || `http://localhost:${PORT}`}/biometric-login.html`);
 });
