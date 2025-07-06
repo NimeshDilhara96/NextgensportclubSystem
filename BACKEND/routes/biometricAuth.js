@@ -114,118 +114,107 @@ router.post('/send-auth-options', async (req, res) => {
       to: email,
       subject: 'Secure Login - NextGen Sports Club',
       html: `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>NextGen Sports Club - Login</title>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; line-height: 1.5; position: relative;">
-          <div style="max-width: 500px; margin: 20px auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            
-            <!-- Header -->
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 600;">NextGen Sports Club</h1>
-              <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">Secure Login Options</p>
-            </div>
-            
-            <!-- Content -->
-            <div style="padding: 30px 20px;">
-              <p style="color: #333; margin: 0 0 20px 0; font-size: 16px;">Hello <strong>${user.name}</strong>,</p>
-              <p style="color: #666; margin: 0 0 25px 0; font-size: 14px;">Choose your preferred login method:</p>
-              
-              <!-- Biometric Option -->
-              <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 15px 0; text-align: center; border: 1px solid #e9ecef;">
-                <div style="font-size: 28px; margin-bottom: 10px;">🔐</div>
-                <h3 style="color: #333; margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">Biometric Login (Mobile)</h3>
-                <a href="${biometricLink}" style="
-                  display: inline-block;
-                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                  color: white;
-                  padding: 12px 24px;
-                  border-radius: 6px;
-                  text-decoration: none;
-                  font-weight: 600;
-                  font-size: 14px;
-                  margin: 8px 0;
-                ">
-                  Login with Face ID / Fingerprint
-                </a>
-              </div>
-              
-              <!-- Divider -->
-              <div style="text-align: center; margin: 20px 0; position: relative;">
-                <div style="height: 1px; background: #ddd;"></div>
-                <span style="background: white; padding: 0 15px; color: #666; font-size: 12px; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);">OR</span>
-              </div>
-              
-              <!-- OTP Option -->
-              <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 15px 0; text-align: center; border: 1px solid #e9ecef;">
-                <div style="font-size: 28px; margin-bottom: 10px;">📧</div>
-                <h3 style="color: #333; margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">Verification Code</h3>
-                <p style="color: #666; margin: 0 0 15px 0; font-size: 13px;">Enter this code on the login page:</p>
-                
-                <div style="
-                  background: white;
-                  border: 2px solid #4285f4;
-                  border-radius: 6px;
-                  padding: 15px;
-                  margin: 10px 0;
-                  font-family: 'Courier New', monospace;
-                  font-size: 24px;
-                  font-weight: 700;
-                  color: #333;
-                  letter-spacing: 4px;
-                ">
-                  ${otp}
-                </div>
-                <p style="color: #999; margin: 8px 0 0 0; font-size: 11px;">Valid for 5 minutes • 3 attempts</p>
-              </div>
-              
-              <!-- Quick Info -->
-              <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px; margin: 20px 0;">
-                <p style="color: #856404; margin: 0; font-size: 12px;">
-                  <strong>💡 Quick Tips:</strong><br>
-                  • Biometric: Mobile devices only<br>
-                  • Code: Works on any device<br>
-                  • Both expire automatically for security
-                </p>
-              </div>
-            </div>
-            
-            <!-- Footer -->
-            <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef; font-size: 12px; color: #666;">
-              <p style="margin: 0 0 10px 0;">
-                Account: ${email} • ${new Date().toLocaleString()}<br>
-                <a href="mailto:support@nextgensportsclub.com" style="color: #4285f4; text-decoration: none;">Need help?</a>
-              </p>
-            </div>
-          </div>
-          
-          <!-- MommentX Security Branding -->
-          <div style="text-align: center; margin: 15px 0; position: relative;">
-            <a href="https://momentx.com" target="_blank" style="
-              display: inline-flex;
-              align-items: center;
-              gap: 6px;
-              padding: 8px 12px;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              color: white;
-              text-decoration: none;
-              border-radius: 20px;
-              font-size: 11px;
-              font-weight: 500;
-              box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-              transition: all 0.3s ease;
-            ">
-              <span style="font-size: 14px;">🔒</span>
-              <span>Secured by</span>
-              <span style="font-weight: 700; color: #fff;">MommentX</span>
-            </a>
-          </div>
-        </body>
-        </html>
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>NextGen Sports Club - Login</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; line-height: 1.5; position: relative;">
+      <div style="max-width: 500px; margin: 20px auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+      
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%); padding: 30px 20px; text-align: center;">
+      <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 600;">NEXTGEN SPORTS CLUB</h1>
+      <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 14px;">Secure Authentication Portal</p>
+      </div>
+      
+      <!-- Content -->
+      <div style="padding: 30px 20px;">
+      <p style="color: #333; margin: 0 0 20px 0; font-size: 16px;">Hello <strong>${user.name}</strong>,</p>
+      <p style="color: #666; margin: 0 0 25px 0; font-size: 14px;">Please select your preferred authentication method below:</p>
+      
+      <!-- Biometric Option -->
+      <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 15px 0; text-align: center; border: 1px solid #e9ecef;">
+      <div style="font-size: 28px; margin-bottom: 10px;">🔐</div>
+      <h3 style="color: #333; margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">Biometric Authentication</h3>
+      <a href="${biometricLink}" style="
+      display: inline-block;
+      background: linear-gradient(to right, #1a2a6c, #b21f1f);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      margin: 8px 0;
+      ">
+      Authenticate Now
+      </a>
+      </div>
+      
+      <!-- Divider -->
+      <div style="text-align: center; margin: 20px 0; position: relative;">
+      <div style="height: 1px; background: #ddd;"></div>
+      <span style="background: white; padding: 0 15px; color: #666; font-size: 12px; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);">OR</span>
+      </div>
+      
+      <!-- OTP Option -->
+      <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 15px 0; text-align: center; border: 1px solid #e9ecef;">
+      <div style="font-size: 28px; margin-bottom: 10px;">🔢</div>
+      <h3 style="color: #333; margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">One-Time Password</h3>
+      <p style="color: #666; margin: 0 0 15px 0; font-size: 13px;">Enter this code on the login screen:</p>
+      
+      <div style="
+      background: white;
+      border: 1px solid #e9ecef;
+      border-radius: 4px;
+      padding: 15px;
+      margin: 10px 0;
+      font-family: 'Arial', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a2a6c;
+      letter-spacing: 4px;
+      ">
+      ${otp}
+      </div>
+      <p style="color: #999; margin: 8px 0 0 0; font-size: 11px;">Valid for 5 minutes • Maximum 3 attempts</p>
+      </div>
+      
+      <!-- Security Notice -->
+      <div style="background: #f0f7ff; border-left: 4px solid #1a2a6c; border-radius: 4px; padding: 15px; margin: 20px 0;">
+      <p style="color: #333; margin: 0; font-size: 12px;">
+      <strong>Security Advisory:</strong><br>
+      • This authentication request expires after 5 minutes<br>
+      • Never share your verification code with anyone<br>
+      • NextGen Sports Club will never ask for your password
+      </p>
+      </div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="background: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e9ecef; font-size: 12px; color: #666;">
+      <p style="margin: 0 0 10px 0;">
+      © ${new Date().getFullYear()} NextGen Sports Club. All rights reserved.<br>
+      <a href="https://nextgensportsclub.com/contact" style="color: #1a2a6c; text-decoration: none;">Support</a> • 
+      <a href="https://nextgensportsclub.com/privacy" style="color: #1a2a6c; text-decoration: none;">Privacy Policy</a>
+      </p>
+      </div>
+      </div>
+      
+      <!-- Powered By -->
+      <div style="text-align: center; margin: 15px 0; position: relative;">
+      <p style="
+      color: #666;
+      font-size: 10px;
+      ">
+      Secured by <span style="color: #1a2a6c; font-weight: 600;">Momment X</span> • This is an automated message.
+      </p>
+      </div>
+      </body>
+      </html>
       `
     };
 
