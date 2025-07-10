@@ -84,7 +84,7 @@ const AdminSlideNav = () => {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/admin/manage-coaches" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <Link to="/admin/coaches" style={{ textDecoration: 'none', color: 'inherit' }}>
                                     Manage Coaches
                                 </Link>
                             </li>
