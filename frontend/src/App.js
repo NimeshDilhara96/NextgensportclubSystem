@@ -2,6 +2,7 @@ import './App.css';
 import Signup from './components/Auth/signup';  // Import Signup component
 import Login from "./components/Auth/login";
 import AdminLogin from './components/Admin/AdminLogin';  // Add this import
+import CoachLogin from './components/Coach/Coachlogin';  // Add this import
 import LandingPage from './components/Main/main';
 import Dashboard from './components/Dashboard/Dashboard';
 import Membership from './components/Dashboard/membership'; // Add this import
@@ -18,6 +19,10 @@ import AddFacility from './components/Admin/AddFacility';
 import Event from './components/Dashboard/Event';  // Add this import
 import ClubStore from './components/Dashboard/clubstore';
 import Health from './components/Dashboard/health';
+import CoachDashboard from './components/Coach/CoachDashboard';  // Add this import
+// Import coach components
+import CoachManagement from './components/Admin/CoachManagement';
+import TrainingCoaches from './components/Dashboard/TrainingCoaches';  // Add TrainingCoaches import
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -48,6 +53,18 @@ const PublicRoute = ({ children }) => {
   if (isAuthenticated) {
     return <Navigate to="/dashboard" />;
   }
+  return children;
+};
+
+// Protected route component for coaches
+const CoachProtectedRoute = ({ children }) => {
+  const isCoachLoggedIn = sessionStorage.getItem('isCoachLoggedIn') === 'true';
+  
+  if (!isCoachLoggedIn) {
+    // Redirect to coach login, not the general login
+    return <Navigate to="/coach/login" replace />;
+  }
+  
   return children;
 };
 
@@ -114,7 +131,22 @@ function App() {
             </AdminProtectedRoute>
           } />
           
-          
+          {/* New coach management routes */}
+          <Route path="/coach/login" element={<CoachLogin />} />
+          <Route path="/admin/coaches" element={
+            <AdminProtectedRoute>
+              <CoachManagement />
+            </AdminProtectedRoute>
+          } />
+          <Route 
+            path="/coach/dashboard" 
+            element={
+              <CoachProtectedRoute>
+                <CoachDashboard />
+              </CoachProtectedRoute>
+            } 
+          />
+
           {/* Protected User routes with SlideNav */}
           <Route path="/profile" element={
             <ProtectedRoute>
@@ -148,7 +180,7 @@ function App() {
           
           <Route path="/training" element={
             <ProtectedRoute>
-              <div>Training Page</div>
+              <TrainingCoaches/>
             </ProtectedRoute>
           } />
           

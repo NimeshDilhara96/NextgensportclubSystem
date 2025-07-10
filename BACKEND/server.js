@@ -32,6 +32,7 @@ const AuthRouter = require("./routes/Auth.js"); // Assuming Auth.js is in the ro
 const adminRouter = require('./routes/admins');
 const biometricAuthRouter = require('./routes/biometricAuth'); // Add biometric auth router
 const forgotPasswordRoutes = require('./routes/forgotPassword');
+const coachRoutes = require('./routes/coaches'); // Add coach routes
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -48,6 +49,7 @@ app.use("/auth", AuthRouter);  // All auth-related routes will now be under /aut
 app.use('/api/admins', adminRouter);
 app.use("/biometric", biometricAuthRouter); // All biometric-related routes will now be under /biometric
 app.use('/forgot-password', forgotPasswordRoutes); // Add this line
+app.use('/coaches', coachRoutes); // Add coach routes
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
