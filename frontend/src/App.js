@@ -13,6 +13,7 @@ import AdminMemberManagement from './components/Admin/adminMemberManagement';
 import CreatePost from './components/Admin/CreatePost';
 import AddSport from './components/Admin/AddSport';  // Add this import
 import AddEventSponser from './components/Admin/addEventsponser';
+import AddProduct from './components/Admin/Addproduct';  // Add this import
 import AddFacility from './components/Admin/AddFacility';
 import Event from './components/Dashboard/Event';  // Add this import
 import ClubStore from './components/Dashboard/clubstore';
@@ -100,6 +101,12 @@ function App() {
               <AddEventSponser />
             </AdminProtectedRoute>
           } />
+
+          <Route path="/admin/add-product" element={
+            <AdminProtectedRoute>
+              <AddProduct/>
+            </AdminProtectedRoute>
+          } />    
 
           <Route path="/admin/facilities" element={
             <AdminProtectedRoute>
