@@ -559,7 +559,7 @@
     align-items: center;
     gap: 6px;
     padding: 8px 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #e8e8e8 0%, #edebee 100%);
     color: white;
     text-decoration: none;
     border-radius: 20px;
@@ -571,7 +571,7 @@
 }
 
 .security_branding a:hover {
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    background: linear-gradient(135deg, #08c334 0%, #08da43 100%);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
@@ -584,12 +584,13 @@
 .security_text {
     font-size: 11px;
     opacity: 0.9;
+     color: #0a0a0a;
 }
 
 .security_brand {
     font-weight: 700;
     font-size: 11px;
-    color: #fff;
+    color: #0a0a0a;
 }
 
 @keyframes pulse {
