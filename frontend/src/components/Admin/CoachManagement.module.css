@@ -1,0 +1,535 @@
+.coachManagementContainer {
+    padding: 2rem;
+    margin-left: 250px; /* Match the width of your AdminSlideNav */
+}
+
+.pageTitle {
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-size: 2rem;
+}
+
+.tabsContainer {
+    display: flex;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabButton {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #555;
+    transition: all 0.3s ease;
+}
+
+.tabButton:hover {
+    color: #2196f3;
+}
+
+.activeTab {
+    border-bottom-color: #2196f3;
+    color: #2196f3;
+    font-weight: 500;
+}
+
+/* Add Coach Section Styles */
+.addCoachSection, .manageCoachesSection {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.addCoachCard h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+/* Manage Coaches Section Styles */
+.searchContainer {
+    margin-bottom: 2rem;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    max-width: 500px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.searchIcon {
+    color: #666;
+    margin-right: 0.75rem;
+}
+
+.searchInput {
+    flex: 1;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+}
+
+/* Shared Form Styles */
+.errorMessage {
+    background-color: #ffebee;
+    color: #d32f2f;
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.successMessage {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.formRow {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+    flex: 1;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #444;
+}
+
+.formControl {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.formControl:focus {
+    border-color: #2196f3;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+.availabilityOptions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.checkboxGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkboxGroup input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.imagePreviewContainer {
+    margin: 1rem 0;
+}
+
+.imagePreview {
+    position: relative;
+    display: inline-block;
+}
+
+.imagePreview img {
+    height: 150px;
+    width: auto;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.removeImage {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.removeImage:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.formActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.uploadButton {
+    flex: 1;
+}
+
+.imageButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #f0f2f5;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #444;
+    transition: background-color 0.3s;
+    width: fit-content;
+}
+
+.imageButton:hover {
+    background-color: #e4e6e9;
+}
+
+.submitButton {
+    padding: 0.75rem 1.5rem;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submitButton:hover {
+    background-color: #3e8e41;
+}
+
+.submitButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Coach Card Styles */
+.loadingMessage {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.noCoachesMessage {
+    text-align: center;
+    padding: 3rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    color: #666;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.noCoachesMessage svg {
+    font-size: 2rem;
+    color: #ccc;
+}
+
+.coachesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.coachCard {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.coachCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.inactiveCoach {
+    opacity: 0.7;
+    border: 1px dashed #ccc;
+}
+
+.coachImage {
+    height: 200px;
+    position: relative;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.coachImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.noImagePlaceholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.noImagePlaceholder svg {
+    font-size: 4rem;
+    color: #ddd;
+}
+
+.coachDetails {
+    padding: 1.5rem;
+}
+
+.coachDetails h3 {
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.inactiveBadge {
+    font-size: 0.7rem;
+    background-color: #f44336;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.specialty {
+    color: #666;
+    font-weight: 500;
+    margin: 0.25rem 0;
+}
+
+.experience {
+    color: #888;
+    font-size: 0.9rem;
+    margin: 0.25rem 0 1rem;
+}
+
+.coachActions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.editButton, .deleteButton {
+    flex: 1;
+    padding: 0.6rem 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s;
+}
+
+.editButton {
+    background-color: #2196f3;
+    color: white;
+}
+
+.editButton:hover {
+    background-color: #0b7dda;
+}
+
+.deleteButton {
+    background-color: #f44336;
+    color: white;
+}
+
+.deleteButton:hover {
+    background-color: #d32f2f;
+}
+
+/* Modal styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 2rem;
+}
+
+.modal {
+    background-color: white;
+    border-radius: 8px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.deleteModal {
+    max-width: 500px;
+}
+
+.modalHeader {
+    padding: 1.25rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.modalBody {
+    padding: 1.5rem;
+}
+
+.deleteWarning {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.warningIcon {
+    color: #f44336;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.warningText {
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.deleteActions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.cancelButton, .confirmDeleteButton {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.cancelButton {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.cancelButton:hover {
+    background-color: #e0e0e0;
+}
+
+.confirmDeleteButton {
+    background-color: #f44336;
+    color: white;
+}
+
+.confirmDeleteButton:hover {
+    background-color: #d32f2f;
+}
+
+.statusToggle {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.statusToggle label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.statusToggle input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+.statusDescription {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .coachManagementContainer {
+        margin-left: 0;
+        padding: 1rem;
+    }
+    
+    .formRow {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .coachesGrid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modalOverlay {
+        padding: 1rem;
+    }
+    
+    .deleteActions {
+        flex-direction: column;
+    }
+}
