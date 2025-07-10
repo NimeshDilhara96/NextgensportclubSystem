@@ -48,10 +48,19 @@ const ClubStore = () => {
       try {
         setLoading(true);
         const response = await axios.get('http://localhost:8070/products');
-        setProducts(response.data);
         
-        const uniqueCategories = [...new Set(response.data.map(product => product.category))];
-        setCategories(uniqueCategories);
+        // Access the products array from the response
+        if (response.data.success && response.data.products) {
+          setProducts(response.data.products);
+          
+          // Extract unique categories
+          const uniqueCategories = [...new Set(response.data.products
+            .map(product => product.category)
+            .filter(category => category))]; // Filter out null/undefined categories
+          setCategories(uniqueCategories);
+        } else {
+          setError('Invalid product data received.');
+        }
       } catch (error) {
         console.error('Error fetching products:', error);
         setError('Failed to load products. Please try again later.');
@@ -114,6 +123,24 @@ const ClubStore = () => {
                           product.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  // Add this helper function at the top of your component
+  const formatPrice = (price) => {
+    return typeof price === 'number' ? price.toFixed(2) : '0.00';
+  };
+
+  const handleCheckout = () => {
+    // Save current cart to session for order processing
+    sessionStorage.setItem('checkoutCart', JSON.stringify(cart));
+    
+    // Clear local cart
+    setCart([]);
+    localStorage.removeItem('clubStoreCart');
+    
+    // Display confirmation
+    alert('Thank you for your order! Your items will be available for pickup at the club.');
+    setShowCartModal(false);
+  };
 
   return (
     <div className={styles.pageWrapper}>
@@ -198,7 +225,7 @@ const ClubStore = () => {
                   </div>
 
                   <div className={styles.productFooter}>
-                    <div className={styles.productPrice}>${product.price.toFixed(2)}</div>
+                    <div className={styles.productPrice}>${formatPrice(product.price)}</div>
                     <button 
                       className={styles.addToCartBtn}
                       onClick={() => addToCart(product)}
@@ -210,6 +237,14 @@ const ClubStore = () => {
               ))
             )}
           </div>
+
+          {!loading && filteredProducts.length === 0 && (
+  <div className={styles.emptyProductsContainer}>
+    <FaShoppingCart className={styles.emptyProductsIcon} />
+    <h3>No products available</h3>
+    <p>Check back soon for new items in our club store!</p>
+  </div>
+)}
 
           {showCartModal && (
             <div className={styles.cartModal}>
@@ -233,7 +268,7 @@ const ClubStore = () => {
                           />
                           <div className={styles.cartItemDetails}>
                             <h4>{item.name}</h4>
-                            <p className={styles.cartItemPrice}>${item.price.toFixed(2)}</p>
+                            <p className={styles.cartItemPrice}>${formatPrice(item.price)}</p>
                           </div>
                           <div className={styles.cartItemQuantity}>
                             <button 
@@ -257,7 +292,7 @@ const ClubStore = () => {
                         <span>Total:</span>
                         <span>${calculateTotal()}</span>
                       </div>
-                      <button className={styles.checkoutBtn}>Proceed to Checkout</button>
+                      <button onClick={handleCheckout} className={styles.checkoutBtn}>Proceed to Checkout</button>
                     </div>
                   </>
                 )}
