@@ -94,7 +94,7 @@ const AdminSlideNav = () => {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/admin/club-store" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <Link to="/admin/add-product" style={{ textDecoration: 'none', color: 'inherit' }}>
                                     Club Store
                                 </Link>
                             </li>

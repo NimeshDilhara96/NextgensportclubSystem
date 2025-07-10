@@ -57,6 +57,7 @@ app.use("/posts", require("./routes/posts"));
 app.use("/sports", require("./routes/sports"));
 app.use("/events", require("./routes/events"));
 app.use("/sponsors", require("./routes/sponsors"));
+app.use("/products", require("./routes/products"));
 app.use("/facilities", require("./routes/Facilityes"));
 
 // Serve biometric login page directly at root level (for email links)

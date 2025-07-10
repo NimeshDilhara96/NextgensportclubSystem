@@ -270,6 +270,29 @@
   color: #666;
 }
 
+.emptyProductsContainer {
+  text-align: center;
+  padding: 3rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.emptyProductsIcon {
+  font-size: 3rem;
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+
+.emptyProductsContainer h3 {
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.emptyProductsContainer p {
+  color: #777;
+}
+
 .cartModal {
   position: fixed;
   top: 0;
