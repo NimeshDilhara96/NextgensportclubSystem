@@ -1,0 +1,119 @@
+.addProductContainer {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    margin-left: 220px; /* Adjust based on your sidebar width */
+}
+
+.addProductCard {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    width: 100%;
+    max-width: 800px;
+}
+
+.addProductCard h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+    text-align: center;
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.formControl {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.imagePreviewContainer {
+    margin: 1rem 0;
+}
+
+.imagePreview {
+    position: relative;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.imagePreview img {
+    height: 150px;
+    width: auto;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.removeImage {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.productActions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.mediaButtons {
+    display: flex;
+}
+
+.mediaButton {
+    display: flex;
+    align-items: center;
+    background-color: #f0f2f5;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+    color: #444;
+    transition: background-color 0.3s;
+}
+
+.mediaButton:hover {
+    background-color: #e4e6e9;
+}
+
+.submitProduct {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submitProduct:hover {
+    background-color: #3e8e41;
+}
+
+.submitProduct:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
