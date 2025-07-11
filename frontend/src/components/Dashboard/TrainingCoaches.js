@@ -180,7 +180,6 @@ const TrainingCoaches = () => {
       }
       
       // Send booking request to backend
-      // This would be replaced with your actual endpoint
       const response = await axios.post(
         `http://localhost:8070/coaches/book/${selectedCoach._id}`,
         {
@@ -243,7 +242,6 @@ const TrainingCoaches = () => {
         return;
       }
       
-      // This would be replaced with your actual endpoint
       const response = await axios.delete(`http://localhost:8070/coaches/session/${sessionId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -253,16 +251,13 @@ const TrainingCoaches = () => {
       
       if (response.data.status === 'success') {
         alert('Session cancelled successfully');
-        // Refresh the sessions list
         fetchUserSessions();
       } else {
         alert(response.data.message || 'Failed to cancel session');
       }
     } catch (err) {
       console.error('Error cancelling session:', err);
-      // If the endpoint doesn't exist yet, show success anyway
       alert('Session cancelled successfully (Development mode)');
-      // Mock refresh by removing the cancelled session
       setSessions(sessions.filter(session => session._id !== sessionId));
     }
   };
@@ -283,10 +278,10 @@ const TrainingCoaches = () => {
     return (
       <div className={styles.pageWrapper}>
         <SlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        <div className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
+        <div className={styles.mainContentWrapper}>
           <div className={styles.container} style={lightModeStyles.container}>
             <h1 style={lightModeStyles.text}>Training & Coaches</h1>
-            <div className={styles.loading}>
+            <div className={styles.loadingState}>
               <p>Loading coaches...</p>
             </div>
           </div>
@@ -300,10 +295,10 @@ const TrainingCoaches = () => {
     return (
       <div className={styles.pageWrapper}>
         <SlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        <div className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
+        <div className={styles.mainContentWrapper}>
           <div className={styles.container} style={lightModeStyles.container}>
             <h1 style={lightModeStyles.text}>Training & Coaches</h1>
-            <div className={styles.error}>
+            <div className={styles.errorState}>
               <p>{error}</p>
               <button onClick={() => window.location.reload()}>Retry</button>
             </div>
@@ -315,28 +310,29 @@ const TrainingCoaches = () => {
   
   return (
     <div className={styles.pageWrapper}>
-      <SlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      
-      <div className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
-        <div className={styles.container} style={lightModeStyles.container}>
-          <div className={styles.trainingHeader}>
+      <SlideNav 
+        isSidebarOpen={isSidebarOpen} 
+        toggleSidebar={toggleSidebar} 
+      />
+      <div 
+        className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}
+      >
+        <div className={styles.container}>
+          <div className={styles.header}>
             <h1 style={lightModeStyles.text}>Training & Coaches</h1>
             <p>Book private or group sessions with our expert coaches</p>
           </div>
           
-          <div className={styles.filterContainer}>
+          <div className={styles.tabs}>
             <button 
-              className={`${styles.filterButton} ${activeTab === 'coaches' ? styles.active : ''}`}
+              className={`${styles.tabButton} ${activeTab === 'coaches' ? styles.activeTab : ''}`}
               onClick={() => setActiveTab('coaches')}
             >
               Available Coaches
             </button>
             <button 
-              className={`${styles.filterButton} ${activeTab === 'sessions' ? styles.active : ''}`}
-              onClick={() => {
-                setActiveTab('sessions');
-                fetchUserSessions();
-              }}
+              className={`${styles.tabButton} ${activeTab === 'sessions' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('sessions')}
             >
               My Sessions
             </button>
@@ -345,7 +341,7 @@ const TrainingCoaches = () => {
           {/* Coaches Tab */}
           {activeTab === 'coaches' && (
             <div className={styles.coachesContainer}>
-              <div className={styles.coachFilters}>
+              <div className={styles.filterControls}>
                 <div className={styles.searchBox}>
                   <FaSearch className={styles.searchIcon} />
                   <input 
@@ -371,8 +367,8 @@ const TrainingCoaches = () => {
               </div>
               
               {filteredCoaches.length === 0 ? (
-                <div className={styles.noCoachesMessage}>
-                  <FaUser className={styles.noCoachesIcon} />
+                <div className={styles.emptyState}>
+                  <FaUser className={styles.emptyStateIcon} />
                   <h3>No coaches found</h3>
                   <p>{searchQuery || selectedSpecialty !== 'all' ? 
                     'Try adjusting your search or filters' : 
@@ -394,9 +390,9 @@ const TrainingCoaches = () => {
                       </div>
                       <div className={styles.coachInfo}>
                         <h3 className={styles.coachName} style={lightModeStyles.accent}>{coach.name}</h3>
-                        <p className={styles.specialty}>{coach.specialty}</p>
+                        <p className={styles.coachSpecialty}>{coach.specialty}</p>
                         {coach.experience > 0 && (
-                          <p className={styles.experience}>
+                          <p className={styles.coachExperience}>
                             <FaStar className={styles.experienceIcon} />
                             {coach.experience} {coach.experience === 1 ? 'year' : 'years'} experience
                           </p>
@@ -479,7 +475,7 @@ const TrainingCoaches = () => {
                             <p>{session.coachSpecialty}</p>
                           </div>
                         </div>
-                        <span className={`${styles.statusTag} ${styles[session.status.toLowerCase()]}`}>
+                        <span className={`${styles.statusTag} ${styles[`status${session.status.toLowerCase()}`]}`}>
                           {session.status}
                         </span>
                       </div>
