@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import SlideNav from '../appnavbar/slidenav';
 import { 
   FaHeartbeat, 
@@ -13,12 +13,11 @@ import {
   FaPaperPlane,
   FaFire,
   FaWeight,
-  FaStopwatch,
-  FaBullseye,
   FaUser,
   FaCalendarAlt,
   FaPhone,
-  FaEnvelope
+  FaEnvelope,
+  FaBullseye,
 } from 'react-icons/fa';
 import styles from './Health.module.css';
 import axios from 'axios';
@@ -30,6 +29,9 @@ const Health = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Sidebar toggle handler
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
   
   // AI Chat States
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -40,28 +42,49 @@ const Health = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [aiError, setAiError] = useState(null);
 
-  // Health Data States - Now calculated from user data
-  const [todayStats, setTodayStats] = useState({
-    calories: 0,
-    water: 0,
-    steps: 0,
-    workoutTime: 0
-  });
+  // Toggle AI Chat Modal
+  const toggleChat = () => setIsChatOpen(prev => !prev);
 
-  const [weeklyGoals] = useState({
-    workouts: 5,
-    calories: 2000,
-    water: 8,
-    sleep: 8
+  // Health Data States - Now from backend HealthData model
+  const [todayStats, setTodayStats] = useState({
+    water: 0,
+    calories: { burned: 0, consumed: 0, target: 2000 },
+    steps: { current: 0, target: 10000 },
+    workout: { totalMinutes: 0, totalCalories: 0, sessions: [] }
   });
 
   const [recentWorkouts, setRecentWorkouts] = useState([]);
   const [nutritionPlan, setNutritionPlan] = useState([]);
-  const [userBookings, setUserBookings] = useState([]);
   const [waterGlasses, setWaterGlasses] = useState([]);
 
+  // AI Workouts States
+  const [aiWorkouts, setAiWorkouts] = useState([]);
+  const [aiWorkoutLoading, setAiWorkoutLoading] = useState(false);
+  const [aiWorkoutError, setAiWorkoutError] = useState(null);
+  const [completedAIWorkouts, setCompletedAIWorkouts] = useState({});
+
+  // BMI States
+  const [bmi, setBmi] = useState(null);
+  const [bmiInput, setBmiInput] = useState({ height: '', weight: '' });
+
+  // Additional Health Tracking States
+  const [mood, setMood] = useState('');
+  const [energy, setEnergy] = useState(5);
+  const [notes, setNotes] = useState('');
+  const [stepsInput, setStepsInput] = useState('');
+  const [caloriesInput, setCaloriesInput] = useState({ burned: '', consumed: '' });
+
+  // Add new state for workout plan
+  const [workoutPlan, setWorkoutPlan] = useState(null);
+  const [showGoalModal, setShowGoalModal] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState('');
+  const [planLoading, setPlanLoading] = useState(false);
+
+  // Fetch real health data from backend HealthData model
+  // (Duplicate fetchTodayHealthData removed to fix redeclaration error)
+
   // Calculate user's age from DOB
-  const calculateAge = useCallback((dob) => {
+  const calculateAge = (dob) => {
     if (!dob) return 'N/A';
     const birthDate = new Date(dob);
     const today = new Date();
@@ -71,7 +94,7 @@ const Health = () => {
       age--;
     }
     return age;
-  }, []);
+  };
 
   // Format date for display
   const formatDate = (date) => {
@@ -83,232 +106,98 @@ const Health = () => {
     });
   };
 
-  // Calculate health stats based on user profile
-  const calculateHealthStats = useCallback((user) => {
-    if (!user) return { calories: 0, water: 0, steps: 0, workoutTime: 0 };
-
-    const age = calculateAge(user.dob);
-    const isActive = user.membershipStatus === 'active';
-    const hasBookings = user.bookings && user.bookings.length > 0;
-
-    // Base calculations on user's age, gender, and activity level
-    let baseCalories = 1200;
-    let baseSteps = 3000;
-    let baseWorkout = 0;
-    let baseWater = 4;
-
-    // Adjust based on age
-    if (age < 30) {
-      baseCalories += 600;
-      baseSteps += 4000;
-    } else if (age < 50) {
-      baseCalories += 400;
-      baseSteps += 3000;
-    } else {
-      baseCalories += 200;
-      baseSteps += 2000;
-    }
-
-    // Adjust based on gender
-    if (user.gender === 'Male') {
-      baseCalories += 300;
-      baseSteps += 1000;
-      baseWater += 2;
-    } else if (user.gender === 'Female') {
-      baseCalories += 100;
-      baseSteps += 500;
-      baseWater += 1;
-    }
-
-    // Adjust based on membership status and activity
-    if (isActive) {
-      baseCalories += 300;
-      baseSteps += 2000;
-      baseWorkout = 45;
-      baseWater += 2;
-    }
-
-    if (hasBookings) {
-      baseCalories += 200;
-      baseWorkout += 30;
-      baseWater += 1;
-    }
-
-    // Add some randomness to make it more realistic (±20%)
-    const variance = 0.2;
-    return {
-      calories: Math.round(baseCalories * (1 + (Math.random() - 0.5) * variance)),
-      water: Math.min(8, Math.round(baseWater * (1 + (Math.random() - 0.5) * variance))),
-      steps: Math.round(baseSteps * (1 + (Math.random() - 0.5) * variance)),
-      workoutTime: Math.round(baseWorkout * (1 + (Math.random() - 0.5) * variance))
-    };
-  }, [calculateAge]);
-
-  // Generate personalized workouts based on user data
-  const generatePersonalizedWorkouts = useCallback((user) => {
-    if (!user) return [];
-
-    const age = calculateAge(user.dob);
-
-    // Base workouts
-    const baseWorkouts = [
-      { name: 'Morning Walk', duration: 30, calories: 150, intensity: 'low' },
-      { name: 'Cardio Session', duration: 45, calories: 400, intensity: 'medium' },
-      { name: 'Strength Training', duration: 60, calories: 350, intensity: 'high' },
-      { name: 'Yoga & Stretching', duration: 40, calories: 200, intensity: 'low' },
-      { name: 'Swimming', duration: 50, calories: 500, intensity: 'medium' },
-      { name: 'Cycling', duration: 60, calories: 450, intensity: 'medium' },
-      { name: 'Weight Training', duration: 45, calories: 300, intensity: 'high' },
-      { name: 'Pilates', duration: 35, calories: 250, intensity: 'medium' }
-    ];
-
-    // Filter based on user profile
-    let suitableWorkouts = baseWorkouts;
-
-    if (age > 50) {
-      suitableWorkouts = baseWorkouts.filter(w => w.intensity !== 'high');
-    }
-
-    if (user.membershipStatus !== 'active') {
-      suitableWorkouts = baseWorkouts.filter(w => w.intensity === 'low');
-    }
-
-    // Select 3-4 random workouts
-    const selectedWorkouts = suitableWorkouts
-      .sort(() => 0.5 - Math.random())
-      .slice(0, Math.min(4, suitableWorkouts.length));
-
-    return selectedWorkouts.map((workout, index) => ({
-      id: index + 1,
-      name: workout.name,
-      duration: workout.duration,
-      calories: workout.calories,
-      date: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  // Initialize default water glasses
+  const initializeWaterGlasses = () => {
+    return Array.from({length: 8}, (_, i) => ({
+      glassNumber: i + 1,
+      completed: false
     }));
-  }, [calculateAge]);
-
-  // Generate personalized nutrition plan based on user data
-  const generateNutritionPlan = useCallback((user, todayStats) => {
-    if (!user) return [];
-
-    const age = calculateAge(user.dob);
-    const targetCalories = todayStats.calories || 2000;
-    
-    let breakfastCals, lunchCals, snackCals, dinnerCals;
-
-    // Distribute calories based on age and gender
-    const ageFactor = age > 50 ? 0.05 : 0;
-    
-    if (user.gender === 'Male') {
-      breakfastCals = Math.round(targetCalories * (0.25 - ageFactor));
-      lunchCals = Math.round(targetCalories * 0.35);
-      snackCals = Math.round(targetCalories * (0.15 + ageFactor));
-      dinnerCals = Math.round(targetCalories * 0.25);
-    } else {
-      breakfastCals = Math.round(targetCalories * (0.23 - ageFactor));
-      lunchCals = Math.round(targetCalories * 0.32);
-      snackCals = Math.round(targetCalories * (0.18 + ageFactor));
-      dinnerCals = Math.round(targetCalories * 0.27);
-    }
-
-    const currentHour = new Date().getHours();
-
-    return [
-      { 
-        id: 1, 
-        meal: 'Breakfast', 
-        calories: breakfastCals, 
-        time: '08:00', 
-        completed: currentHour > 9 
-      },
-      { 
-        id: 2, 
-        meal: 'Lunch', 
-        calories: lunchCals, 
-        time: '13:00', 
-        completed: currentHour > 14 
-      },
-      { 
-        id: 3, 
-        meal: 'Snack', 
-        calories: snackCals, 
-        time: '16:00', 
-        completed: currentHour > 17 
-      },
-      { 
-        id: 4, 
-        meal: 'Dinner', 
-        calories: dinnerCals, 
-        time: '19:00', 
-        completed: currentHour > 20 
-      }
-    ];
-  }, [calculateAge]);
-
-  // Initialize Gemini AI
-  const initializeGemini = () => {
-    try {
-      console.log('Initializing Gemini AI...');
-      
-      const apiKey = process.env.REACT_APP_GEMINI_API_KEY || 'AIzaSyDqAX9agitzTXAhWvVVNKB-zYTU5kKiQXg';
-      const ai = new GoogleGenAI({ apiKey });
-      
-      console.log('Gemini AI initialized successfully');
-      return ai;
-    } catch (error) {
-      console.error('Error initializing Gemini:', error);
-      setAiError(`Failed to initialize AI: ${error.message}`);
-      return null;
-    }
   };
 
-  // Fetch real health data from backend
-  const fetchTodayHealthData = async () => {
+  // Fetch real health data from backend HealthData model
+  const fetchTodayHealthData = React.useCallback(async () => {
     try {
       const userEmail = sessionStorage.getItem('userEmail');
-      if (!userEmail) return;
+      if (!userEmail) {
+        console.error('No user email found');
+        setWaterGlasses(initializeWaterGlasses());
+        return;
+      }
 
-      const response = await axios.get(`http://localhost:8070/health/today/${userEmail}`);
+      console.log('Fetching health data for:', userEmail);
+      const response = await axios.get(`http://localhost:8070/user/health/today/${userEmail}`);
       
       if (response.data.status === "success") {
         const healthData = response.data.data;
         
-        // Update state with real data
+        // Update state with real data from HealthData model
         setTodayStats({
-          calories: healthData.calories.burned,
-          water: healthData.waterIntake.current,
-          steps: healthData.steps.current,
-          workoutTime: healthData.workout.currentMinutes
+          water: healthData.waterIntake?.current || 0,
+          calories: {
+            burned: healthData.calories?.burned || 0,
+            consumed: healthData.calories?.consumed || 0,
+            target: healthData.calories?.target || 2000
+          },
+          steps: {
+            current: healthData.steps?.current || 0,
+            target: healthData.steps?.target || 10000
+          },
+          workout: {
+            totalMinutes: healthData.workout?.totalMinutes || 0,
+            totalCalories: healthData.workout?.totalCalories || 0,
+            sessions: healthData.workout?.sessions || []
+          }
         });
         
         // Set water glasses state for UI
-        setWaterGlasses(healthData.waterIntake.glasses);
+        setWaterGlasses(healthData.waterIntake?.glasses || initializeWaterGlasses());
         
-        console.log('Health data loaded:', healthData);
+        // Set other health data
+        setBmi(healthData.bmi);
+        setMood(healthData.mood || '');
+        setEnergy(healthData.energy || 5);
+        setNotes(healthData.notes || '');
+        
+        // Update recent workouts from actual workout sessions
+        if (healthData.workout?.sessions) {
+          setRecentWorkouts(healthData.workout.sessions.map((session, index) => ({
+            id: index + 1,
+            name: session.name,
+            duration: session.duration,
+            calories: session.calories,
+            completed: session.completed,
+            date: new Date(session.startTime).toISOString().split('T')[0]
+          })));
+        }
+        
+        console.log('Health data loaded from HealthData model:', healthData);
+      } else {
+        console.error('Health data fetch failed:', response.data);
+        setWaterGlasses(initializeWaterGlasses());
       }
     } catch (error) {
       console.error('Error fetching health data:', error);
-      // If health data doesn't exist, initialize with default water glasses
-      setWaterGlasses(Array.from({length: 8}, (_, i) => ({
-        glassNumber: i + 1,
-        completed: false
-      })));
+      setWaterGlasses(initializeWaterGlasses());
     }
-  };
+  }, []);
 
-  // Update water intake
+  // Update water intake - now properly saves to HealthData model
   const updateWaterIntake = async (glassNumber, completed) => {
     try {
       const userEmail = sessionStorage.getItem('userEmail');
-      if (!userEmail) return;
+      if (!userEmail) {
+        console.error('No user email found');
+        return;
+      }
 
-      const response = await axios.put(`http://localhost:8070/health/water/${userEmail}`, {
-        glassNumber,
-        completed
-      });
+      const payload = { glassNumber, completed };
+      if (bmi) payload.bmi = bmi;
+
+      console.log('Sending water update:', payload);
+      const response = await axios.put(`http://localhost:8070/user/health/water/${userEmail}`, payload);
       
       if (response.data.status === "success") {
-        // Update local state
+        // Update local state with data from HealthData model
         setTodayStats(prev => ({
           ...prev,
           water: response.data.data.current
@@ -316,10 +205,13 @@ const Health = () => {
         
         setWaterGlasses(response.data.data.glasses);
         
-        console.log('Water intake updated:', response.data);
+        console.log('Water intake updated in HealthData model:', response.data);
+      } else {
+        console.error('Water update failed:', response.data);
       }
     } catch (error) {
       console.error('Error updating water intake:', error);
+      alert('Error updating water intake. Please try again.');
       
       // Fallback: Update local state only
       setWaterGlasses(prev => prev.map(glass => 
@@ -339,159 +231,463 @@ const Health = () => {
     }
   };
 
-  // Add workout session
+  // Add workout session - now properly saves to HealthData model
   const addWorkoutSession = async (workoutData) => {
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) {
+        console.error('No user email found');
+        return;
+      }
+
+      console.log('Sending workout data:', workoutData);
+      const response = await axios.post(`http://localhost:8070/user/health/workout/${userEmail}`, workoutData);
+      
+      if (response.data.status === "success") {
+        // Update local state with data from HealthData model
+        setTodayStats(prev => ({
+          ...prev,
+          workout: {
+            totalMinutes: response.data.data.totalMinutes,
+            totalCalories: response.data.data.totalCalories,
+            sessions: response.data.data.sessions
+          }
+        }));
+        
+        // Update recent workouts
+        setRecentWorkouts(response.data.data.sessions.map((session, index) => ({
+          id: index + 1, // Use index + 1 as ID
+          name: session.name,
+          duration: session.duration,
+          calories: session.calories,
+          completed: session.completed,
+          date: new Date(session.startTime).toISOString().split('T')[0]
+        })));
+        
+        console.log('Workout added to HealthData model:', response.data);
+        alert('Workout session added successfully!');
+      } else {
+        console.error('Workout add failed:', response.data);
+        alert('Failed to add workout. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error adding workout:', error);
+      alert('Error adding workout. Please try again.');
+      
+      // Fallback: Update local state only
+      setTodayStats(prev => ({
+        ...prev,
+        workout: {
+          ...prev.workout,
+          totalMinutes: prev.workout.totalMinutes + (workoutData.duration || 0),
+          totalCalories: prev.workout.totalCalories + (workoutData.calories || 0)
+        }
+      }));
+    }
+  };
+
+  // Update steps - new function to save steps to HealthData model
+  const updateSteps = async () => {
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail || !stepsInput) return;
+
+      const response = await axios.put(`http://localhost:8070/user/health/steps/${userEmail}`, {
+        steps: parseInt(stepsInput)
+      });
+      
+      if (response.data.status === "success") {
+        setTodayStats(prev => ({
+          ...prev,
+          steps: {
+            current: response.data.data.current,
+            target: response.data.data.target
+          }
+        }));
+        
+        setStepsInput('');
+        console.log('Steps updated in HealthData model:', response.data);
+      }
+    } catch (error) {
+      console.error('Error updating steps:', error);
+    }
+  };
+
+  // Update calories - new function to save calories to HealthData model
+  const updateCalories = async () => {
     try {
       const userEmail = sessionStorage.getItem('userEmail');
       if (!userEmail) return;
 
-      const response = await axios.post(`http://localhost:8070/health/workout/${userEmail}`, workoutData);
+      const payload = {};
+      if (caloriesInput.burned) payload.burned = parseInt(caloriesInput.burned);
+      if (caloriesInput.consumed) payload.consumed = parseInt(caloriesInput.consumed);
+
+      if (Object.keys(payload).length === 0) return;
+
+      const response = await axios.put(`http://localhost:8070/user/health/calories/${userEmail}`, payload);
+      
+      if (response.data.status === "success") {
+        setTodayStats(prev => ({
+          ...prev,
+          calories: {
+            burned: response.data.data.burned,
+            consumed: response.data.data.consumed,
+            target: response.data.data.target
+          }
+        }));
+        
+        setCaloriesInput({ burned: '', consumed: '' });
+        console.log('Calories updated in HealthData model:', response.data);
+      }
+    } catch (error) {
+      console.error('Error updating calories:', error);
+    }
+  };
+
+  // Update mood and energy - new function to save to HealthData model
+  const updateMoodAndEnergy = async () => {
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) return;
+
+      const payload = {};
+      if (mood) payload.mood = mood;
+      if (energy) payload.energy = energy;
+      if (notes) payload.notes = notes;
+
+      if (Object.keys(payload).length === 0) return;
+
+      const response = await axios.put(`http://localhost:8070/user/health/mood/${userEmail}`, payload);
+      
+      if (response.data.status === "success") {
+        console.log('Mood and energy updated in HealthData model:', response.data);
+      }
+    } catch (error) {
+      console.error('Error updating mood and energy:', error);
+    }
+  };
+
+  // Calculate BMI and save to HealthData model
+  const calculateBMI = async () => {
+    const heightM = parseFloat(bmiInput.height) / 100;
+    const weightKg = parseFloat(bmiInput.weight);
+    if (!heightM || !weightKg) {
+      alert('Please enter both height and weight');
+      return;
+    }
+    
+    const bmiValue = weightKg / (heightM * heightM);
+    const bmiResult = bmiValue.toFixed(2);
+    setBmi(bmiResult);
+
+    // Save BMI to HealthData model
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) {
+        console.error('No user email found');
+        return;
+      }
+
+      console.log('Sending BMI update:', { bmi: parseFloat(bmiResult) });
+      const response = await axios.put(`http://localhost:8070/user/health/bmi/${userEmail}`, {
+        bmi: parseFloat(bmiResult)
+      });
+      
+      if (response.data.status === "success") {
+        console.log('BMI saved to HealthData model:', response.data);
+        alert(`BMI calculated and saved: ${bmiResult}`);
+      } else {
+        console.error('BMI save failed:', response.data);
+        alert('Failed to save BMI. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error saving BMI:', error);
+      alert('Error saving BMI. Please try again.');
+    }
+  };
+
+  // Mark workout as completed/incomplete
+  const toggleWorkoutComplete = async (workoutId, completed) => {
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) {
+        console.error('No user email found');
+        return;
+      }
+
+      console.log('Sending workout completion update:', { workoutId, completed });
+      const response = await axios.put(`http://localhost:8070/user/health/workout/complete/${userEmail}`, {
+        workoutId,
+        completed
+      });
       
       if (response.data.status === "success") {
         // Update local state
         setTodayStats(prev => ({
           ...prev,
-          workoutTime: response.data.data.currentMinutes
+          workout: {
+            totalMinutes: response.data.data.totalMinutes,
+            totalCalories: response.data.data.totalCalories,
+            sessions: response.data.data.sessions
+          }
         }));
         
-        console.log('Workout added:', response.data);
+        // Update recent workouts
+        setRecentWorkouts(response.data.data.sessions.map((session, index) => ({
+          id: index + 1, // Use index + 1 as ID
+          name: session.name,
+          duration: session.duration,
+          calories: session.calories,
+          completed: session.completed,
+          date: new Date(session.startTime).toISOString().split('T')[0]
+        })));
+        
+        console.log('Workout completion updated:', response.data);
+      } else {
+        console.error('Workout completion update failed:', response.data);
+        alert('Failed to update workout status. Please try again.');
       }
     } catch (error) {
-      console.error('Error adding workout:', error);
+      console.error('Error updating workout completion:', error);
+      alert('Error updating workout status. Please try again.');
+    }
+  };
+
+  // (Removed unused generatePersonalizedWorkouts function)
+
+  // (Removed unused generateNutritionPlan function)
+
+  // Initialize Gemini AI
+  const initializeGemini = () => {
+    try {
+      console.log('Initializing Gemini AI...');
       
-      // Fallback: Update local state only
-      setTodayStats(prev => ({
-        ...prev,
-        workoutTime: prev.workoutTime + (workoutData.duration || 0)
-      }));
+      const apiKey = process.env.REACT_APP_GEMINI_API_KEY || 'AIzaSyDqAX9agitzTXAhWvVVNKB-zYTU5kKiQXg';
+      const ai = new GoogleGenAI({ apiKey });
+      
+      console.log('Gemini AI initialized successfully');
+      return ai;
+    } catch (error) {
+      console.error('Error initializing Gemini:', error);
+      setAiError(`Failed to initialize AI: ${error.message}`);
+      return null;
     }
   };
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userEmail = sessionStorage.getItem('userEmail');
-        if (!userEmail) {
-          setError('No user email found. Please log in again.');
-          setLoading(false);
-          return;
+  // Fetch nutrition plan from backend
+  const fetchNutritionPlan = async (userEmail) => {
+    try {
+      console.log("Fetching nutrition plan for:", userEmail);
+      // Since we don't have a nutrition plan endpoint yet, let's create a basic one
+      const basicNutritionPlan = [
+        { 
+          id: 1, 
+          meal: 'Breakfast', 
+          calories: 400, 
+          time: '08:00', 
+          completed: false,
+          items: ['Oatmeal with fruits', 'Greek yogurt', 'Nuts']
+        },
+        { 
+          id: 2, 
+          meal: 'Lunch', 
+          calories: 600, 
+          time: '13:00', 
+          completed: false,
+          items: ['Grilled chicken', 'Brown rice', 'Vegetables']
+        },
+        { 
+          id: 3, 
+          meal: 'Snack', 
+          calories: 200, 
+          time: '16:00', 
+          completed: false,
+          items: ['Apple', 'Almonds']
+        },
+        { 
+          id: 4, 
+          meal: 'Dinner', 
+          calories: 500, 
+          time: '19:00', 
+          completed: false,
+          items: ['Salmon', 'Quinoa', 'Steamed vegetables']
         }
+      ];
+      
+      setNutritionPlan(basicNutritionPlan);
+      console.log("Basic nutrition plan set");
+    } catch (error) {
+      setNutritionPlan([]);
+      console.error('Error setting nutrition plan:', error);
+    }
+  };
 
-        console.log('Fetching user data for:', userEmail);
-        
-        // Updated to use /user prefix
-        const response = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
-        
-        if (response.data.status === "success") {
-          const user = response.data.user;
-          setUserData(user);
-          
-          // Calculate personalized health stats
-          const calculatedStats = calculateHealthStats(user);
-          setTodayStats(calculatedStats);
-          
-          // Generate personalized content
-          setRecentWorkouts(generatePersonalizedWorkouts(user));
-          setNutritionPlan(generateNutritionPlan(user, calculatedStats));
-          
-          console.log('User data loaded successfully:', user);
-        } else {
-          throw new Error('Failed to fetch user data');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        setError('Failed to load user data. Please try again later.');
+  // Generate 7-day workout plan
+  const generateWorkoutPlan = async (goal) => {
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) {
+        console.error('No user email found');
+        return;
       }
-    };
 
-    const fetchUserBookings = async () => {
-      try {
-        const userEmail = sessionStorage.getItem('userEmail');
-        if (userEmail) {
-          // Updated to use /user prefix
-          const response = await axios.get(`http://localhost:8070/user/bookings/${userEmail}`);
-          if (response.data.status === "success") {
-            setUserBookings(response.data.bookings);
+      setPlanLoading(true);
+      console.log('Generating workout plan for goal:', goal);
+      
+      const response = await axios.post(`http://localhost:8070/user/health/workout-plan/generate/${userEmail}`, {
+        goal: goal
+      });
+      
+      if (response.data.status === "success") {
+        setWorkoutPlan(response.data.data);
+        setShowGoalModal(false);
+        setSelectedGoal('');
+        console.log('Workout plan generated:', response.data.data);
+        alert('7-day workout plan generated successfully!');
+      } else {
+        console.error('Workout plan generation failed:', response.data);
+        alert('Failed to generate workout plan. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error generating workout plan:', error);
+      alert('Error generating workout plan. Please try again.');
+    } finally {
+      setPlanLoading(false);
+    }
+  };
+
+  // Fetch current workout plan
+  const fetchWorkoutPlan = async () => {
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) return;
+
+      const response = await axios.get(`http://localhost:8070/user/health/workout-plan/${userEmail}`);
+      
+      if (response.data.status === "success" && response.data.data) {
+        setWorkoutPlan(response.data.data);
+        console.log('Workout plan loaded:', response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching workout plan:', error);
+    }
+  };
+
+  // Mark exercise as completed
+  const markExerciseComplete = async (dayNumber, exerciseIndex, completed) => {
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) {
+        console.error('No user email found');
+        return;
+      }
+
+      console.log('Marking exercise complete:', { dayNumber, exerciseIndex, completed });
+      
+      const response = await axios.put(`http://localhost:8070/user/health/workout-plan/complete/${userEmail}`, {
+        dayNumber,
+        exerciseIndex,
+        completed
+      });
+      
+      if (response.data.status === "success") {
+        // Update local state
+        setWorkoutPlan(response.data.data.workoutPlan);
+        setTodayStats(prev => ({
+          ...prev,
+          calories: {
+            ...prev.calories,
+            burned: response.data.data.calories.burned
           }
+        }));
+        
+        console.log('Exercise completion updated:', response.data);
+        
+        if (completed) {
+          alert('Exercise completed! Calories burned updated.');
         }
-      } catch (error) {
-        console.error('Error fetching user bookings:', error);
+      } else {
+        console.error('Exercise completion update failed:', response.data);
+        alert('Failed to update exercise status. Please try again.');
       }
-    };
-
-    const loadAllData = async () => {
-      setLoading(true);
-      await fetchUserData();
-      await fetchUserBookings();
-      await fetchTodayHealthData();
-      setLoading(false);
-    };
-
-    loadAllData();
-  }, [calculateHealthStats, generateNutritionPlan, generatePersonalizedWorkouts]);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const toggleChat = () => {
-    setIsChatOpen(!isChatOpen);
-    if (!isChatOpen) {
-      setAiError(null);
+    } catch (error) {
+      console.error('Error updating exercise completion:', error);
+      alert('Error updating exercise status. Please try again.');
     }
   };
 
-  // Enhanced AI chat with real user data
-  const sendMessage = async () => {
-    if (!chatInput.trim()) return;
-
-    const userMessage = chatInput.trim();
-    setChatInput('');
-    setAiError(null);
-    
-    setChatMessages(prev => [...prev, { type: 'user', message: userMessage }]);
-    setIsTyping(true);
+  // Generate AI Workouts - Fixed implementation
+  const generateAIWorkouts = async () => {
+    setAiWorkoutLoading(true);
+    setAiWorkoutError(null);
     
     try {
-      const ai = initializeGemini();
-      if (!ai) {
-        throw new Error('Gemini AI not initialized');
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) {
+        throw new Error('No user email found');
       }
 
-      // Create comprehensive user profile for AI
-      const userAge = calculateAge(userData?.dob);
-      const membershipDuration = userData?.joinedDate ? 
-        Math.floor((new Date() - new Date(userData.joinedDate)) / (1000 * 60 * 60 * 24)) : 0;
+      // Get user data for personalization
+      const userRes = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
+      if (userRes.data.status !== "success") {
+        throw new Error('Failed to fetch user data');
+      }
 
-      const healthPrompt = `You are a professional health and fitness assistant for a sports club member.
+      const user = userRes.data.user;
+      const age = calculateAge(user.dob);
+      const gender = user.gender;
 
-MEMBER PROFILE:
-- Name: ${userData?.name || 'User'}
-- Age: ${userAge} years old
-- Gender: ${userData?.gender || 'Not specified'}
-- Membership Status: ${userData?.membershipStatus || 'inactive'}
-- Membership Package: ${userData?.membershipPackage || 'none'}
-- Member since: ${formatDate(userData?.joinedDate)} (${membershipDuration} days)
-- Contact: ${userData?.contact || 'Not provided'}
+      // Initialize Gemini AI
+      const ai = initializeGemini();
+      if (!ai) {
+        throw new Error('AI not available');
+      }
 
-TODAY'S HEALTH DATA:
-- Calories burned: ${todayStats.calories}
-- Water intake: ${todayStats.water}/8 glasses
-- Steps taken: ${todayStats.steps.toLocaleString()}
-- Workout time: ${todayStats.workoutTime} minutes
+      // Create personalized prompt
+      const prompt = `Create a personalized 7-day workout plan for a ${age}-year-old ${gender} with no equipment needed. 
+      
+      Requirements:
+      - 7 different days with 7 exercises each day
+      - Each exercise should include: name, sets, reps, duration (minutes), and estimated calories burned
+      - Exercises should be suitable for home workouts with no equipment
+      - Vary the intensity and focus areas (cardio, strength, flexibility)
+      - Total daily calories should be between 200-400 calories
+      - Include rest days or lighter days
+      
+      User Profile:
+      - Age: ${age}
+      - Gender: ${gender}
+      - Goal: General fitness and health improvement
+      
+      Please provide the response in this exact JSON format:
+      {
+        "workouts": [
+          {
+            "day": "Day 1",
+            "dayNumber": 1,
+            "focus": "Cardio & Full Body",
+            "exercises": [
+              {
+                "name": "Exercise Name",
+                "sets": 3,
+                "reps": 15,
+                "duration": 2,
+                "calories": 8,
+                "description": "Brief description of how to do the exercise"
+              }
+            ],
+            "totalCalories": 180,
+            "totalDuration": 25
+          }
+        ]
+      }`;
 
-RECENT ACTIVITY:
-- Recent workouts: ${recentWorkouts.map(w => w.name).join(', ') || 'None'}
-- Facility bookings: ${userBookings.length} active bookings
-- Sports enrolled: ${userData?.sports?.length || 0} sports
-
-User's question: ${userMessage}
-
-Please provide personalized, helpful health and fitness advice based on this member's profile and current stats. Be encouraging and specific. Keep response to 2-3 sentences.`;
-
+      console.log('Generating AI workout plan...');
+      
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
-        contents: healthPrompt,
+        contents: prompt,
         config: {
           thinkingConfig: {
             thinkingBudget: 0,
@@ -499,44 +695,210 @@ Please provide personalized, helpful health and fitness advice based on this mem
         }
       });
 
-      const aiMessage = response.text;
-      if (!aiMessage || aiMessage.trim().length === 0) {
-        throw new Error('Empty response from Gemini');
+      const aiResponse = response.text || response.response?.text;
+      
+      if (!aiResponse) {
+        throw new Error('No response from AI');
       }
 
-      setChatMessages(prev => [...prev, { type: 'ai', message: aiMessage }]);
+      console.log('AI Response:', aiResponse);
+
+      // Try to parse JSON from the response
+      let workoutData;
+      try {
+        // Extract JSON from the response (AI might add extra text)
+        const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          workoutData = JSON.parse(jsonMatch[0]);
+        } else {
+          throw new Error('No JSON found in response');
+        }
+      } catch (parseError) {
+        console.error('Failed to parse AI response:', parseError);
+        console.log('Raw AI response:', aiResponse);
+        
+        // Fallback: Create a basic workout plan
+        workoutData = {
+          workouts: [
+            {
+              day: "Day 1",
+              dayNumber: 1,
+              focus: "Cardio & Full Body",
+              exercises: [
+                { name: "Jumping Jacks", sets: 3, reps: 20, duration: 2, calories: 8, description: "Jump while raising arms and legs" },
+                { name: "Push-ups", sets: 3, reps: 10, duration: 2, calories: 5, description: "Standard push-ups on floor" },
+                { name: "Squats", sets: 3, reps: 15, duration: 2, calories: 6, description: "Bodyweight squats" },
+                { name: "Plank", sets: 3, reps: 30, duration: 1, calories: 4, description: "Hold plank position" },
+                { name: "Lunges", sets: 3, reps: 12, duration: 2, calories: 6, description: "Alternating lunges" },
+                { name: "Mountain Climbers", sets: 3, reps: 20, duration: 2, calories: 6, description: "Running in plank position" },
+                { name: "Burpees", sets: 3, reps: 8, duration: 3, calories: 10, description: "Full burpee with push-up" }
+              ],
+              totalCalories: 180,
+              totalDuration: 25
+            },
+            {
+              day: "Day 2",
+              dayNumber: 2,
+              focus: "Strength & Core",
+              exercises: [
+                { name: "Push-ups", sets: 4, reps: 12, duration: 3, calories: 6, description: "Focus on form" },
+                { name: "Squats", sets: 4, reps: 18, duration: 3, calories: 7, description: "Deep squats" },
+                { name: "Plank", sets: 4, reps: 45, duration: 2, calories: 5, description: "Longer holds" },
+                { name: "Lunges", sets: 3, reps: 15, duration: 2, calories: 7, description: "Walking lunges" },
+                { name: "Glute Bridges", sets: 3, reps: 20, duration: 2, calories: 5, description: "Lay on back, lift hips" },
+                { name: "Bicycle Crunches", sets: 3, reps: 20, duration: 2, calories: 4, description: "Alternating knee to elbow" },
+                { name: "Wall Sit", sets: 3, reps: 60, duration: 2, calories: 6, description: "Sit against wall" }
+              ],
+              totalCalories: 200,
+              totalDuration: 25
+            }
+          ]
+        };
+      }
+
+      // Transform the data for the frontend
+      const transformedWorkouts = workoutData.workouts.map(workout => ({
+        workoutName: `${workout.focus} - ${workout.day}`,
+        day: workout.day,
+        dayNumber: workout.dayNumber,
+        duration: workout.totalDuration,
+        calories: workout.totalCalories,
+        description: `${workout.focus} workout with ${workout.exercises.length} exercises`,
+        exercises: workout.exercises
+      }));
+
+      setAiWorkouts(transformedWorkouts);
+      setCompletedAIWorkouts({});
+      
+      console.log('AI workouts generated successfully:', transformedWorkouts);
+      
+    } catch (err) {
+      console.error('Error generating AI workouts:', err);
+      setAiWorkoutError(`Failed to generate AI workouts: ${err.message}`);
+      
+      // Fallback workouts
+      const fallbackWorkouts = [
+        {
+          workoutName: "Cardio Blast",
+          day: "Day 1",
+          duration: 20,
+          calories: 180,
+          description: "High-intensity cardio workout to get your heart pumping."
+        },
+        {
+          workoutName: "Strength Builder",
+          day: "Day 2", 
+          duration: 25,
+          calories: 200,
+          description: "Strength-focused exercises for full body."
+        },
+        {
+          workoutName: "Core Crusher",
+          day: "Day 3",
+          duration: 15,
+          calories: 150,
+          description: "Target your core muscles with these exercises."
+        }
+      ];
+      
+      setAiWorkouts(fallbackWorkouts);
+      setCompletedAIWorkouts({});
+    } finally {
+      setAiWorkoutLoading(false);
+    }
+  };
+
+  // Enhanced AI workout completion with calorie tracking
+  const toggleAIWorkoutComplete = async (idx) => {
+    try {
+      const workout = aiWorkouts[idx];
+      const isCurrentlyCompleted = completedAIWorkouts[idx];
+      
+      // Update local state immediately for better UX
+      setCompletedAIWorkouts(prev => ({
+        ...prev,
+        [idx]: !prev[idx]
+      }));
+
+      // If marking as completed, add to daily calories burned
+      if (!isCurrentlyCompleted && workout.calories) {
+        const userEmail = sessionStorage.getItem('userEmail');
+        if (userEmail) {
+          // Update calories in backend
+          const currentBurned = todayStats.calories.burned;
+          const newBurned = currentBurned + workout.calories;
+          
+          await axios.put(`http://localhost:8070/user/health/calories/${userEmail}`, {
+            burned: newBurned
+          });
+          
+          // Update local state
+          setTodayStats(prev => ({
+            ...prev,
+            calories: {
+              ...prev.calories,
+              burned: newBurned
+            }
+          }));
+          
+          console.log(`Added ${workout.calories} calories from AI workout completion`);
+        }
+      }
       
     } catch (error) {
-      console.error('Gemini API Error:', error);
-      
-      // Enhanced fallback with real user data
-      const generatePersonalizedFallback = () => {
-        const userName = userData?.name || 'there';
-        const userAge = calculateAge(userData?.dob);
-        const question = userMessage.toLowerCase();
-        
-        if (question.includes('water') || question.includes('hydrat')) {
-          return `Hi ${userName}! I'm having technical issues, but I can see you've had ${todayStats.water} glasses of water today. At ${userAge} years old, staying hydrated is crucial for your ${userData?.membershipPackage || 'fitness'} goals!`;
-        } else if (question.includes('workout') || question.includes('exercise')) {
-          return `${userName}, despite the connection issue, you've done ${todayStats.workoutTime} minutes of exercise today! As a ${userData?.membershipStatus} member, keep up this great routine.`;
-        } else if (question.includes('calorie')) {
-          return `Hi ${userName}! You've burned ${todayStats.calories} calories today - excellent for someone with ${userData?.membershipPackage || 'your'} membership level!`;
-        } else {
-          return `Hi ${userName}! Technical difficulties here, but your stats look great: ${todayStats.calories} calories, ${todayStats.steps} steps. Keep up the excellent work with your ${userData?.membershipPackage || 'fitness'} journey!`;
+      console.error('Error updating AI workout completion:', error);
+      // Revert the state change if there was an error
+      setCompletedAIWorkouts(prev => ({
+        ...prev,
+        [idx]: !prev[idx]
+      }));
+    }
+  };
+
+  // Send chat message (AI or fallback)
+  const sendMessage = async () => {
+    if (!chatInput.trim()) return;
+    const userMessage = chatInput.trim();
+    setChatMessages(prev => [...prev, { type: 'user', message: userMessage }]);
+    setChatInput('');
+    setIsTyping(true);
+
+    try {
+      const ai = initializeGemini();
+      if (!ai) {
+        throw new Error('AI not available');
+      }
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: userMessage,
+        config: {
+          thinkingConfig: {
+            thinkingBudget: 0,
+          },
         }
-      };
-      
-      setChatMessages(prev => [...prev, { type: 'ai', message: generatePersonalizedFallback() }]);
-      setAiError('Connection Error');
+      });
+      setChatMessages(prev => [
+        ...prev,
+        { type: 'ai', message: response.text || "Sorry, I couldn't generate a response." }
+      ]);
+    } catch (error) {
+      setAiError('AI unavailable');
+      setChatMessages(prev => [
+        ...prev,
+        { type: 'ai', message: "Sorry, I'm unable to respond with AI right now. Please try again later." }
+      ]);
     } finally {
       setIsTyping(false);
     }
   };
 
+  // Handle key press in chat input
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      sendMessage();
+      if (!isTyping && chatInput.trim() !== '') {
+        sendMessage();
+      }
     }
   };
 
@@ -568,6 +930,56 @@ Please provide personalized, helpful health and fitness advice based on this mem
     }
   };
 
+  // Fetch user data and health data on mount
+  React.useEffect(() => {
+    const fetchUserDataAndHealth = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const userEmail = sessionStorage.getItem('userEmail');
+        
+        if (!userEmail) {
+          setError('No user email found. Please log in again.');
+          setLoading(false);
+          return;
+        }
+
+        console.log('Fetching user data for:', userEmail);
+        
+        // Fetch user data using the correct endpoint
+        const userRes = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
+        
+        if (userRes.data.status === "success") {
+          setUserData(userRes.data.user);
+          console.log('User data loaded:', userRes.data.user);
+        } else {
+          throw new Error('Failed to fetch user data');
+        }
+
+        // Fetch health data
+        await fetchTodayHealthData();
+        
+        // Fetch nutrition plan
+        await fetchNutritionPlan(userEmail);
+        
+        // Fetch workout plan
+        await fetchWorkoutPlan();
+        
+        console.log('All data loaded successfully');
+        
+      } catch (err) {
+        console.error('Error loading data:', err);
+        setError('Failed to load data. Please check your connection and try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserDataAndHealth();
+  }, [fetchTodayHealthData]);
+
+  // Main render
   if (loading) {
     return (
       <>
@@ -591,7 +1003,15 @@ Please provide personalized, helpful health and fitness advice based on this mem
         <div className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
           <div className={styles.container}>
             <div className={styles.error}>
+              <FaTimes className={styles.errorIcon} />
+              <h3>Error Loading Data</h3>
               <p>{error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className={styles.retryButton}
+              >
+                Retry
+              </button>
             </div>
           </div>
         </div>
@@ -599,6 +1019,9 @@ Please provide personalized, helpful health and fitness advice based on this mem
     );
   }
 
+  // if (error) {
+  //   return (
+  // Error handling UI removed because 'error' state is no longer used.
   return (
     <>
       <SlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
@@ -682,22 +1105,8 @@ Please provide personalized, helpful health and fitness advice based on this mem
                 </div>
               )}
               
-              {/* Today's Stats */}
+              {/* Today's Stats - Now from HealthData model */}
               <div className={styles.statsGrid}>
-                <div className={styles.statCard}>
-                  <div className={styles.statIcon}>
-                    <FaFire />
-                  </div>
-                  <div className={styles.statInfo}>
-                    <h3>{todayStats.calories}</h3>
-                    <p>Calories Burned</p>
-                    <div className={styles.progress}>
-                      <div className={styles.progressBar} style={{width: `${Math.min(100, (todayStats.calories / weeklyGoals.calories) * 100)}%`}}></div>
-                    </div>
-                    <small>Target: {weeklyGoals.calories} cal</small>
-                  </div>
-                </div>
-
                 <div className={styles.statCard}>
                   <div className={styles.statIcon}>
                     <FaWater />
@@ -714,72 +1123,103 @@ Please provide personalized, helpful health and fitness advice based on this mem
 
                 <div className={styles.statCard}>
                   <div className={styles.statIcon}>
-                    <FaRunning />
+                    <FaFire />
                   </div>
                   <div className={styles.statInfo}>
-                    <h3>{todayStats.steps.toLocaleString()}</h3>
-                    <p>Steps Today</p>
+                    <h3>{todayStats.calories.burned}</h3>
+                    <p>Calories Burned</p>
                     <div className={styles.progress}>
-                      <div className={styles.progressBar} style={{width: `${Math.min(100, (todayStats.steps / 10000) * 100)}%`}}></div>
+                      <div className={styles.progressBar} style={{width: `${(todayStats.calories.burned / todayStats.calories.target) * 100}%`}}></div>
                     </div>
-                    <small>Target: 10,000 steps</small>
+                    <small>Target: {todayStats.calories.target} cal</small>
                   </div>
                 </div>
 
                 <div className={styles.statCard}>
                   <div className={styles.statIcon}>
-                    <FaStopwatch />
+                    <FaRunning />
                   </div>
                   <div className={styles.statInfo}>
-                    <h3>{todayStats.workoutTime}min</h3>
-                    <p>Workout Time</p>
+                    <h3>{todayStats.steps.current}</h3>
+                    <p>Steps Today</p>
                     <div className={styles.progress}>
-                      <div className={styles.progressBar} style={{width: `${Math.min(100, (todayStats.workoutTime / 60) * 100)}%`}}></div>
+                      <div className={styles.progressBar} style={{width: `${(todayStats.steps.current / todayStats.steps.target) * 100}%`}}></div>
                     </div>
-                    <small>Target: 60 min</small>
+                    <small>Target: {todayStats.steps.target} steps</small>
+                  </div>
+                </div>
+
+                <div className={styles.statCard}>
+                  <div className={styles.statIcon}>
+                    <FaDumbbell />
+                  </div>
+                  <div className={styles.statInfo}>
+                    <h3>{todayStats.workout.totalMinutes}</h3>
+                    <p>Workout Minutes</p>
+                    <div className={styles.progress}>
+                      <div className={styles.progressBar} style={{width: `${(todayStats.workout.totalMinutes / 60) * 100}%`}}></div>
+                    </div>
+                    <small>Target: 60 minutes</small>
                   </div>
                 </div>
               </div>
 
-              {/* Weekly Goals */}
-              <div className={styles.goalsSection}>
-                <h2>Weekly Goals</h2>
-                <div className={styles.goalsList}>
-                  <div className={styles.goalItem}>
-                    <FaBullseye />
-                    <span>Complete {weeklyGoals.workouts} workouts this week</span>
-                    <div className={styles.goalProgress}>{recentWorkouts.length}/{weeklyGoals.workouts}</div>
-                  </div>
-                  <div className={styles.goalItem}>
-                    <FaFire />
-                    <span>Burn {weeklyGoals.calories} calories daily</span>
-                    <div className={styles.goalProgress}>{Math.round((todayStats.calories / weeklyGoals.calories) * 100)}%</div>
-                  </div>
-                  <div className={styles.goalItem}>
-                    <FaWater />
-                    <span>Drink {weeklyGoals.water} glasses of water daily</span>
-                    <div className={styles.goalProgress}>{Math.round((todayStats.water / weeklyGoals.water) * 100)}%</div>
-                  </div>
+              {/* Quick Input Section */}
+              <div className={styles.quickInputSection}>
+                <h2>Quick Updates</h2>
+                
+                {/* Steps Input */}
+                <div className={styles.inputGroup}>
+                  <label>Update Steps:</label>
+                  <input
+                    type="number"
+                    placeholder="Enter steps"
+                    value={stepsInput}
+                    onChange={(e) => setStepsInput(e.target.value)}
+                  />
+                  <button onClick={updateSteps}>Update</button>
+                </div>
+
+                {/* Calories Input */}
+                <div className={styles.inputGroup}>
+                  <label>Update Calories:</label>
+                  <input
+                    type="number"
+                    placeholder="Burned"
+                    value={caloriesInput.burned}
+                    onChange={(e) => setCaloriesInput({...caloriesInput, burned: e.target.value})}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Consumed"
+                    value={caloriesInput.consumed}
+                    onChange={(e) => setCaloriesInput({...caloriesInput, consumed: e.target.value})}
+                  />
+                  <button onClick={updateCalories}>Update</button>
+                </div>
+
+                {/* Mood and Energy */}
+                <div className={styles.inputGroup}>
+                  <label>Mood & Energy:</label>
+                  <select value={mood} onChange={(e) => setMood(e.target.value)}>
+                    <option value="">Select mood</option>
+                    <option value="excellent">Excellent</option>
+                    <option value="good">Good</option>
+                    <option value="okay">Okay</option>
+                    <option value="bad">Bad</option>
+                    <option value="terrible">Terrible</option>
+                  </select>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={energy}
+                    onChange={(e) => setEnergy(parseInt(e.target.value))}
+                  />
+                  <span>Energy: {energy}/10</span>
+                  <button onClick={updateMoodAndEnergy}>Save</button>
                 </div>
               </div>
-
-              {/* User Bookings */}
-              {userBookings.length > 0 && (
-                <div className={styles.bookingsSection}>
-                  <h2>Your Recent Bookings</h2>
-                  <div className={styles.bookingsList}>
-                    {userBookings.slice(0, 3).map((booking, index) => (
-                      <div key={index} className={styles.bookingCard}>
-                        <div className={styles.bookingInfo}>
-                          <h4>{booking.facilityName}</h4>
-                          <p>Status: <span className={`${styles.bookingStatus} ${styles[booking.status]}`}>{booking.status}</span></p>
-                          <small>{formatDate(booking.bookedAt)}</small>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {/* Water Tracking Section */}
               <div className={styles.waterSection}>
@@ -810,37 +1250,126 @@ Please provide personalized, helpful health and fitness advice based on this mem
                   </div>
                 </div>
               </div>
+
+              {/* BMI Checker Section */}
+              <div className={styles.bmiSection}>
+                <h2>BMI Checker</h2>
+                <input
+                  type="number"
+                  placeholder="Height (cm)"
+                  value={bmiInput.height}
+                  onChange={e => setBmiInput({ ...bmiInput, height: e.target.value })}
+                />
+                <input
+                  type="number"
+                  placeholder="Weight (kg)"
+                  value={bmiInput.weight}
+                  onChange={e => setBmiInput({ ...bmiInput, weight: e.target.value })}
+                />
+                <button onClick={calculateBMI}>Calculate BMI</button>
+                {bmi && <div>Your BMI: {bmi}</div>}
+              </div>
             </>
           )}
 
           {/* Workouts Tab */}
           {activeTab === 'workouts' && (
             <>
-              <h1 className={styles.pageTitle}>Personalized Workout Plans</h1>
-              <p className={styles.subtitle}>Based on your profile: {calculateAge(userData?.dob)} years old, {userData?.gender}, {userData?.membershipStatus} member</p>
+              <h1 className={styles.pageTitle}>Full Body Workout Plan</h1>
+              <p className={styles.subtitle}>7-day personalized workout plan - No equipment needed!</p>
+              
+              {/* Generate Plan Button */}
+              {!workoutPlan && (
+                <div className={styles.generatePlanSection}>
+                  <button 
+                    className={styles.generatePlanButton}
+                    onClick={() => setShowGoalModal(true)}
+                    disabled={planLoading}
+                  >
+                    <FaDumbbell /> Generate 7-Day Workout Plan
+                  </button>
+                  {planLoading && <span>Generating plan...</span>}
+                </div>
+              )}
+
+              {/* Workout Plan Display */}
+              {workoutPlan && (
+                <div className={styles.workoutPlanSection}>
+                  <div className={styles.planHeader}>
+                    <h2>Your 7-Day {workoutPlan.goal.replace('_', ' ').toUpperCase()} Plan</h2>
+                    <div className={styles.planStats}>
+                      <span>Day {workoutPlan.currentDay} of 7</span>
+                      <span>Total Calories: {workoutPlan.totalCalories}</span>
+                      <span>Completed Days: {workoutPlan.days.filter(d => d.completed).length}</span>
+                    </div>
+                  </div>
+
+                  <div className={styles.planDays}>
+                    {workoutPlan.days.map((day, dayIndex) => (
+                      <div key={day.day} className={`${styles.planDay} ${day.completed ? styles.completed : ''}`}>
+                        <div className={styles.dayHeader}>
+                          <h3>Day {day.day}</h3>
+                          <span className={styles.dayCalories}>{day.totalCalories} cal</span>
+                          {day.completed && <span className={styles.completedBadge}>✓ Completed</span>}
+                        </div>
+
+                        <div className={styles.dayExercises}>
+                          {day.exercises.map((exercise, exerciseIndex) => (
+                            <div key={exerciseIndex} className={`${styles.exerciseItem} ${exercise.completed ? styles.completed : ''}`}>
+                              <div className={styles.exerciseInfo}>
+                                <h4>{exercise.name}</h4>
+                                <p>{exercise.sets} sets × {exercise.reps} reps</p>
+                                <span className={styles.exerciseCalories}>{exercise.calories} cal</span>
+                              </div>
+                              
+                              <button
+                                onClick={() => markExerciseComplete(day.day, exerciseIndex, !exercise.completed)}
+                                className={styles.completeExerciseButton}
+                                style={{
+                                  background: exercise.completed ? '#4caf50' : '#eee',
+                                  color: exercise.completed ? '#fff' : '#333'
+                                }}
+                              >
+                                {exercise.completed ? '✓ Done' : 'Mark Complete'}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               
               {/* Add workout button */}
               <div className={styles.addWorkoutContainer}>
                 <button 
                   className={styles.addWorkoutButton}
                   onClick={() => {
-                    // Example workout data
                     const newWorkout = {
                       name: "Quick Exercise",
                       duration: 15,
                       calories: 120
                     };
                     addWorkoutSession(newWorkout);
-                    alert("Workout added: 15 minutes, 120 calories");
                   }}
                 >
                   <FaDumbbell /> Add Quick Workout
                 </button>
+                <button 
+                  className={styles.addWorkoutButton}
+                  onClick={generateAIWorkouts}
+                  disabled={aiWorkoutLoading}
+                >
+                  <FaRobot /> Generate AI Exercise Plan
+                </button>
+                {aiWorkoutLoading && <span>Generating...</span>}
+                {aiWorkoutError && <span style={{color: 'red'}}>{aiWorkoutError}</span>}
               </div>
               
               <div className={styles.workouts}>
                 {recentWorkouts.map((workout) => (
-                  <div key={workout.id} className={styles.workoutCard}>
+                  <div key={workout.id} className={`${styles.workoutCard} ${workout.completed ? styles.completed : ''}`}>
                     <div className={styles.workoutHeader}>
                       <div className={styles.workoutIcon}>
                         <FaDumbbell />
@@ -860,8 +1389,103 @@ Please provide personalized, helpful health and fitness advice based on this mem
                         <span>{workout.calories} cal</span>
                       </div>
                     </div>
+                    <button
+                      onClick={() => toggleWorkoutComplete(workout.id, !workout.completed)}
+                      className={styles.completeButton}
+                      style={{
+                        background: workout.completed ? '#4caf50' : '#eee',
+                        color: workout.completed ? '#fff' : '#333',
+                        marginTop: '10px',
+                        border: 'none',
+                        borderRadius: '5px',
+                        padding: '5px 10px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {workout.completed ? 'Completed ✓' : 'Mark as Complete'}
+                    </button>
                   </div>
                 ))}
+                
+                {/* AI Workouts */}
+                {aiWorkouts.length > 0 && (
+                  <div className={styles.workouts}>
+                    <h2>AI-Generated Workout Plan</h2>
+                    <p className={styles.subtitle}>Personalized workouts created by AI for your fitness level</p>
+                    
+                    {aiWorkouts.map((workout, idx) => (
+                      <div
+                        key={idx}
+                        className={`${styles.workoutCard} ${completedAIWorkouts[idx] ? styles.completed : ''}`}
+                        style={{
+                          opacity: completedAIWorkouts[idx] ? 0.6 : 1,
+                          textDecoration: completedAIWorkouts[idx] ? 'line-through' : 'none'
+                        }}
+                      >
+                        <div className={styles.workoutHeader}>
+                          <div className={styles.workoutIcon}><FaRobot /></div>
+                          <div className={styles.workoutInfo}>
+                            <h3>{workout.workoutName || workout.name}</h3>
+                            <p>{workout.day}</p>
+                            {workout.exercises && (
+                              <div className={styles.exerciseList}>
+                                <small>Exercises: {workout.exercises.map(ex => ex.name).join(', ')}</small>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className={styles.workoutStats}>
+                          <div className={styles.workoutStat}>
+                            <FaClock /> 
+                            <span>{workout.duration} min</span>
+                          </div>
+                          <div className={styles.workoutStat}>
+                            <FaFire /> 
+                            <span>{workout.calories} cal</span>
+                          </div>
+                        </div>
+                        
+                        <div className={styles.workoutDesc}>
+                          {workout.description}
+                        </div>
+                        
+                        {workout.exercises && (
+                          <div className={styles.exerciseDetails}>
+                            <h4>Today's Exercises:</h4>
+                            <div className={styles.exerciseGrid}>
+                              {workout.exercises.map((exercise, exIdx) => (
+                                <div key={exIdx} className={styles.miniExercise}>
+                                  <strong>{exercise.name}</strong>
+                                  <span>{exercise.sets}×{exercise.reps}</span>
+                                  <small>{exercise.calories} cal</small>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        <button
+                          onClick={() => toggleAIWorkoutComplete(idx)}
+                          className={styles.completeButton}
+                          style={{
+                            background: completedAIWorkouts[idx] ? '#4caf50' : '#eee',
+                            color: completedAIWorkouts[idx] ? '#fff' : '#333',
+                            marginTop: '10px',
+                            border: 'none',
+                            borderRadius: '5px',
+                            padding: '8px 16px',
+                            cursor: 'pointer',
+                            fontWeight: '600',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          {completedAIWorkouts[idx] ? '✓ Completed' : 'Mark as Complete'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -874,16 +1498,18 @@ Please provide personalized, helpful health and fitness advice based on this mem
               
               <div className={styles.meals}>
                 {nutritionPlan.map((meal) => (
-                  <div key={meal.id} className={`${styles.mealCard} ${meal.completed ? styles.completed : ''}`}>
+                  <div key={meal.id} className={styles.mealCard}>
                     <div className={styles.mealInfo}>
                       <h3>{meal.meal}</h3>
                       <p>{meal.time}</p>
+                      <ul>
+                        {meal.items && meal.items.map((item, idx) => (
+                          <li key={idx}>{item}</li>
+                        ))}
+                      </ul>
                     </div>
                     <div className={styles.mealCalories}>
                       <span>{meal.calories} cal</span>
-                    </div>
-                    <div className={styles.mealStatus}>
-                      {meal.completed ? '✓' : '○'}
                     </div>
                   </div>
                 ))}
@@ -981,6 +1607,73 @@ Please provide personalized, helpful health and fitness advice based on this mem
           </div>
         )}
       </div>
+
+      {/* Goal Selection Modal */}
+      {showGoalModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.goalModal}>
+            <h2>What's your fitness goal?</h2>
+            <p>Choose your primary goal to generate a personalized 7-day workout plan:</p>
+            
+            <div className={styles.goalOptions}>
+              <button 
+                className={`${styles.goalOption} ${selectedGoal === 'weight_loss' ? styles.selected : ''}`}
+                onClick={() => setSelectedGoal('weight_loss')}
+              >
+                <FaFire />
+                <h3>Weight Loss</h3>
+                <p>Burn calories and lose weight with cardio-focused exercises</p>
+              </button>
+              
+              <button 
+                className={`${styles.goalOption} ${selectedGoal === 'muscle_building' ? styles.selected : ''}`}
+                onClick={() => setSelectedGoal('muscle_building')}
+              >
+                <FaDumbbell />
+                <h3>Muscle Building</h3>
+                <p>Build strength and muscle with resistance exercises</p>
+              </button>
+              
+              <button 
+                className={`${styles.goalOption} ${selectedGoal === 'toning' ? styles.selected : ''}`}
+                onClick={() => setSelectedGoal('toning')}
+              >
+                <FaBullseye />
+                <h3>Toning</h3>
+                <p>Tone and sculpt your body with balanced exercises</p>
+              </button>
+              
+              <button 
+                className={`${styles.goalOption} ${selectedGoal === 'general_fitness' ? styles.selected : ''}`}
+                onClick={() => setSelectedGoal('general_fitness')}
+              >
+                <FaHeartbeat />
+                <h3>General Fitness</h3>
+                <p>Improve overall fitness and health</p>
+              </button>
+            </div>
+            
+            <div className={styles.modalActions}>
+              <button 
+                className={styles.cancelButton}
+                onClick={() => {
+                  setShowGoalModal(false);
+                  setSelectedGoal('');
+                }}
+              >
+                Cancel
+              </button>
+              <button 
+                className={styles.generateButton}
+                onClick={() => generateWorkoutPlan(selectedGoal)}
+                disabled={!selectedGoal || planLoading}
+              >
+                {planLoading ? 'Generating...' : 'Generate Plan'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
