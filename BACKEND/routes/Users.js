@@ -1,5 +1,6 @@
 const router = require("express").Router();
 let User = require("../models/User");
+const HealthData = require("../models/HealthData"); // Add HealthData import
 const multer = require('multer');
 const path = require('path');
 const jwt = require('jsonwebtoken');
@@ -512,6 +513,512 @@ router.get("/checkStatus", auth, async (req, res) => {
       message: "Server error during status check"
     });
   }
+});
+
+// Health Data Routes - Add these before module.exports
+
+// Get today's health data for a user
+router.route("/health/today/:userEmail").get(async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        // Get today's date (start of day)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOne({
+            user: user._id,
+            date: today
+        });
+
+        // If no data exists for today, create it
+        if (!healthData) {
+            healthData = new HealthData({
+                user: user._id,
+                date: today
+            });
+            
+            // Initialize water glasses
+            healthData.initializeWaterGlasses();
+            await healthData.save();
+        }
+
+        res.json({
+            status: "success",
+            data: healthData,
+            progress: healthData.getDailyProgress()
+        });
+
+    } catch (error) {
+        console.error("Error fetching health data:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Update water intake - mark glass as completed/uncompleted
+router.route("/health/water/:userEmail").put(async (req, res) => {
+    try {
+        const { glassNumber, completed } = req.body;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        // Get today's date
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOne({
+            user: user._id,
+            date: today
+        });
+
+        if (!healthData) {
+            healthData = new HealthData({
+                user: user._id,
+                date: today
+            });
+            healthData.initializeWaterGlasses();
+        }
+
+        // Mark the water glass
+        await healthData.markWaterGlass(glassNumber, completed);
+
+        res.json({
+            status: "success",
+            message: `Water glass ${glassNumber} ${completed ? 'completed' : 'unchecked'}`,
+            data: healthData.waterIntake,
+            progress: healthData.getDailyProgress()
+        });
+
+    } catch (error) {
+        console.error("Error updating water intake:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Update calories burned
+router.route("/health/calories/:userEmail").put(async (req, res) => {
+    try {
+        const { burned, consumed } = req.body;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOneAndUpdate(
+            { user: user._id, date: today },
+            { 
+                $set: { 
+                    ...(burned !== undefined && { 'calories.burned': burned }),
+                    ...(consumed !== undefined && { 'calories.consumed': consumed })
+                }
+            },
+            { upsert: true, new: true }
+        );
+
+        res.json({
+            status: "success",
+            message: "Calories updated successfully",
+            data: healthData.calories,
+            progress: healthData.getDailyProgress()
+        });
+
+    } catch (error) {
+        console.error("Error updating calories:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Update steps
+router.route("/health/steps/:userEmail").put(async (req, res) => {
+    try {
+        const { steps } = req.body;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOneAndUpdate(
+            { user: user._id, date: today },
+            { $set: { 'steps.current': steps } },
+            { upsert: true, new: true }
+        );
+
+        res.json({
+            status: "success",
+            message: "Steps updated successfully",
+            data: healthData.steps,
+            progress: healthData.getDailyProgress()
+        });
+
+    } catch (error) {
+        console.error("Error updating steps:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Add workout session
+router.route("/health/workout/:userEmail").post(async (req, res) => {
+    try {
+        const { name, duration, calories, startTime, endTime } = req.body;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOne({
+            user: user._id,
+            date: today
+        });
+
+        if (!healthData) {
+            healthData = new HealthData({
+                user: user._id,
+                date: today
+            });
+        }
+
+        // Add workout session
+        await healthData.addWorkoutSession({
+            name,
+            duration,
+            calories,
+            startTime: startTime || new Date(),
+            endTime: endTime || new Date(),
+            completed: true
+        });
+
+        res.json({
+            status: "success",
+            message: "Workout session added successfully",
+            data: healthData.workout,
+            progress: healthData.getDailyProgress()
+        });
+
+    } catch (error) {
+        console.error("Error adding workout:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Mark workout as completed
+router.route("/health/workout/complete/:userEmail").put(async (req, res) => {
+    try {
+        const { workoutId, completed } = req.body;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOne({
+            user: user._id,
+            date: today
+        });
+
+        if (!healthData) {
+            return res.json({ status: "error", message: "No health data found for today" });
+        }
+
+        // Find and update the specific workout session by index
+        const workoutIndex = parseInt(workoutId) - 1; // Convert to 0-based index
+        if (workoutIndex < 0 || workoutIndex >= healthData.workout.sessions.length) {
+            return res.json({ status: "error", message: "Workout session not found" });
+        }
+
+        healthData.workout.sessions[workoutIndex].completed = completed;
+        healthData.workout.sessions[workoutIndex].endTime = completed ? new Date() : null;
+
+        // Recalculate totals
+        healthData.workout.totalMinutes = healthData.workout.sessions.reduce((total, session) => 
+            total + (session.completed ? (session.duration || 0) : 0), 0);
+        healthData.workout.totalCalories = healthData.workout.sessions.reduce((total, session) => 
+            total + (session.completed ? (session.calories || 0) : 0), 0);
+
+        await healthData.save();
+
+        res.json({
+            status: "success",
+            message: `Workout ${completed ? 'completed' : 'marked as incomplete'}`,
+            data: healthData.workout,
+            progress: healthData.getDailyProgress()
+        });
+
+    } catch (error) {
+        console.error("Error updating workout completion:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Update mood and energy
+router.route("/health/mood/:userEmail").put(async (req, res) => {
+    try {
+        const { mood, energy, notes } = req.body;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOneAndUpdate(
+            { user: user._id, date: today },
+            { 
+                $set: { 
+                    ...(mood && { mood }),
+                    ...(energy && { energy }),
+                    ...(notes && { notes })
+                }
+            },
+            { upsert: true, new: true }
+        );
+
+        res.json({
+            status: "success",
+            message: "Mood and energy updated successfully",
+            data: {
+                mood: healthData.mood,
+                energy: healthData.energy,
+                notes: healthData.notes
+            }
+        });
+
+    } catch (error) {
+        console.error("Error updating mood:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Update BMI
+router.route("/health/bmi/:userEmail").put(async (req, res) => {
+    try {
+        const { bmi } = req.body;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOneAndUpdate(
+            { user: user._id, date: today },
+            { $set: { bmi: parseFloat(bmi) } },
+            { upsert: true, new: true }
+        );
+
+        res.json({
+            status: "success",
+            message: "BMI updated successfully",
+            data: {
+                bmi: healthData.bmi
+            }
+        });
+
+    } catch (error) {
+        console.error("Error updating BMI:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Get health data for a date range
+router.route("/health/range/:userEmail").get(async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const healthData = await HealthData.find({
+            user: user._id,
+            date: {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate)
+            }
+        }).sort({ date: 1 });
+
+        res.json({
+            status: "success",
+            data: healthData,
+            count: healthData.length
+        });
+
+    } catch (error) {
+        console.error("Error fetching health data range:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Generate 7-day workout plan
+router.route("/health/workout-plan/generate/:userEmail").post(async (req, res) => {
+    try {
+        const { goal } = req.body;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOne({
+            user: user._id,
+            date: today
+        });
+
+        if (!healthData) {
+            healthData = new HealthData({
+                user: user._id,
+                date: today
+            });
+        }
+
+        // Generate workout plan
+        await healthData.generateWorkoutPlan(goal, user);
+
+        res.json({
+            status: "success",
+            message: "7-day workout plan generated successfully",
+            data: healthData.workoutPlan
+        });
+
+    } catch (error) {
+        console.error("Error generating workout plan:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Get current workout plan
+router.route("/health/workout-plan/:userEmail").get(async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOne({
+            user: user._id,
+            date: today
+        });
+
+        if (!healthData || !healthData.workoutPlan) {
+            return res.json({
+                status: "success",
+                data: null,
+                message: "No workout plan found"
+            });
+        }
+
+        res.json({
+            status: "success",
+            data: healthData.workoutPlan
+        });
+
+    } catch (error) {
+        console.error("Error fetching workout plan:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Mark exercise as completed
+router.route("/health/workout-plan/complete/:userEmail").put(async (req, res) => {
+    try {
+        const { dayNumber, exerciseIndex, completed } = req.body;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOne({
+            user: user._id,
+            date: today
+        });
+
+        if (!healthData || !healthData.workoutPlan) {
+            return res.json({ status: "error", message: "No workout plan found" });
+        }
+
+        // Mark exercise as completed
+        await healthData.markExerciseComplete(dayNumber, exerciseIndex, completed);
+
+        res.json({
+            status: "success",
+            message: `Exercise ${completed ? 'completed' : 'marked as incomplete'}`,
+            data: {
+                workoutPlan: healthData.workoutPlan,
+                calories: healthData.calories,
+                progress: healthData.getDailyProgress()
+            }
+        });
+
+    } catch (error) {
+        console.error("Error updating exercise completion:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Get workout plan history
+router.route("/health/workout-plan/history/:userEmail").get(async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const healthData = await HealthData.find({
+            user: user._id,
+            date: {
+                $gte: new Date(startDate || new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)),
+                $lte: new Date(endDate || new Date())
+            },
+            'workoutPlan.days': { $exists: true, $ne: [] }
+        }).sort({ date: 1 });
+
+        res.json({
+            status: "success",
+            data: healthData,
+            count: healthData.length
+        });
+
+    } catch (error) {
+        console.error("Error fetching workout plan history:", error);
+        res.json({ status: "error", message: error.message });
+    }
 });
 
 module.exports = router;
