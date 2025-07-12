@@ -187,81 +187,90 @@ const Event = () => {
                 {events.length === 0 && !loading ? (
                   <div className={styles.noEvents}>No events scheduled at the moment.</div>
                 ) : (
-                  events.map((event) => (
-                    <div key={event._id} className={styles.event}>
-                      <div className={styles.eventHeader}>
-                        <img 
-                          src={event.image ? `http://localhost:8070/${event.image}` : Logo}
-                          alt={event.title} 
-                          className={styles.eventImage}
-                        />
-                        <div className={styles.eventInfo}>
-                          <h3>{event.title}</h3>
-                          <div className={styles.eventMeta}>
-                            <span className={styles.eventDate}>
-                              <FaCalendarAlt /> {formatDate(event.date)}
-                            </span>
-                            <span className={styles.eventTime}>
-                              <FaClock /> {formatTime(event.startTime)} - {formatTime(event.endTime)}
-                            </span>
+                  events.map((event) => {
+                    // Check if event is expired
+                    const eventDate = new Date(event.date);
+                    const now = new Date();
+                    const isExpired = eventDate < now.setHours(0,0,0,0); // Expired if before today
+                    return (
+                      <div key={event._id} className={styles.event}>
+                        <div className={styles.eventHeader}>
+                          <img 
+                            src={event.image ? `http://localhost:8070/${event.image}` : Logo}
+                            alt={event.title} 
+                            className={styles.eventImage}
+                          />
+                          <div className={styles.eventInfo}>
+                            <h3>{event.title}</h3>
+                            <div className={styles.eventMeta}>
+                              <span className={styles.eventDate}>
+                                <FaCalendarAlt /> {formatDate(event.date)}
+                              </span>
+                              <span className={styles.eventTime}>
+                                <FaClock /> {formatTime(event.startTime)} - {formatTime(event.endTime)}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className={styles.eventContent}>
-                        <p className={styles.eventLocation}>
-                          <FaMapMarkerAlt /> {event.location}
-                        </p>
-                        <p className={styles.eventDescription}>
-                          {selectedEvent === event._id 
-                            ? event.description 
-                            : event.description.length > 150 
-                              ? `${event.description.substring(0, 150)}...` 
-                              : event.description}
-                        </p>
-                        {event.description.length > 150 && (
-                          <button 
-                            className={styles.showMoreBtn}
-                            onClick={() => toggleEventDetails(event._id)}
-                          >
-                            {selectedEvent === event._id ? 'Show Less' : 'Read More'}
-                          </button>
-                        )}
-                      </div>
-
-                      <div className={styles.eventStats}>
-                        <span className={styles.attendeeCount}>
-                          <FaUsers /> {event.attendees?.length || 0} attending
-                        </span>
-                      </div>
-
-                      <div className={styles.eventActions}>
-                        <button 
-                          onClick={() => handleRSVP(event._id)} 
-                          className={`${styles.actionButton} ${
-                            event.attendees?.some(attendee => attendee.userEmail === sessionStorage.getItem('userEmail')) 
-                              ? styles.active 
-                              : ''
-                          }`}
-                          disabled={rsvpLoading === event._id}
-                        >
-                          {rsvpLoading === event._id ? (
-                            <>
-                              <FaClock /> Processing...
-                            </>
-                          ) : event.attendees?.some(attendee => attendee.userEmail === sessionStorage.getItem('userEmail')) ? (
-                            <>
-                              <FaCheck /> Attending
-                            </>
-                          ) : (
-                            <>
-                              <FaCalendarAlt /> RSVP
-                            </>
+                        <div className={styles.eventContent}>
+                          <p className={styles.eventLocation}>
+                            <FaMapMarkerAlt /> {event.location}
+                          </p>
+                          <p className={styles.eventDescription}>
+                            {selectedEvent === event._id 
+                              ? event.description 
+                              : event.description.length > 150 
+                                ? `${event.description.substring(0, 150)}...` 
+                                : event.description}
+                          </p>
+                          {event.description.length > 150 && (
+                            <button 
+                              className={styles.showMoreBtn}
+                              onClick={() => toggleEventDetails(event._id)}
+                            >
+                              {selectedEvent === event._id ? 'Show Less' : 'Read More'}
+                            </button>
                           )}
-                        </button>
+                        </div>
+
+                        <div className={styles.eventStats}>
+                          <span className={styles.attendeeCount}>
+                            <FaUsers /> {event.attendees?.length || 0} attending
+                          </span>
+                        </div>
+
+                        <div className={styles.eventActions}>
+                          {/* Only show RSVP if event is not expired */}
+                          {!isExpired && (
+                            <button 
+                              onClick={() => handleRSVP(event._id)} 
+                              className={`${styles.actionButton} ${
+                                event.attendees?.some(attendee => attendee.userEmail === sessionStorage.getItem('userEmail')) 
+                                  ? styles.active 
+                                  : ''
+                              }`}
+                              disabled={rsvpLoading === event._id}
+                            >
+                              {rsvpLoading === event._id ? (
+                                <>
+                                  <FaClock /> Processing...
+                                </>
+                              ) : event.attendees?.some(attendee => attendee.userEmail === sessionStorage.getItem('userEmail')) ? (
+                                <>
+                                  <FaCheck /> Attending
+                                </>
+                              ) : (
+                                <>
+                                  <FaCalendarAlt /> RSVP
+                                </>
+                              )}
+                            </button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </>
