@@ -8,7 +8,6 @@ const Membership = () => {
   const [memberships, setMemberships] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedPlan, setSelectedPlan] = useState(null);
   const [message, setMessage] = useState('');
   const [currentMembership, setCurrentMembership] = useState('');
 
@@ -53,7 +52,6 @@ const Membership = () => {
 
   const handleSelectPlan = async (planName) => {
     setMessage('');
-    setSelectedPlan(planName);
     const userEmail = sessionStorage.getItem('userEmail');
     if (!userEmail) {
       setMessage('Please log in to purchase a membership.');
