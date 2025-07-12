@@ -996,6 +996,27 @@ const Health = () => {
     );
   }
 
+  // Restrict access to Big or Premium members
+  if (userData && !['big', 'premium'].includes(userData.membershipPackage?.toLowerCase())) {
+    return (
+      <>
+        <SlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <div className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : ''}`}>
+          <div className={styles.container}>
+            <div className={styles.error}>
+              <FaTimes className={styles.errorIcon} />
+              <h3>Upgrade Required</h3>
+              <p>You need a <b>Big</b> or <b>Premium</b> membership to access health features.</p>
+              <button onClick={() => window.location.href = '/dashboard/membership'} className={styles.retryButton}>
+                View Membership Plans
+              </button>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   if (error) {
     return (
       <>
