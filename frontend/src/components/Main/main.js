@@ -74,165 +74,175 @@ const LandingPage = () => {
 
   return (
     <div className={styles.container}>
-      {/* Navigation Bar */}
-      <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
+      {/* SEO-optimized Navigation Bar */}
+      <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`} role="navigation" aria-label="Main navigation">
         <div className={styles.logoContainer}>
-          <img src={logo} alt="Sports Club Logo" className={styles.logo} />
+          <img src={logo} alt="FTC Sports Club - Premium Fitness and Training Center" className={styles.logo} />
           <span className={styles.logoText}>Club FTC</span>
         </div>
         
         {/* Mobile Menu Toggle */}
-        <div 
+        <button 
           className={`${styles.menuIcon} ${mobileMenuOpen ? styles.active : ''}`} 
           onClick={toggleMobileMenu}
+          aria-label="Toggle mobile menu"
+          aria-expanded={mobileMenuOpen}
         >
           <span></span>
           <span></span>
           <span></span>
-        </div>
+        </button>
         
-        <ul className={`${styles.navLinks} ${mobileMenuOpen ? styles.active : ''}`}>
-          <li><Link to="/" onClick={closeMobileMenu}>Home</Link></li>
-          <li><Link to="/about" onClick={closeMobileMenu}>About</Link></li>
-          <li><Link to="/#news" onClick={handleNewsClick}>News</Link></li>
-          <li><Link to="/gallery" onClick={closeMobileMenu}>Gallery</Link></li>
-          <li><Link to="/facilities" onClick={closeMobileMenu}>Facilities</Link></li>
-          <li><Link to="/login" className={styles.loginButton} onClick={closeMobileMenu}>Member Login</Link></li>
+        <ul className={`${styles.navLinks} ${mobileMenuOpen ? styles.active : ''}`} role="menubar">
+          <li role="none"><Link to="/" onClick={closeMobileMenu} role="menuitem">Home</Link></li>
+          <li role="none"><Link to="/about" onClick={closeMobileMenu} role="menuitem">About</Link></li>
+          <li role="none"><Link to="/#news" onClick={handleNewsClick} role="menuitem">News</Link></li>
+          <li role="none"><Link to="/gallery" onClick={closeMobileMenu} role="menuitem">Gallery</Link></li>
+          <li role="none"><Link to="/facilities" onClick={closeMobileMenu} role="menuitem">Facilities</Link></li>
+          <li role="none"><Link to="/login" className={styles.loginButton} onClick={closeMobileMenu} role="menuitem">Member Login</Link></li>
         </ul>
       </nav>
 
       <div 
         className={`${styles.menuOverlay} ${mobileMenuOpen ? styles.active : ''}`} 
         onClick={closeMobileMenu}
+        aria-hidden="true"
       ></div>
 
-      {/* Hero Section - Improved */}
-      <section className={styles.hero}>
+      {/* Hero Section - Professional & SEO Optimized */}
+      <section className={styles.hero} role="banner" aria-label="Welcome to FTC">
         <div className={styles.heroContent}>
           <h1 className={styles.animatedTitle}>
-            <span>Welcome to</span>
-            <span className={styles.highlight}> FTC</span>
+            <span>Professional Fitness &</span>
+            <span className={styles.highlight}> Training Center</span>
           </h1>
-          <p className={styles.heroSubtitle}>Your path to fitness, health, and community starts here.</p>
+          <p className={styles.heroSubtitle}>Elevate your performance with industry-leading facilities, expert coaching, and comprehensive wellness programs designed for serious athletes and fitness enthusiasts.</p>
           <div className={styles.heroButtons}>
             <button
               className={styles.ctaButton}
               onClick={() => window.location.href = '/signup'}
               type="button"
+              aria-label="Join FTC membership program"
             >
-              Join Us Today
-              <i className={styles.buttonIcon}>→</i>
+              Join Our Community
+              <span className={styles.buttonIcon} aria-hidden="true">→</span>
             </button>
-            <button className={styles.secondaryButton}>
-              Learn More
-              <i className={styles.buttonIcon}>↓</i>
+            <button className={styles.secondaryButton} aria-label="Learn more about our services">
+              Explore Services
+              <span className={styles.buttonIcon} aria-hidden="true">↓</span>
             </button>
           </div>
         </div>
-        <div className={styles.heroOverlay}></div>
+        <div className={styles.heroOverlay} aria-hidden="true"></div>
       </section>
 
-      {/* Features Section - Improved */}
-      <section className={styles.featuresSection}>
+      {/* Services Section - Professional Focus */}
+      <section className={styles.featuresSection} aria-labelledby="services-heading">
         <div className={styles.sectionHeader}>
-          <h2>What We Offer</h2>
-          <p>Discover our premium services designed for your success</p>
+          <h2 id="services-heading">Our Professional Services</h2>
+          <p>Comprehensive fitness solutions tailored for peak performance and sustainable results</p>
         </div>
         
         <div className={styles.features}>
-          <div className={styles.feature}>
-            <div className={styles.featureIcon}>
-              <i>🏋️</i>
+          <article className={styles.feature}>
+            <div className={styles.featureIcon} aria-hidden="true">
+              <span>🏋️</span>
             </div>
-            <h3>Training Sessions</h3>
-            <p>Join our professional training programs to boost your skills and achieve your fitness goals.</p>
-            <button type="button" className={styles.featureLink}>Learn More</button>
-          </div>
+            <h3>Elite Training Programs</h3>
+            <p>Structured, science-based training methodologies designed by certified professionals to maximize your athletic potential and achieve measurable results.</p>
+            <button type="button" className={styles.featureLink} aria-label="Learn more about training programs">Explore Programs</button>
+          </article>
           
-          <div className={styles.feature}>
-            <div className={styles.featureIcon}>
-              <i>🥗</i>
+          <article className={styles.feature}>
+            <div className={styles.featureIcon} aria-hidden="true">
+              <span>📊</span>
             </div>
-            <h3>Health & Nutrition</h3>
-            <p>Get personalized health plans and nutrition guidance from certified experts.</p>
-            <button type="button" className={styles.featureLink}>Learn More</button>
-          </div>
+            <h3>Performance Analytics</h3>
+            <p>Advanced monitoring systems and personalized assessments to track progress, optimize performance, and ensure continuous improvement in your fitness journey.</p>
+            <button type="button" className={styles.featureLink} aria-label="Learn more about performance analytics">View Analytics</button>
+          </article>
           
-          <div className={styles.feature}>
-            <div className={styles.featureIcon}>
-              <i>🏆</i>
+          <article className={styles.feature}>
+            <div className={styles.featureIcon} aria-hidden="true">
+              <span>🏆</span>
             </div>
-            <h3>Community Events</h3>
-            <p>Participate in our exciting community events, tournaments and social gatherings.</p>
-            <button type="button" className={styles.featureLink}>Learn More</button>
-          </div>
+            <h3>Corporate Wellness</h3>
+            <p>Professional corporate fitness programs and team-building activities designed to enhance workplace productivity and employee well-being.</p>
+            <button type="button" className={styles.featureLink} aria-label="Learn more about corporate wellness">Corporate Solutions</button>
+          </article>
         </div>
       </section>
 
-      {/* Testimonials Section - Improved */}
-      <section className={styles.testimonialsSection}>
+      {/* Testimonials Section - Professional Focus */}
+      <section className={styles.testimonialsSection} aria-labelledby="testimonials-heading">
         <div className={styles.sectionHeader}>
-          <h2>What Our Members Say</h2>
-          <p>Real stories from our community</p>
+          <h2 id="testimonials-heading">Client Success Stories</h2>
+          <p>Proven results from our professional training programs</p>
         </div>
         
         <div className={styles.testimonialCards}>
-          <div className={styles.testimonialCard}>
-            <div className={styles.testimonialQuote}>❝</div>
-            <p>Joining FTC was the best decision I made for my health! The trainers are incredible and the community is so supportive.</p>
+          <article className={styles.testimonialCard}>
+            <div className={styles.testimonialQuote} aria-hidden="true">❝</div>
+            <blockquote>
+              <p>The systematic approach and professional expertise at FTC transformed my training regimen. The measurable improvements in my performance metrics exceeded all expectations.</p>
+            </blockquote>
             <div className={styles.testimonialAuthor}>
-              <div className={styles.authorAvatar}>AJ</div>
+              <div className={styles.authorAvatar} aria-hidden="true">AJ</div>
               <div className={styles.authorInfo}>
                 <h4>Alex Johnson</h4>
-                <p>Member since 2023</p>
+                <p>Corporate Executive</p>
               </div>
             </div>
-            <div className={styles.testimonialStars}>★★★★★</div>
-          </div>
+            <div className={styles.testimonialStars} aria-label="5 star rating">★★★★★</div>
+          </article>
           
-          <div className={styles.testimonialCard}>
-            <div className={styles.testimonialQuote}>❝</div>
-            <p>The community events are so much fun and engaging. I've made great friends and improved my fitness tremendously.</p>
+          <article className={styles.testimonialCard}>
+            <div className={styles.testimonialQuote} aria-hidden="true">❝</div>
+            <blockquote>
+              <p>FTC's data-driven approach and professional environment provided the structure I needed to achieve my fitness goals efficiently and sustainably.</p>
+            </blockquote>
             <div className={styles.testimonialAuthor}>
-              <div className={styles.authorAvatar}>SL</div>
+              <div className={styles.authorAvatar} aria-hidden="true">SL</div>
               <div className={styles.authorInfo}>
                 <h4>Sarah Lee</h4>
-                <p>Member since 2022</p>
+                <p>Business Owner</p>
               </div>
             </div>
-            <div className={styles.testimonialStars}>★★★★★</div>
-          </div>
+            <div className={styles.testimonialStars} aria-label="5 star rating">★★★★★</div>
+          </article>
           
-          <div className={styles.testimonialCard}>
-            <div className={styles.testimonialQuote}>❝</div>
-            <p>The trainers are professional and very supportive. The facilities are always clean and well-maintained.</p>
+          <article className={styles.testimonialCard}>
+            <div className={styles.testimonialQuote} aria-hidden="true">❝</div>
+            <blockquote>
+              <p>The professionalism and expertise of the training staff, combined with state-of-the-art facilities, makes FTC the premier choice for serious fitness enthusiasts.</p>
+            </blockquote>
             <div className={styles.testimonialAuthor}>
-              <div className={styles.authorAvatar}>MB</div>
+              <div className={styles.authorAvatar} aria-hidden="true">MB</div>
               <div className={styles.authorInfo}>
                 <h4>Michael Brown</h4>
-                <p>Member since 2021</p>
+                <p>Professional Athlete</p>
               </div>
             </div>
-            <div className={styles.testimonialStars}>★★★★★</div>
-          </div>
+            <div className={styles.testimonialStars} aria-label="5 star rating">★★★★★</div>
+          </article>
         </div>
         
-        <div className={styles.testimonialDots}>
-          <span className={`${styles.dot} ${styles.active}`}></span>
-          <span className={styles.dot}></span>
-          <span className={styles.dot}></span>
+        <div className={styles.testimonialDots} role="tablist" aria-label="Testimonial navigation">
+          <button className={`${styles.dot} ${styles.active}`} role="tab" aria-selected="true" aria-label="View testimonial 1"></button>
+          <button className={styles.dot} role="tab" aria-selected="false" aria-label="View testimonial 2"></button>
+          <button className={styles.dot} role="tab" aria-selected="false" aria-label="View testimonial 3"></button>
         </div>
       </section>
 
-      {/* News Section */}
-      <section id="news" className={styles.newsSection}>
+      {/* News Section - Professional Updates */}
+      <section id="news" className={styles.newsSection} aria-labelledby="news-heading">
         <div className={styles.sectionHeader}>
-          <h2>Latest News & Updates</h2>
-          <p>Stay updated with what's happening at FTC</p>
+          <h2 id="news-heading">Industry News & Updates</h2>
+          <p>Stay informed with the latest developments in fitness technology and professional training methodologies</p>
         </div>
         
         <div className={styles.newsGrid}>
-          <div className={styles.newsCard}>
+          <article className={styles.newsCard}>
             <div className={styles.newsImage}>
               <div className={styles.newsDate}>
                 <span className={styles.day}>15</span>
@@ -240,16 +250,16 @@ const LandingPage = () => {
               </div>
             </div>
             <div className={styles.newsContent}>
-              <div className={styles.newsTag}>Event</div>
-              <h3>Summer Sports Camp Registration Now Open</h3>
-              <p>Join our annual summer sports camp for kids aged 7-15. Learn new skills and make friends in a fun environment.</p>
-              <Link to="/news/summer-camp" className={styles.newsLink}>
-                Read More <span>→</span>
+              <div className={styles.newsTag}>Program Launch</div>
+              <h3>Advanced Performance Training Program</h3>
+              <p>Introducing our new high-intensity performance training program designed for serious athletes seeking competitive advantage through scientific training methodologies.</p>
+              <Link to="/news/performance-program" className={styles.newsLink} aria-label="Read more about Advanced Performance Training Program">
+                Read More <span aria-hidden="true">→</span>
               </Link>
             </div>
-          </div>
+          </article>
           
-          <div className={styles.newsCard}>
+          <article className={styles.newsCard}>
             <div className={styles.newsImage}>
               <div className={styles.newsDate}>
                 <span className={styles.day}>10</span>
@@ -257,16 +267,16 @@ const LandingPage = () => {
               </div>
             </div>
             <div className={styles.newsContent}>
-              <div className={styles.newsTag}>Facility</div>
-              <h3>New Swimming Pool Opening Next Month</h3>
-              <p>We're excited to announce the opening of our new Olympic-sized swimming pool with state-of-the-art facilities.</p>
-              <Link to="/news/new-pool" className={styles.newsLink}>
-                Read More <span>→</span>
+              <div className={styles.newsTag}>Facility Upgrade</div>
+              <h3>State-of-the-Art Recovery Center</h3>
+              <p>Our new recovery and rehabilitation center features cutting-edge equipment including cryotherapy chambers, infrared saunas, and advanced physiotherapy facilities.</p>
+              <Link to="/news/recovery-center" className={styles.newsLink} aria-label="Read more about State-of-the-Art Recovery Center">
+                Read More <span aria-hidden="true">→</span>
               </Link>
             </div>
-          </div>
+          </article>
           
-          <div className={styles.newsCard}>
+          <article className={styles.newsCard}>
             <div className={styles.newsImage}>
               <div className={styles.newsDate}>
                 <span className={styles.day}>03</span>
@@ -274,69 +284,103 @@ const LandingPage = () => {
               </div>
             </div>
             <div className={styles.newsContent}>
-              <div className={styles.newsTag}>Community</div>
-              <h3>FTC Wins Regional Sports Club Award</h3>
-              <p>We're proud to announce that FTC has been recognized as the Best Community Sports Club in the region.</p>
-              <Link to="/news/award" className={styles.newsLink}>
-                Read More <span>→</span>
+              <div className={styles.newsTag}>Recognition</div>
+              <h3>Industry Excellence Award 2024</h3>
+              <p>FTC has been recognized as the leading professional fitness facility in the region, acknowledging our commitment to excellence in training and member satisfaction.</p>
+              <Link to="/news/excellence-award" className={styles.newsLink} aria-label="Read more about Industry Excellence Award 2024">
+                Read More <span aria-hidden="true">→</span>
               </Link>
             </div>
-          </div>
+          </article>
         </div>
         
         <div className={styles.newsViewAll}>
-          <Link to="/news" className={styles.viewAllLink}>
-            View All News <span className={styles.viewAllIcon}>→</span>
+          <Link to="/news" className={styles.viewAllLink} aria-label="View all news and updates">
+            View All Updates <span className={styles.viewAllIcon} aria-hidden="true">→</span>
           </Link>
         </div>
       </section>
 
-      {/* Contact Section - Improved */}
-      <section className={styles.contactSection}>
+      {/* Contact Section - Professional */}
+      <section className={styles.contactSection} aria-labelledby="contact-heading">
         <div className={styles.contactContent}>
           <div className={styles.contactInfo}>
-            <h2>Get In Touch</h2>
-            <p>Have questions or ready to start your fitness journey? Reach out to us!</p>
+            <h2 id="contact-heading">Connect With Our Team</h2>
+            <p>Ready to elevate your fitness journey? Our professional team is here to discuss your goals and create a customized training solution.</p>
             
             <div className={styles.contactDetails}>
               <div className={styles.contactItem}>
-                <span className={styles.contactIcon}>📍</span>
-                <p>123 Fitness Street, Sportsville</p>
+                <span className={styles.contactIcon} aria-hidden="true">📍</span>
+                <div>
+                  <h4>Location</h4>
+                  <p>123 Professional Drive, Business District</p>
+                </div>
               </div>
               <div className={styles.contactItem}>
-                <span className={styles.contactIcon}>📱</span>
-                <p>(123) 356-7890</p>
+                <span className={styles.contactIcon} aria-hidden="true">📱</span>
+                <div>
+                  <h4>Phone</h4>
+                  <p>(123) 356-7890</p>
+                </div>
               </div>
               <div className={styles.contactItem}>
-                <span className={styles.contactIcon}>✉️</span>
-                <p>info@ftcclub.com</p>
+                <span className={styles.contactIcon} aria-hidden="true">✉️</span>
+                <div>
+                  <h4>Email</h4>
+                  <p>info@ftcprofessional.com</p>
+                </div>
               </div>
             </div>
           </div>
           
-          <form className={styles.contactForm}>
+          <form className={styles.contactForm} aria-label="Contact form">
             <div className={styles.formGroup}>
-              <input type="text" placeholder="Your Name" className={styles.inputField} required />
+              <label htmlFor="name" className={styles.visuallyHidden}>Full Name</label>
+              <input 
+                id="name"
+                type="text" 
+                placeholder="Full Name" 
+                className={styles.inputField} 
+                required 
+                aria-required="true"
+              />
             </div>
             <div className={styles.formGroup}>
-              <input type="email" placeholder="Your Email" className={styles.inputField} required />
+              <label htmlFor="email" className={styles.visuallyHidden}>Email Address</label>
+              <input 
+                id="email"
+                type="email" 
+                placeholder="Email Address" 
+                className={styles.inputField} 
+                required 
+                aria-required="true"
+              />
             </div>
             <div className={styles.formGroup}>
-              <textarea placeholder="Your Message" className={styles.textareaField} required></textarea>
+              <label htmlFor="message" className={styles.visuallyHidden}>Message</label>
+              <textarea 
+                id="message"
+                placeholder="Tell us about your fitness goals and how we can help" 
+                className={styles.textareaField} 
+                required 
+                aria-required="true"
+              ></textarea>
             </div>
-            <button type="submit" className={styles.submitButton}>
+            <button type="submit" className={styles.submitButton} aria-label="Send message">
               Send Message
-              <span className={styles.buttonArrow}>→</span>
+              <span className={styles.buttonArrow} aria-hidden="true">→</span>
             </button>
           </form>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className={styles.footer}>
-        <p>&copy; 2025 FTC.All rights reserved.</p>
-        <p>Powered by MommentX</p>
-        <p>v2.2 Test</p>
+      {/* Footer - Professional */}
+      <footer className={styles.footer} role="contentinfo">
+        <div className={styles.footerContent}>
+          <p>&copy; 2025 CLUB FTC Professional Training Center. All rights reserved.</p>
+          <p>Powered by MommentX | Nextgen Sport Club | Designed by @nimeshdilhara96</p>
+          <p>Version 3.1 - Development Edition</p>
+        </div>
       </footer>
     </div>
   );
