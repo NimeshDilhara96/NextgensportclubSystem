@@ -9,7 +9,6 @@ const Event = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [events, setEvents] = useState([]);
   const [sponsors, setSponsors] = useState([]);
-  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -21,10 +20,7 @@ const Event = () => {
       try {
         const userEmail = sessionStorage.getItem('userEmail');
         if (userEmail) {
-          const response = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
-          if (response.data.status === "success") {
-            setUserData(response.data.user);
-          }
+          await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
