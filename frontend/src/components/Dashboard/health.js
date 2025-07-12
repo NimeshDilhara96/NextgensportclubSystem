@@ -772,6 +772,19 @@ const Health = () => {
       
       console.log('AI workouts generated successfully:', transformedWorkouts);
       
+      // Send the AI workout plan to the user's email
+      try {
+        await axios.post('http://localhost:8070/notify/ai-workout', {
+          email: user.email,
+          name: user.name,
+          aiWorkoutPlan: transformedWorkouts
+        });
+        alert('Your AI workout plan has been sent to your email!');
+      } catch (notifyErr) {
+        console.error('Failed to send AI workout plan email:', notifyErr);
+        alert('Workout generated, but failed to send email notification.');
+      }
+      
     } catch (err) {
       console.error('Error generating AI workouts:', err);
       setAiWorkoutError(`Failed to generate AI workouts: ${err.message}`);
