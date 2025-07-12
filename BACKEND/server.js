@@ -34,6 +34,7 @@ const biometricAuthRouter = require('./routes/biometricAuth'); // Add biometric 
 const forgotPasswordRoutes = require('./routes/forgotPassword');
 const coachRoutes = require('./routes/coaches'); // Add coach routes
 const membershipsRoute = require('./routes/memberships');
+const notificationsRoute = require('./routes/notifications');
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -52,6 +53,7 @@ app.use("/biometric", biometricAuthRouter); // All biometric-related routes will
 app.use('/forgot-password', forgotPasswordRoutes); // Add this line
 app.use('/coaches', coachRoutes); // Add coach routes
 app.use('/memberships', membershipsRoute);
+app.use('/notify', notificationsRoute);
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
