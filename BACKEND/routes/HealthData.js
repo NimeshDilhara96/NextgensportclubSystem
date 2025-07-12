@@ -274,4 +274,89 @@ router.route("/mood/:userEmail").put(async (req, res) => {
     }
 });
 
+// Update BMI
+router.route("/bmi/:userEmail").put(async (req, res) => {
+    try {
+        const { bmi } = req.body;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOneAndUpdate(
+            { user: user._id, date: today },
+            { $set: { bmi: parseFloat(bmi) } },
+            { upsert: true, new: true }
+        );
+
+        res.json({
+            status: "success",
+            message: "BMI updated successfully",
+            data: {
+                bmi: healthData.bmi
+            }
+        });
+
+    } catch (error) {
+        console.error("Error updating BMI:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
+// Mark workout as completed
+router.route("/workout/complete/:userEmail").put(async (req, res) => {
+    try {
+        const { workoutId, completed } = req.body;
+        
+        const user = await User.findOne({ email: req.params.userEmail });
+        if (!user) {
+            return res.json({ status: "error", message: "User not found" });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let healthData = await HealthData.findOne({
+            user: user._id,
+            date: today
+        });
+
+        if (!healthData) {
+            return res.json({ status: "error", message: "No health data found for today" });
+        }
+
+        // Find and update the specific workout session
+        const workoutSession = healthData.workout.sessions.id(workoutId);
+        if (!workoutSession) {
+            return res.json({ status: "error", message: "Workout session not found" });
+        }
+
+        workoutSession.completed = completed;
+        workoutSession.endTime = completed ? new Date() : null;
+
+        // Recalculate totals
+        healthData.workout.totalMinutes = healthData.workout.sessions.reduce((total, session) => 
+            total + (session.completed ? (session.duration || 0) : 0), 0);
+        healthData.workout.totalCalories = healthData.workout.sessions.reduce((total, session) => 
+            total + (session.completed ? (session.calories || 0) : 0), 0);
+
+        await healthData.save();
+
+        res.json({
+            status: "success",
+            message: `Workout ${completed ? 'completed' : 'marked as incomplete'}`,
+            data: healthData.workout,
+            progress: healthData.getDailyProgress()
+        });
+
+    } catch (error) {
+        console.error("Error updating workout completion:", error);
+        res.json({ status: "error", message: error.message });
+    }
+});
+
 module.exports = router;
