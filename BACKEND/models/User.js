@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
     },
     membershipPackage: {
         type: String,
-        enum: ["basic", "premium", "platinum", "none"],
+        enum: ["light", "big", "premium", "basic", "platinum", "none"],
         default: "none"
     },
     membershipStatus: {
