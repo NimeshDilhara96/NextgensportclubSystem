@@ -274,7 +274,16 @@ router.post('/book/:id', async (req, res) => {
         // Expected format: "9:00 AM - 9:00 PM" or similar
         const bookingStartTime = new Date(startTime);
         const bookingEndTime = new Date(endTime);
-        
+
+        // Prevent booking in the past
+        const now = new Date();
+        if (bookingStartTime < now || bookingEndTime < now) {
+            return res.status(400).json({
+                status: "error",
+                message: "Cannot book for a past date or time"
+            });
+        }
+
         // Extract hours from the facility operating hours
         const operatingHours = facility.hours.split('-');
         if (operatingHours.length !== 2) {
@@ -446,8 +455,8 @@ router.get('/:id/bookings', async (req, res) => {
 router.delete('/booking/:id', async (req, res) => {
   try {
     const bookingId = req.params.id;
-    const { email } = req.body;
-    
+    const email = req.body.email || req.query.email; // Accept from body or query
+
     if (!email) {
       return res.status(400).json({
         status: 'error',
@@ -474,15 +483,15 @@ router.delete('/booking/:id', async (req, res) => {
       });
     }
     
-    // Update the booking status to "Cancelled"
-    user.bookings[bookingIndex].status = 'Cancelled';
+    // Remove the booking from the array
+    user.bookings.splice(bookingIndex, 1);
     
     // Save the updated user document
     await user.save();
     
     return res.status(200).json({
       status: 'success',
-      message: 'Booking cancelled successfully'
+      message: 'Booking deleted successfully'
     });
   } catch (error) {
     console.error('Error cancelling booking:', error);

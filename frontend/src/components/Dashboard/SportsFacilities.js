@@ -253,12 +253,10 @@ const SportsFacilities = () => {
       
       console.log(`Cancelling booking ${bookingId} for user ${userEmail}`);
       
-      const response = await axios.delete(`http://localhost:8070/facilities/booking/${bookingId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        data: { email: userEmail }  // Important: pass email in request body
-      });
+      const response = await axios.delete(
+        `http://localhost:8070/facilities/booking/${bookingId}?email=${encodeURIComponent(userEmail)}`,
+        { headers: { 'Authorization': `Bearer ${token}` } }
+      );
       
       if (response.data.status === 'success') {
         alert('Booking cancelled successfully');
