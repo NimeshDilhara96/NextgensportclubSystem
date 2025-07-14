@@ -4,6 +4,7 @@ const Order = require('../models/Order');
 const User = require('../models/User');
 const Product = require('../models/Product');
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 // Create a new order
 router.post('/', async (req, res) => {
@@ -98,6 +99,18 @@ router.put('/:id/status', async (req, res) => {
     }
     order.status = status;
     await order.save();
+
+    // If status is 'processing', send email notification
+    if (status === 'processing') {
+      try {
+        await axios.post('http://localhost:8070/notify/order-processing', {
+          email: order.email,
+          orderId: order._id
+        });
+      } catch (notifyErr) {
+        console.error('Failed to send processing email notification:', notifyErr.message);
+      }
+    }
 
     res.json({ success: true, order });
   } catch (error) {

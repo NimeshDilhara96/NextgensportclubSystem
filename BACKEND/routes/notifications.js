@@ -79,4 +79,35 @@ router.post('/ai-workout', async (req, res) => {
   }
 });
 
+// POST /notify/order-processing
+router.post('/order-processing', async (req, res) => {
+  try {
+    const { email, orderId } = req.body;
+    if (!email || !orderId) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const mailOptions = {
+      from: `"NextGen Sports Club" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Your Order is Processing - NextGen Sports Club',
+      html: `
+        <div style="font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f8fafc; color:#1a1a1a; padding:32px; max-width:600px; margin:0 auto; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.08); border:1px solid #e2e8f0;">
+          <h2 style="color:#0f172a;">Order Processing</h2>
+          <p style="font-size:16px;">Hello,</p>
+          <p style="font-size:15px;">Your order <b>#{orderId}</b> is now <b>processing</b>.</p>
+          <p style="font-size:15px;">Thank you for shopping with us at NextGen Sports Club!</p>
+          <div style="margin-top:32px;font-size:13px;color:#64748b;">If you have any questions, reply to this email or contact support.</div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: 'Order processing email sent!' });
+  } catch (error) {
+    console.error('❌ Error sending order processing notification:', error);
+    res.status(500).json({ message: 'Failed to send order processing notification', error: error.message });
+  }
+});
+
 module.exports = router; 
