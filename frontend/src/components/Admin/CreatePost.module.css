@@ -115,3 +115,151 @@
     background-color: #e4e6eb;
     cursor: not-allowed;
 } 
+
+/* Post Feed Styles */
+.postFeed {
+    margin: 40px auto 0 auto;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.noPosts {
+    text-align: center;
+    color: #888;
+    font-size: 18px;
+    margin-top: 40px;
+}
+
+.postCard {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(30,41,59,0.08);
+    padding: 20px 24px 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid #f0f2f5;
+    position: relative;
+}
+
+.postHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.postUser {
+    font-weight: 600;
+    color: #1877f2;
+    font-size: 15px;
+}
+
+.postDate {
+    color: #888;
+    font-size: 13px;
+}
+
+.postContent {
+    font-size: 16px;
+    color: #222;
+    margin-bottom: 8px;
+    white-space: pre-line;
+}
+
+.postMediaPreview {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.postMedia {
+    border-radius: 8px;
+    max-width: 180px;
+    max-height: 180px;
+    object-fit: cover;
+    background: #f0f2f5;
+    border: 1px solid #e4e6eb;
+}
+
+.postActionsBar {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.likeBtn, .editBtn, .deleteBtn {
+    background: none;
+    border: none;
+    color: #65676b;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.likeBtn:hover {
+    background: #f0f2f5;
+    color: #1877f2;
+}
+.editBtn:hover {
+    background: #f0f2f5;
+    color: #34a853;
+}
+.deleteBtn:hover {
+    background: #fbeaea;
+    color: #ff4d4f;
+}
+
+.editContentInput {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 8px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.editActions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.saveEditBtn {
+    background: #1877f2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.saveEditBtn:hover {
+    background: #166fe5;
+}
+.cancelEditBtn {
+    background: #e4e6eb;
+    color: #222;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 18px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.cancelEditBtn:hover {
+    background: #d8dadf;
+} 
