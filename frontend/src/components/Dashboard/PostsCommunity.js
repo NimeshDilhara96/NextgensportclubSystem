@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SlideNav from '../appnavbar/slidenav';
-import { FaThumbsUp, FaComment, FaImage, FaVideo } from 'react-icons/fa';
+import { FaThumbsUp, FaComment } from 'react-icons/fa';
 import styles from './PostsCommunity.module.css';
 import axios from 'axios';
 import Logo from '../../assets/logo.png';
@@ -132,7 +132,16 @@ const Community = () => {
                     className={styles.clubLogo}
                   />
                   <div className={styles.postUserInfo}>
-                    <h3>CLUB FTC</h3>
+                    <h3>CLUB FTC
+                      <span className={styles.verifiedBadge} title="Verified">
+                        <svg viewBox="0 0 16 16" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                          <g>
+                            <path d="M8 0.8c.3 0 .6.2.8.5l1.1 1.5c.2.2.5.3.7.2l1.8-.7c.3-.1.6 0 .8.2l1.2 1.2c.2.2.3.5.2.8l-.7 1.8c-.1.3 0 .5.2.7l1.5 1.1c.3.2.5.5.5.8v1.7c0 .3-.2.6-.5.8l-1.5 1.1c-.2.2-.3.5-.2.7l.7 1.8c.1.3 0 .6-.2.8l-1.2 1.2c-.2.2-.5.3-.8.2l-1.8-.7c-.3-.1-.5 0-.7.2l-1.1 1.5c-.2.3-.5.5-.8.5s-.6-.2-.8-.5l-1.1-1.5c-.2-.2-.5-.3-.7-.2l-1.8.7c-.3.1-.6 0-.8-.2l-1.2-1.2c-.2-.2-.3-.5-.2-.8l.7-1.8c.1-.3 0-.5-.2-.7l-1.5-1.1C.2 10.6 0 10.3 0 10V8.3c0-.3.2-.6.5-.8l1.5-1.1c.2-.2.3-.5.2-.7l-.7-1.8c-.1-.3 0-.6.2-.8l1.2-1.2c.2-.2.5-.3.8-.2l1.8.7c.3.1.5 0 .7-.2l1.1-1.5C7.4 1 7.7 0.8 8 0.8z" fill="#1877f2"/>
+                            <path d="M11.2 6.1l-3.2 3.2-1.5-1.5c-.2-.2-.5-.2-.7 0s-.2.5 0 .7l1.8 1.8c.2.2.5.2.7 0l3.6-3.6c.2-.2.2-.5 0-.7s-.5-.2-.7 0z" fill="#fff"/>
+                          </g>
+                        </svg>
+                      </span>
+                    </h3>
                     <span className={styles.postDate}>
                       {new Date(post.createdAt).toLocaleDateString()}
                     </span>
@@ -140,7 +149,7 @@ const Community = () => {
                 </div>
 
                 <div className={styles.postContent}>
-                  {post.content}
+                  <div style={{ whiteSpace: 'pre-line' }}>{post.content}</div>
                   
                   {post.media && post.media.length > 0 && (
                     <div className={styles.mediaContainer}>
