@@ -124,6 +124,11 @@ const SlideNav = ({ isSidebarOpen, toggleSidebar }) => {
           </li>
         </ul>
       </nav>
+      <div className="sidebar-brand">
+        <span className="mommentx-logo">MommentX</span>
+        <span className="brand-divider"> | </span>
+        <span className="nimesh-logo">Design Nimeshdilhara96</span>
+      </div>
       </div>
 
       <header className="dashboard-header">
