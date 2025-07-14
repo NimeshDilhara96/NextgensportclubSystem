@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AdminSlideNav from './AdminSlideNav';
 import { FaImage, FaTimes } from 'react-icons/fa';
 import axios from 'axios';
@@ -15,6 +15,26 @@ const AddProduct = () => {
     const [image, setImage] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [orders, setOrders] = useState([]);
+    const [ordersLoading, setOrdersLoading] = useState(true);
+    const [ordersError, setOrdersError] = useState(null);
+    const [orderFilter, setOrderFilter] = useState('all'); // all, completed, uncompleted
+
+    useEffect(() => {
+        // Fetch orders on mount
+        const fetchOrders = async () => {
+            try {
+                setOrdersLoading(true);
+                const res = await axios.get('http://localhost:8070/orders');
+                setOrders(res.data.orders || []);
+            } catch (err) {
+                setOrdersError('Failed to fetch orders');
+            } finally {
+                setOrdersLoading(false);
+            }
+        };
+        fetchOrders();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -81,6 +101,24 @@ const AddProduct = () => {
             setIsSubmitting(false);
         }
     };
+
+    // Update order status
+    const handleStatusChange = async (orderId, newStatus) => {
+        try {
+            await axios.put(`http://localhost:8070/orders/${orderId}/status`, { status: newStatus });
+            setOrders(orders => orders.map(order => order._id === orderId ? { ...order, status: newStatus } : order));
+        } catch (err) {
+            alert('Failed to update order status');
+        }
+    };
+
+    // Filter orders
+    const filteredOrders = orders.filter(order => {
+        if (orderFilter === 'completed') return order.status === 'completed';
+        if (orderFilter === 'uncompleted') return order.status === 'pending' || order.status === 'processing';
+        if (orderFilter === 'cancelled') return order.status === 'cancelled';
+        return true;
+    });
 
     return (
         <>
@@ -190,6 +228,67 @@ const AddProduct = () => {
                             </button>
                         </div>
                     </form>
+                </div>
+                {/* Orders Section */}
+                <div className={styles.addProductCard} style={{ marginTop: '2rem' }}>
+                    <h2>Orders</h2>
+                    <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem' }}>
+                        <button onClick={() => setOrderFilter('all')} className={orderFilter === 'all' ? styles.activeTab : ''}>All</button>
+                        <button onClick={() => setOrderFilter('completed')} className={orderFilter === 'completed' ? styles.activeTab : ''}>Completed</button>
+                        <button onClick={() => setOrderFilter('uncompleted')} className={orderFilter === 'uncompleted' ? styles.activeTab : ''}>Uncompleted</button>
+                        <button onClick={() => setOrderFilter('cancelled')} className={orderFilter === 'cancelled' ? styles.activeTab : ''}>Cancelled</button>
+                    </div>
+                    {ordersLoading ? (
+                        <div>Loading orders...</div>
+                    ) : ordersError ? (
+                        <div style={{ color: 'red' }}>{ordersError}</div>
+                    ) : filteredOrders.length === 0 ? (
+                        <div>No orders found.</div>
+                    ) : (
+                        <div style={{ overflowX: 'auto' }}>
+                        <table className={styles.ordersTable} style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Address</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Products</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredOrders.map(order => (
+                                    <tr key={order._id}>
+                                        <td>{order._id}</td>
+                                        <td>{order.user?.name || '-'}</td>
+                                        <td>{order.user?.email || order.email}</td>
+                                        <td>{order.address}</td>
+                                        <td>{order.phone}</td>
+                                        <td>
+                                            <select value={order.status} onChange={e => handleStatusChange(order._id, e.target.value)}>
+                                                <option value="pending">Pending</option>
+                                                <option value="processing">Processing</option>
+                                                <option value="completed">Completed</option>
+                                                <option value="cancelled">Cancelled</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+                                                {order.products.map((item, idx) => (
+                                                    <li key={idx}>
+                                                        {item.product?.name || item.product} x {item.quantity}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        </div>
+                    )}
                 </div>
             </div>
         </>
