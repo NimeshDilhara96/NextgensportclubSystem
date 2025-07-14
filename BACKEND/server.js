@@ -35,6 +35,7 @@ const forgotPasswordRoutes = require('./routes/forgotPassword');
 const coachRoutes = require('./routes/coaches'); // Add coach routes
 const membershipsRoute = require('./routes/memberships');
 const notificationsRoute = require('./routes/notifications');
+const orderRouter = require('./routes/orders');
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -54,6 +55,7 @@ app.use('/forgot-password', forgotPasswordRoutes); // Add this line
 app.use('/coaches', coachRoutes); // Add coach routes
 app.use('/memberships', membershipsRoute);
 app.use('/notify', notificationsRoute);
+app.use('/orders', orderRouter);
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
