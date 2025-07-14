@@ -4,7 +4,6 @@ const Order = require('../models/Order');
 const User = require('../models/User');
 const Product = require('../models/Product');
 const mongoose = require('mongoose');
-const Notification = require('../models/Notification');
 
 // Create a new order
 router.post('/', async (req, res) => {
@@ -100,17 +99,7 @@ router.put('/:id/status', async (req, res) => {
     order.status = status;
     await order.save();
 
-    // Create notification for user
-    const message = `Your order #${order._id} status has been updated to '${status}'.`;
-    const notification = new Notification({
-      user: order.user,
-      type: 'order',
-      message,
-      order: order._id
-    });
-    await notification.save();
-
-    res.json({ success: true, order, notification });
+    res.json({ success: true, order });
   } catch (error) {
     console.error('Error updating order status:', error);
     res.status(500).json({ success: false, message: 'Failed to update order status', error: error.message });
