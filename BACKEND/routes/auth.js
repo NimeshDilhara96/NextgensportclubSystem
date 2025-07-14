@@ -2,6 +2,93 @@ const router = require("express").Router();
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+
+// In-memory OTP store (for demo; use Redis/DB for production)
+const signupOtpSessions = new Map();
+
+// Nodemailer transporter (configure with your env variables)
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+// Generate 6-digit OTP
+function generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Send OTP for email verification
+router.post("/send-verification-otp", async (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email is required" });
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        return res.status(409).json({ message: "User already exists with this email." });
+    }
+
+    const otp = generateOTP();
+    const sessionId = `signup_${crypto.randomUUID()}`;
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
+
+    signupOtpSessions.set(sessionId, {
+        email,
+        otp,
+        attempts: 0,
+        maxAttempts: 3,
+        expiresAt
+    });
+
+    // Send OTP email
+    const mailOptions = {
+        from: `NextGen Sports Club <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: 'Verify your email - NextGen Sports Club',
+        html: `<p>Your verification code is:</p><h2>${otp}</h2><p>This code will expire in 5 minutes.</p>`
+    };
+    try {
+        await transporter.sendMail(mailOptions);
+        res.json({ message: `Verification code sent to ${email}`, sessionId, expiresIn: 300 });
+    } catch (err) {
+        console.error('Error sending verification email:', err);
+        res.status(500).json({ message: 'Failed to send verification email' });
+    }
+});
+
+// Verify OTP for email verification
+router.post("/verify-otp", (req, res) => {
+    const { sessionId, otp } = req.body;
+    if (!sessionId || !otp) return res.status(400).json({ message: "Session ID and OTP are required" });
+
+    const session = signupOtpSessions.get(sessionId);
+    if (!session) return res.status(404).json({ message: "Invalid or expired session" });
+
+    if (Date.now() > session.expiresAt) {
+        signupOtpSessions.delete(sessionId);
+        return res.status(401).json({ message: "Verification code expired. Please request a new one." });
+    }
+
+    if (session.attempts >= session.maxAttempts) {
+        signupOtpSessions.delete(sessionId);
+        return res.status(401).json({ message: "Too many incorrect attempts. Please request a new code." });
+    }
+
+    if (session.otp !== otp.toString()) {
+        session.attempts++;
+        signupOtpSessions.set(sessionId, session);
+        return res.status(401).json({ message: `Incorrect code. ${session.maxAttempts - session.attempts} attempts left.` });
+    }
+
+    // Success: clean up session
+    signupOtpSessions.delete(sessionId);
+    res.json({ message: "Email verified successfully!" });
+});
 
 // Signup Route
 router.route("/signup").post(async (req, res) => {
