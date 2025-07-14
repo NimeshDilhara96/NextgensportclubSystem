@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import SlideNav from '../appnavbar/slidenav';
-import { FaShoppingCart, FaTag, FaSearch, FaFilter, FaStar } from 'react-icons/fa';
+import { FaShoppingCart, FaTag, FaSearch, FaFilter, FaStar, FaBell } from 'react-icons/fa';
 import styles from './ClubStore.module.css';
 import axios from 'axios';
 import Logo from '../../assets/logo.png';
+import OrderSummary from './OrderSummary';
 
 const ClubStore = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -15,6 +16,16 @@ const ClubStore = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showCartModal, setShowCartModal] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [checkoutInfo, setCheckoutInfo] = useState({
+    address: '',
+    phone: '',
+    email: sessionStorage.getItem('userEmail') || ''
+  });
+  const [orderSummary, setOrderSummary] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
 
   // Check if sidebar should be open by default on larger screens
   useEffect(() => {
@@ -23,11 +34,7 @@ const ClubStore = () => {
         setIsSidebarOpen(true);
       }
     };
-    
-    // Set initial state
     checkScreenSize();
-    
-    // Update on resize
     window.addEventListener('resize', checkScreenSize);
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
@@ -48,15 +55,11 @@ const ClubStore = () => {
       try {
         setLoading(true);
         const response = await axios.get('http://localhost:8070/products');
-        
-        // Access the products array from the response
         if (response.data.success && response.data.products) {
           setProducts(response.data.products);
-          
-          // Extract unique categories
           const uniqueCategories = [...new Set(response.data.products
             .map(product => product.category)
-            .filter(category => category))]; // Filter out null/undefined categories
+            .filter(category => category))];
           setCategories(uniqueCategories);
         } else {
           setError('Invalid product data received.');
@@ -76,15 +79,39 @@ const ClubStore = () => {
 
     fetchUserData();
     fetchProducts();
+    fetchNotifications();
   }, []);
 
   useEffect(() => {
     localStorage.setItem('clubStoreCart', JSON.stringify(cart));
   }, [cart]);
 
+  // Notifications
+  const fetchNotifications = async () => {
+    const userId = sessionStorage.getItem('userId');
+    if (!userId) return;
+    setNotificationsLoading(true);
+    try {
+      const res = await axios.get(`http://localhost:8070/notifications?userId=${userId}`);
+      setNotifications(res.data.notifications || []);
+    } catch (err) {
+      // Optionally handle error
+    } finally {
+      setNotificationsLoading(false);
+    }
+  };
+
+  const handleBellClick = () => {
+    setShowNotifications(!showNotifications);
+    if (!showNotifications) {
+      fetchNotifications();
+    }
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
   const addToCart = (product) => {
     const existingItemIndex = cart.findIndex(item => item._id === product._id);
-    
     if (existingItemIndex >= 0) {
       const updatedCart = [...cart];
       updatedCart[existingItemIndex] = {
@@ -103,7 +130,6 @@ const ClubStore = () => {
 
   const updateCartItemQuantity = (productId, newQuantity) => {
     if (newQuantity < 1) return;
-    
     setCart(cart.map(item => 
       item._id === productId ? { ...item, quantity: newQuantity } : item
     ));
@@ -124,22 +150,60 @@ const ClubStore = () => {
     return matchesCategory && matchesSearch;
   });
 
-  // Add this helper function at the top of your component
   const formatPrice = (price) => {
     return typeof price === 'number' ? price.toFixed(2) : '0.00';
   };
 
   const handleCheckout = () => {
-    // Save current cart to session for order processing
-    sessionStorage.setItem('checkoutCart', JSON.stringify(cart));
-    
-    // Clear local cart
-    setCart([]);
-    localStorage.removeItem('clubStoreCart');
-    
-    // Display confirmation
-    alert('Thank you for your order! Your items will be available for pickup at the club.');
     setShowCartModal(false);
+    setShowCheckoutModal(true);
+  };
+
+  const handleCheckoutInfoChange = (e) => {
+    const { name, value } = e.target;
+    setCheckoutInfo({ ...checkoutInfo, [name]: value });
+  };
+
+  const submitOrder = async (e) => {
+    e.preventDefault();
+    const userEmail = sessionStorage.getItem('userEmail');
+    let userId = sessionStorage.getItem('userId');
+    if (!userId && userEmail) {
+      try {
+        const res = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
+        userId = res.data.user?._id;
+        if (userId) sessionStorage.setItem('userId', userId);
+      } catch (err) {
+        alert('Could not fetch user info.');
+        return;
+      }
+    }
+    if (!userId) {
+      alert('User not found. Please log in.');
+      return;
+    }
+    if (!checkoutInfo.address || !checkoutInfo.phone || !checkoutInfo.email) {
+      alert('Please fill in all checkout fields.');
+      return;
+    }
+    const orderProducts = cart.map(item => ({ product: item._id, quantity: item.quantity }));
+    const total = parseFloat(calculateTotal());
+    try {
+      const res = await axios.post('http://localhost:8070/orders', {
+        userId,
+        products: orderProducts,
+        total,
+        address: checkoutInfo.address,
+        phone: checkoutInfo.phone,
+        email: checkoutInfo.email
+      });
+      setOrderSummary(res.data.order);
+      setCart([]);
+      localStorage.removeItem('clubStoreCart');
+      setShowCheckoutModal(false);
+    } catch (err) {
+      alert('Failed to place order. Please try again.');
+    }
   };
 
   return (
@@ -154,12 +218,37 @@ const ClubStore = () => {
         <div className={styles.container}>
           <div className={styles.storeHeader}>
             <h1 className={styles.pageTitle}>Club Store</h1>
-            <div className={styles.cartIconContainer} onClick={(e) => {
-              e.stopPropagation();
-              setShowCartModal(!showCartModal);
-            }}>
-              <FaShoppingCart className={styles.cartIcon} />
-              {cart.length > 0 && <span className={styles.cartBadge}>{cart.reduce((sum, item) => sum + item.quantity, 0)}</span>}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+              <div className={styles.cartIconContainer} onClick={(e) => {
+                e.stopPropagation();
+                setShowCartModal(!showCartModal);
+              }}>
+                <FaShoppingCart className={styles.cartIcon} />
+                {cart.length > 0 && <span className={styles.cartBadge}>{cart.reduce((sum, item) => sum + item.quantity, 0)}</span>}
+              </div>
+              <div style={{ position: 'relative' }}>
+                <FaBell className={styles.cartIcon} style={{ cursor: 'pointer' }} onClick={handleBellClick} />
+                {unreadCount > 0 && <span className={styles.cartBadge}>{unreadCount}</span>}
+                {showNotifications && (
+                  <div className={styles.notificationsDropdown}>
+                    <h4 style={{ margin: '0 0 0.5rem 0' }}>Notifications</h4>
+                    {notificationsLoading ? (
+                      <div>Loading...</div>
+                    ) : notifications.length === 0 ? (
+                      <div>No notifications</div>
+                    ) : (
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                        {notifications.map((n, idx) => (
+                          <li key={n._id || idx} style={{ padding: '0.5rem 0', borderBottom: '1px solid #eee', fontWeight: n.read ? 'normal' : 'bold' }}>
+                            {n.message}
+                            <div style={{ fontSize: '0.8em', color: '#888' }}>{new Date(n.createdAt).toLocaleString()}</div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -299,6 +388,39 @@ const ClubStore = () => {
               </div>
             </div>
           )}
+
+          {/* Checkout Modal */}
+          {showCheckoutModal && (
+            <div className={styles.cartModal}>
+              <div className={styles.cartModalContent}>
+                <div className={styles.cartHeader}>
+                  <h2>Checkout</h2>
+                  <button className={styles.closeModal} onClick={() => setShowCheckoutModal(false)}>&times;</button>
+                </div>
+                <form onSubmit={submitOrder} className={styles.checkoutForm}>
+                  <div className={styles.formGroup}>
+                    <label>Address</label>
+                    <input type="text" name="address" value={checkoutInfo.address} onChange={handleCheckoutInfoChange} required className={styles.formControl} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Phone</label>
+                    <input type="text" name="phone" value={checkoutInfo.phone} onChange={handleCheckoutInfoChange} required className={styles.formControl} />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Email</label>
+                    <input type="email" name="email" value={checkoutInfo.email} onChange={handleCheckoutInfoChange} required className={styles.formControl} />
+                  </div>
+                  <button type="submit" className={styles.checkoutBtn}>Place Order</button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Order Summary */}
+          {orderSummary && (
+            <OrderSummary order={orderSummary} onClose={() => setOrderSummary(null)} />
+          )}
+
         </div>
       </div>
     </div>
