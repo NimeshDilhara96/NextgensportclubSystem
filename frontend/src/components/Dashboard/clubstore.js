@@ -344,7 +344,10 @@ const ClubStore = () => {
                 </div>
 
                 {cart.length === 0 ? (
-                  <div className={styles.emptyCart}>Your cart is empty</div>
+                  <div className={styles.emptyCart}>
+                    <FaShoppingCart className={styles.emptyCartIcon} />
+                    Your cart is empty
+                  </div>
                 ) : (
                   <>
                     <div className={styles.cartItems}>
