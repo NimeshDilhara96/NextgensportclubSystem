@@ -1,23 +1,34 @@
 .addProductContainer {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     padding: 2rem;
     margin-left: 220px; /* Adjust based on your sidebar width */
+    background: #f7f8fa;
+    min-height: 100vh;
 }
 
 .addProductCard {
     background-color: white;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     padding: 2rem;
     width: 100%;
-    max-width: 800px;
+    max-width: 900px;
+    margin-bottom: 2rem;
+    transition: box-shadow 0.2s;
+}
+
+.addProductCard:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
 }
 
 .addProductCard h2 {
     margin-bottom: 1.5rem;
-    color: #333;
+    color: #2d3a4a;
     text-align: center;
+    font-size: 2rem;
+    letter-spacing: 1px;
 }
 
 .formGroup {
@@ -28,6 +39,7 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
+    color: #2d3a4a;
 }
 
 .formControl {
@@ -36,6 +48,13 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
+    background: #f9f9fb;
+    transition: border 0.2s;
+}
+
+.formControl:focus {
+    border: 1.5px solid #4caf50;
+    outline: none;
 }
 
 .imagePreviewContainer {
@@ -54,6 +73,7 @@
     width: auto;
     object-fit: cover;
     border-radius: 8px;
+    border: 1.5px solid #e0e0e0;
 }
 
 .removeImage {
@@ -69,6 +89,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
 .productActions {
@@ -92,6 +113,7 @@
     margin-right: 10px;
     color: #444;
     transition: background-color 0.3s;
+    font-size: 1rem;
 }
 
 .mediaButton:hover {
@@ -102,18 +124,85 @@
     background-color: #4caf50;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 24px;
     border-radius: 4px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
+    font-size: 1.1rem;
     transition: background-color 0.3s;
+    box-shadow: 0 2px 8px rgba(76,175,80,0.08);
 }
 
 .submitProduct:hover {
-    background-color: #3e8e41;
+    background-color: #388e3c;
 }
 
 .submitProduct:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
+}
+
+/* Orders Table Styles */
+.ordersTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    background: #f9f9fb;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.ordersTable th, .ordersTable td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.ordersTable th {
+    background: #e8f5e9;
+    color: #388e3c;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.ordersTable tr:nth-child(even) {
+    background: #f4f8f6;
+}
+
+.ordersTable tr:hover {
+    background: #e0f2f1;
+    transition: background 0.2s;
+}
+
+.ordersTable ul {
+    margin: 0;
+    padding-left: 1.1em;
+    list-style: disc;
+}
+
+@media (max-width: 900px) {
+    .addProductContainer {
+        margin-left: 0;
+        padding: 1rem;
+    }
+    .addProductCard {
+        padding: 1rem;
+        max-width: 100%;
+    }
+    .ordersTable th, .ordersTable td {
+        padding: 0.5rem 0.5rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .addProductCard {
+        padding: 0.5rem;
+    }
+    .ordersTable th, .ordersTable td {
+        padding: 0.35rem 0.25rem;
+        font-size: 0.9rem;
+    }
 }
