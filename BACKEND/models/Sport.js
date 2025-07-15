@@ -47,10 +47,10 @@ const SportSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    instructorName: {
-        type: String,
-        required: false
-    },
+    coaches: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coach'
+    }],
     maxCapacity: {
         type: Number,
         default: 20

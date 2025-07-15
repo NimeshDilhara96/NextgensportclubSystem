@@ -42,7 +42,11 @@ const coachSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
-    }
+    },
+    sports: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Sport'
+    }]
 }, {
     timestamps: true
 });
