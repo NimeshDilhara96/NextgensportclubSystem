@@ -442,80 +442,168 @@ const SportsFacilities = () => {
           {/* Sports Tab */}
           {activeTab === 'sports' && (
             <div className={styles.sportsList}>
+              <h1 className={styles.sportsHeader} style={lightModeStyles.accent}>Explore Sports Programs</h1>
+              <p className={styles.sportsDescription} style={lightModeStyles.description}>
+                Discover and join exciting sports programs. View coaches, schedules, and more!
+              </p>
               <div className={styles.sportsGrid}>
                 {sports.length === 0 ? (
                   <p className={styles.noData}>No sports programs available at this time</p>
                 ) : (
                   sports.map(sport => (
-                    <div key={sport._id} className={styles.sportCard} style={lightModeStyles.card}>
-                      <img 
-                        src={sport.image ? `http://localhost:8070/${sport.image}` : 'https://via.placeholder.com/100x100?text=Sport'} 
-                        alt={sport.name} 
-                        className={styles.sportImage}
-                      />
-                      <h3 className={styles.sportName} style={lightModeStyles.accent}>{sport.name}</h3>
-                      <p className={styles.sportDescription} style={lightModeStyles.description}>{sport.description}</p>
-                      <div className={styles.sportMembers} style={lightModeStyles.description}>
-                        <span className={styles.memberCount} style={lightModeStyles.accent}>
-                          {sport.memberCount || 0}
-                        </span> active members
+                    <div
+                      key={sport._id}
+                      className={styles.sportCard}
+                      style={{
+                        ...lightModeStyles.card,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                        borderRadius: 16,
+                        border: isUserMember(sport) ? '2px solid #1877f2' : '1px solid #eee',
+                        position: 'relative',
+                        transition: 'transform 0.2s',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
+                      onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                    >
+                      <div style={{ position: 'relative' }}>
+                        <img
+                          src={sport.image ? `http://localhost:8070/${sport.image}` : 'https://via.placeholder.com/200x120?text=Sport'}
+                          alt={sport.name}
+                          className={styles.sportImage}
+                          style={{
+                            width: '100%',
+                            height: 120,
+                            objectFit: 'cover',
+                            borderRadius: '16px 16px 0 0'
+                          }}
+                        />
+                        <span
+                          style={{
+                            position: 'absolute',
+                            top: 10,
+                            right: 10,
+                            background: '#1877f2',
+                            color: '#fff',
+                            borderRadius: 12,
+                            padding: '2px 10px',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            boxShadow: '0 1px 4px rgba(0,0,0,0.10)'
+                          }}
+                        >
+                          {sport.memberCount || 0} Members
+                        </span>
+                        {isUserMember(sport) && (
+                          <span
+                            style={{
+                              position: 'absolute',
+                              top: 10,
+                              left: 10,
+                              background: '#28a745',
+                              color: '#fff',
+                              borderRadius: 12,
+                              padding: '2px 10px',
+                              fontSize: 12,
+                              fontWeight: 600,
+                            }}
+                          >
+                            Joined
+                          </span>
+                        )}
                       </div>
-                      <div className={styles.sportInfo}>
-                        {sport.category && (
-                          <p>
-                            <span className={styles.sportInfoLabel}>Category:</span> 
-                            <span className={styles.sportInfoValue}>{sport.category}</span>
-                          </p>
-                        )}
-                        {sport.instructorName && (
-                          <p>
-                            <span className={styles.sportInfoLabel}>Instructor:</span> 
-                            <span className={styles.sportInfoValue}>{sport.instructorName}</span>
-                          </p>
-                        )}
-                        {sport.schedule && (
-                          <p>
-                            <span className={styles.sportInfoLabel}>Schedule:</span> 
-                            <span className={styles.sportInfoValue}>{sport.schedule}</span>
-                          </p>
-                        )}
-                      </div>
-                      {sport.coaches && sport.coaches.length > 0 ? (
-                        <div className={styles.sportCoaches}>
-                          <strong>Coaches:</strong>
-                          <div className={styles.coachAvatarList}>
-                            {sport.coaches.map(coach => (
-                              <div key={coach._id || coach} className={styles.coachAvatarItem}>
-                                {coach.image && (
-                                  <img src={`http://localhost:8070${coach.image}`} alt={coach.name} className={styles.coachAvatar} width="32" height="32" />
-                                )}
-                                <span>{coach.name || coach}</span>
-                              </div>
-                            ))}
+                      <div style={{ padding: '16px' }}>
+                        <h3 style={{ ...lightModeStyles.accent, marginBottom: 8 }}>{sport.name}</h3>
+                        <p style={{ ...lightModeStyles.description, marginBottom: 10 }}>{sport.description}</p>
+                        <div style={{ marginBottom: 10 }}>
+                          {sport.category && (
+                            <div style={{ fontSize: 13, marginBottom: 4 }}>
+                              <strong>Category:</strong> {sport.category}
+                            </div>
+                          )}
+                          {sport.schedule && (
+                            <div style={{ fontSize: 13 }}>
+                              <strong>Schedule:</strong> {sport.schedule}
+                            </div>
+                          )}
+                        </div>
+                        {sport.coaches && sport.coaches.length > 0 ? (
+                          <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <strong style={{ fontSize: 13 }}>Coaches:</strong>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                              {sport.coaches.map(coach => (
+                                <div
+                                  key={coach._id || coach}
+                                  title={coach.name || coach}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 4,
+                                    background: '#f0f2f5',
+                                    borderRadius: '50%',
+                                    padding: 2,
+                                  }}
+                                >
+                                  {coach.image && (
+                                    <img
+                                      src={`http://localhost:8070${coach.image}`}
+                                      alt={coach.name}
+                                      style={{
+                                        width: 32,
+                                        height: 32,
+                                        borderRadius: '50%',
+                                        objectFit: 'cover',
+                                        border: '1px solid #ddd'
+                                      }}
+                                    />
+                                  )}
+                                  <span style={{ fontSize: 13 }}>{coach.name || coach}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div className={styles.sportCoaches}>
-                          <strong>Coaches:</strong> <span>No coaches assigned.</span>
-                        </div>
-                      )}
-                      {!isUserMember(sport) ? (
-                        <button 
-                          className={styles.joinButton}
-                          onClick={() => handleJoinSport(sport._id)}
-                          disabled={sport.availability !== 'Available'}
-                        >
-                          {sport.availability === 'Available' ? 'Join Now' : 'Not Available'}
-                        </button>
-                      ) : (
-                        <button
-                          className={styles.cancelButton}
-                          onClick={() => handleLeaveSport(sport._id)}
-                          disabled={sport.availability !== 'Available'}
-                        >
-                          Cancel
-                        </button>
-                      )}
+                        ) : (
+                          <div style={{ marginBottom: 10 }}>
+                            <strong>Coaches:</strong> <span>No coaches assigned.</span>
+                          </div>
+                        )}
+                        {!isUserMember(sport) ? (
+                          <button
+                            className={styles.joinButton}
+                            style={{
+                              background: '#1877f2',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: 8,
+                              padding: '8px 18px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              marginTop: 8,
+                            }}
+                            onClick={() => handleJoinSport(sport._id)}
+                            disabled={sport.availability !== 'Available'}
+                          >
+                            {sport.availability === 'Available' ? 'Join Now' : 'Not Available'}
+                          </button>
+                        ) : (
+                          <button
+                            className={styles.cancelButton}
+                            style={{
+                              background: '#f44336',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: 8,
+                              padding: '8px 18px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              marginTop: 8,
+                            }}
+                            onClick={() => handleLeaveSport(sport._id)}
+                            disabled={sport.availability !== 'Available'}
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))
                 )}
