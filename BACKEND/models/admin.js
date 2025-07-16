@@ -10,6 +10,11 @@ const adminSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    email: { // Add this field if you want to keep the index
+        type: String,
+        unique: true,
+        sparse: true // Optional: allows multiple docs without email
     }
 }, {
     timestamps: true

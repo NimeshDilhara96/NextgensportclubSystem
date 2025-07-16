@@ -4,7 +4,7 @@ const Admin = require('../models/admin');
 // Register new admin
 router.post('/register', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, password, email } = req.body; // Add email here
         
         // Check if admin already exists
         const existingAdmin = await Admin.findOne({ username });
@@ -15,7 +15,8 @@ router.post('/register', async (req, res) => {
         // Create new admin
         const newAdmin = new Admin({
             username,
-            password
+            password,
+            email // Add email here
         });
 
         // Save admin
@@ -58,4 +59,4 @@ router.get('/profile', async (req, res) => {
     }
 });
 
-module.exports = router; 
+module.exports = router;
