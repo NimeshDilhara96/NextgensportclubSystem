@@ -20,6 +20,7 @@ const Profile = () => {
     profilePicture: ''
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [joinedSports, setJoinedSports] = useState([]); // NEW: store sport details
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -37,8 +38,8 @@ const Profile = () => {
           return;
         }
 
+        // Fetch user data
         const response = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
-        
         if (response.data.status === "success") {
           const userData = response.data.user;
           setUser(userData);
@@ -56,6 +57,18 @@ const Profile = () => {
         } else {
           setError(response.data.message || 'Failed to fetch user data');
         }
+
+        // --- NEW: Fetch all sports and filter joined ---
+        const sportsRes = await axios.get('http://localhost:8070/sports');
+        if (sportsRes.data && sportsRes.data.sports) {
+          const joined = sportsRes.data.sports.filter(sport =>
+            sport.members && sport.members.some(member => member.userEmail === userEmail)
+          );
+          setJoinedSports(joined);
+        } else {
+          setJoinedSports([]);
+        }
+        // --- END NEW ---
       } catch (error) {
         console.error('Error fetching user data:', error);
         setError(error.response?.data?.message || 'Failed to fetch user data');
@@ -316,6 +329,36 @@ const Profile = () => {
               </button>
             </div>
           )}
+
+          {/* --- NEW: Joined Sports Section --- */}
+          <div className="joined-sports-section" style={{ marginTop: 30 }}>
+            <h2>Joined Sports</h2>
+            {joinedSports.length === 0 ? (
+              <p>You have not joined any sports yet.</p>
+            ) : (
+              <div className="joined-sports-list" style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}>
+                {joinedSports.map((sport) => (
+                  <div key={sport._id} className="sport-card" style={{
+                    border: '1px solid #eee',
+                    borderRadius: 8,
+                    padding: 16,
+                    minWidth: 180,
+                    textAlign: 'center',
+                    background: '#fafafa'
+                  }}>
+                    <img
+                      src={sport.image?.startsWith('http') ? sport.image : `http://localhost:8070/${sport.image}`}
+                      alt={sport.name}
+                      style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8, marginBottom: 8 }}
+                    />
+                    <div style={{ fontWeight: 600 }}>{sport.name}</div>
+                    <div style={{ fontSize: 13, color: '#666' }}>{sport.category}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          {/* --- END NEW --- */}
         </div>
       </div>
     </>
