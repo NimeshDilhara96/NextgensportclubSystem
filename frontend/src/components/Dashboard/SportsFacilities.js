@@ -171,6 +171,48 @@ const SportsFacilities = () => {
     }
   };
 
+  // Handle leaving a sport
+  const handleLeaveSport = async (sportId) => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const userEmail = sessionStorage.getItem('userEmail');
+
+      if (!token || !userEmail) {
+        alert('Authentication required - please login first');
+        return;
+      }
+
+      // Send the request with the email in the body
+      const response = await axios.post(`http://localhost:8070/sports/leave/${sportId}`, {
+        email: userEmail
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data.status === 'success') {
+        alert('You have left the sport.');
+        // Refresh sports data
+        const sportsResponse = await axios.get('http://localhost:8070/sports');
+        if (sportsResponse.data.status === 'success') {
+          setSports(sportsResponse.data.sports);
+        } else {
+          setSports(sportsResponse.data || []);
+        }
+      } else {
+        alert(response.data.message || 'Failed to leave sport.');
+      }
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message);
+      } else {
+        alert('Failed to leave sport. Please try again.');
+      }
+      console.error('Error leaving sport:', err);
+    }
+  };
+
   // Replace the existing handleBookFacility function with this:
   const handleBookFacility = (facility) => {
     setSelectedFacility(facility);
@@ -317,6 +359,12 @@ const SportsFacilities = () => {
     );
   }
   
+  const isUserMember = (sport) => {
+    const userEmail = sessionStorage.getItem('userEmail');
+    if (!userEmail || !sport.members) return false;
+    return sport.members.some(member => member.userEmail === userEmail);
+  };
+
   return (
     <div className={styles.pageWrapper}>
       <SlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
@@ -447,13 +495,23 @@ const SportsFacilities = () => {
                           <strong>Coaches:</strong> <span>No coaches assigned.</span>
                         </div>
                       )}
-                      <button 
-                        className={styles.joinButton}
-                        onClick={() => handleJoinSport(sport._id)}
-                        disabled={sport.availability !== 'Available'}
-                      >
-                        {sport.availability === 'Available' ? 'Join Now' : 'Not Available'}
-                      </button>
+                      {!isUserMember(sport) ? (
+                        <button 
+                          className={styles.joinButton}
+                          onClick={() => handleJoinSport(sport._id)}
+                          disabled={sport.availability !== 'Available'}
+                        >
+                          {sport.availability === 'Available' ? 'Join Now' : 'Not Available'}
+                        </button>
+                      ) : (
+                        <button
+                          className={styles.cancelButton}
+                          onClick={() => handleLeaveSport(sport._id)}
+                          disabled={sport.availability !== 'Available'}
+                        >
+                          Cancel
+                        </button>
+                      )}
                     </div>
                   ))
                 )}

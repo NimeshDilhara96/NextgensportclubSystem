@@ -222,81 +222,32 @@ router.post('/join/:sportId', async (req, res) => {
 router.post('/leave/:sportId', async (req, res) => {
     try {
         const sportId = req.params.sportId;
-        const userEmail = req.body.userEmail || req.user?.email;
-        
+        const userEmail = req.body.email;
+
         if (!userEmail) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'User email required'
-            });
+            return res.status(400).json({ status: 'error', message: 'User email is required.' });
         }
 
-        // Find both sport and user documents
         const sport = await Sport.findById(sportId);
-        const User = require('../models/User');
-        const user = await User.findOne({ email: userEmail });
-
         if (!sport) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'Sport not found'
-            });
+            return res.status(404).json({ status: 'error', message: 'Sport not found.' });
         }
 
-        if (!user) {
-            return res.status(404).json({
-                status: 'error',
-                message: 'User not found'
-            });
+        // Remove member by email
+        const initialCount = sport.members.length;
+        sport.members = sport.members.filter(member => member.userEmail !== userEmail);
+        sport.memberCount = sport.members.length;
+
+        // Only save if a member was actually removed
+        if (sport.members.length < initialCount) {
+            await sport.save();
+            return res.status(200).json({ status: 'success', message: 'You have left the sport.' });
+        } else {
+            return res.status(400).json({ status: 'error', message: 'You are not a member of this sport.' });
         }
-
-        // Check if user is a member of sport (by email)
-        const memberIndex = sport.members.findIndex(member => member.userEmail === userEmail);
-        if (memberIndex === -1) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'You are not a member of this sport'
-            });
-        }
-
-        // Check if sport exists in user's sports array
-        const sportIndex = user.sports.findIndex(item => item.sport.toString() === sportId);
-        if (sportIndex === -1) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Sport not found in user profile'
-            });
-        }
-
-        // Remove member from sport and decrement count
-        sport.members.splice(memberIndex, 1);
-        sport.memberCount = Math.max(0, sport.memberCount - 1);
-
-        // Remove sport from user's sports array
-        user.sports.splice(sportIndex, 1);
-
-        // Save both documents
-        const [updatedSport, updatedUser] = await Promise.all([
-            sport.save(),
-            user.save()
-        ]);
-        
-        res.status(200).json({
-            status: 'success',
-            message: 'Successfully left the sport',
-            sport: updatedSport,
-            user: {
-                name: updatedUser.name,
-                email: updatedUser.email,
-                sports: updatedUser.sports
-            }
-        });
     } catch (error) {
         console.error('Error leaving sport:', error);
-        res.status(500).json({
-            status: 'error',
-            message: 'Failed to leave sport'
-        });
+        res.status(500).json({ status: 'error', message: 'Failed to leave sport.' });
     }
 });
 
