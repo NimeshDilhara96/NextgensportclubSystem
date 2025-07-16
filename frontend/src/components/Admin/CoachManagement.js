@@ -58,7 +58,8 @@ const CoachManagement = () => {
         bio: '',
         email: '',
         phone: '',
-        availability: []
+        availability: [],
+        sports: [] // Added for sports assignment
     });
     const [image, setImage] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -77,11 +78,24 @@ const CoachManagement = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [coachToDelete, setCoachToDelete] = useState(null);
 
-    // Fetch coaches when component mounts or tab changes to manage
+    // Fetch sports when component mounts
+    const [sports, setSports] = useState([]);
+
     useEffect(() => {
         if (activeTab === 'manage') {
             fetchCoaches();
         }
+        const fetchSports = async () => {
+            try {
+                const response = await axios.get('http://localhost:8070/sports');
+                if (response.data.status === 'success') {
+                    setSports(response.data.sports);
+                }
+            } catch (err) {
+                // handle error
+            }
+        };
+        fetchSports();
     }, [activeTab]);
 
     const fetchCoaches = async () => {
@@ -143,6 +157,8 @@ const CoachManagement = () => {
         }
     };
 
+    // Removed unused handleSportsChange function
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
@@ -165,8 +181,8 @@ const CoachManagement = () => {
             
             // Append text data
             Object.keys(coachData).forEach(key => {
-                if (key === 'availability') {
-                    formData.append('availability', JSON.stringify(coachData.availability));
+                if (key === 'availability' || key === 'sports') {
+                    formData.append(key, JSON.stringify(coachData[key]));
                 } else {
                     formData.append(key, coachData[key]);
                 }
@@ -193,7 +209,8 @@ const CoachManagement = () => {
                 bio: '',
                 email: '',
                 phone: '',
-                availability: []
+                availability: [],
+                sports: []
             });
             setImage(null);
             setPreviewUrl(null);
@@ -279,6 +296,8 @@ const CoachManagement = () => {
         });
     };
 
+    // Removed unused handleSportsEditChange function
+
     const handleContactChange = (e) => {
         const { name, value } = e.target;
         setSelectedCoach({
@@ -313,6 +332,7 @@ const CoachManagement = () => {
             
             // Append availability as JSON string
             formData.append('availability', JSON.stringify(selectedCoach.availability || []));
+            formData.append('sports', JSON.stringify(selectedCoach.sports || [])); // Append sports
             
             // Append image if a new one was selected
             if (editImage) {
@@ -528,6 +548,33 @@ const CoachManagement = () => {
                                                 />
                                                 <label htmlFor={option.value}>{option.day}</label>
                                             </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className={styles.formGroup}>
+                                    <label>Assign Sports</label>
+                                    <div className={styles.sportsCheckboxList}>
+                                        {sports.map(sport => (
+                                            <label key={sport._id} className={styles.sportCheckboxItem}>
+                                                <input
+                                                    type="checkbox"
+                                                    value={sport._id}
+                                                    checked={coachData.sports.includes(sport._id)}
+                                                    onChange={e => {
+                                                        const checked = e.target.checked;
+                                                        const value = e.target.value;
+                                                        setCoachData(prev => {
+                                                            if (checked) {
+                                                                return { ...prev, sports: [...prev.sports, value] };
+                                                            } else {
+                                                                return { ...prev, sports: prev.sports.filter(id => id !== value) };
+                                                            }
+                                                        });
+                                                    }}
+                                                />
+                                                {sport.name}
+                                            </label>
                                         ))}
                                     </div>
                                 </div>
@@ -780,6 +827,33 @@ const CoachManagement = () => {
                                                             />
                                                             <label htmlFor={`edit-${option.value}`}>{option.day}</label>
                                                         </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div className={styles.formGroup}>
+                                                <label>Assign Sports</label>
+                                                <div className={styles.sportsCheckboxList}>
+                                                    {sports.map(sport => (
+                                                        <label key={sport._id} className={styles.sportCheckboxItem}>
+                                                            <input
+                                                                type="checkbox"
+                                                                value={sport._id}
+                                                                checked={selectedCoach.sports.includes(sport._id)}
+                                                                onChange={e => {
+                                                                    const checked = e.target.checked;
+                                                                    const value = e.target.value;
+                                                                    setSelectedCoach(prev => {
+                                                                        if (checked) {
+                                                                            return { ...prev, sports: [...prev.sports, value] };
+                                                                        } else {
+                                                                            return { ...prev, sports: prev.sports.filter(id => id !== value) };
+                                                                        }
+                                                                    });
+                                                                }}
+                                                            />
+                                                            {sport.name}
+                                                        </label>
                                                     ))}
                                                 </div>
                                             </div>

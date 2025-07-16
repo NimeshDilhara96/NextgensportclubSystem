@@ -3,6 +3,7 @@ import axios from 'axios';
 import SlideNav from '../appnavbar/slidenav';
 import { FaStar, FaCalendarAlt, FaEnvelope, FaPhone, FaUser, FaSearch, FaFilter } from 'react-icons/fa';
 import styles from './TrainingCoaches.module.css';
+import { useLocation } from 'react-router-dom';
 
 // Light mode styles
 const lightModeStyles = {
@@ -36,6 +37,7 @@ const TrainingCoaches = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('all');
   const [specialties, setSpecialties] = useState([]);
+  const [showAllCoaches, setShowAllCoaches] = useState(false);
   
   // Modal states
   const [showCoachModal, setShowCoachModal] = useState(false);
@@ -47,6 +49,13 @@ const TrainingCoaches = () => {
     notes: '',
   });
   const [bookingStatus, setBookingStatus] = useState({ type: '', message: '' });
+
+  const [userSports, setUserSports] = useState([]);
+  const [userSportsLoading, setUserSportsLoading] = useState(true);
+  const [userSportsError, setUserSportsError] = useState(null);
+
+  const location = useLocation();
+  const sport = location.state?.sport;
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -66,34 +75,29 @@ const TrainingCoaches = () => {
     return days[day] || day;
   };
   
-  // Fetch coaches data from backend
+  // Fetch all coaches on mount.
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAllCoaches = async () => {
       setLoading(true);
       try {
         const response = await axios.get('http://localhost:8070/coaches');
-        
         if (response.data.success && response.data.coaches) {
-          // Filter out inactive coaches
-          const activeCoaches = response.data.coaches.filter(coach => coach.isActive !== false);
-          setCoaches(activeCoaches);
-          
-          // Extract unique specialties
-          const uniqueSpecialties = [...new Set(activeCoaches.map(coach => coach.specialty))].filter(Boolean);
+          setCoaches(response.data.coaches);
+          const uniqueSpecialties = Array.from(new Set(response.data.coaches.map(coach => coach.specialty)));
           setSpecialties(uniqueSpecialties);
         } else {
-          throw new Error('Invalid response format');
+          setCoaches([]);
+          setSpecialties([]);
         }
         setError(null);
       } catch (err) {
-        console.error('Error fetching coaches:', err);
-        setError('Failed to load coaches. Please try again later.');
+        setError('Failed to load coaches.');
+        setCoaches([]);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchData();
+    fetchAllCoaches();
   }, []);
 
   // Fetch user sessions
@@ -141,6 +145,34 @@ const TrainingCoaches = () => {
       fetchUserSessions();
     }
   }, [activeTab]);
+
+  // Fetch user's joined sports on mount
+  useEffect(() => {
+    const fetchUserSports = async () => {
+      setUserSportsLoading(true);
+      setUserSportsError(null);
+      try {
+        const userEmail = sessionStorage.getItem('userEmail');
+        if (!userEmail) {
+          setUserSports([]);
+          setUserSportsLoading(false);
+          return;
+        }
+        const response = await axios.get(`http://localhost:8070/user/get/${userEmail}`);
+        if (response.data && response.data.user && response.data.user.sports) {
+          setUserSports(response.data.user.sports);
+        } else {
+          setUserSports([]);
+        }
+      } catch (err) {
+        setUserSportsError('Failed to load your joined sports.');
+        setUserSports([]);
+      } finally {
+        setUserSportsLoading(false);
+      }
+    };
+    fetchUserSports();
+  }, []);
 
   // Handle view coach details
   const handleViewCoach = (coach) => {
@@ -262,15 +294,23 @@ const TrainingCoaches = () => {
     }
   };
 
-  // Filter coaches based on search and specialty
+  // Filter coaches based on search, specialty, and user joined sports
   const filteredCoaches = coaches.filter(coach => {
     const matchesSearch = coach.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           coach.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (coach.bio && coach.bio.toLowerCase().includes(searchQuery.toLowerCase()));
                           
+    // If not showing all, filter by user joined sports
+    let matchesUserSports = true;
+    if (!showAllCoaches && userSports.length > 0) {
+      // Check if coach is assigned to any of the user's joined sports
+      const userSportIds = userSports.map(s => (s.sport?._id || s.sport || s.sportId || s));
+      matchesUserSports = coach.sports && coach.sports.some(sid => userSportIds.includes(sid.toString ? sid.toString() : sid));
+    }
+
     const matchesSpecialty = selectedSpecialty === 'all' || coach.specialty === selectedSpecialty;
     
-    return matchesSearch && matchesSpecialty;
+    return matchesSearch && matchesUserSports && matchesSpecialty;
   });
   
   // Show loading indicator
@@ -318,6 +358,25 @@ const TrainingCoaches = () => {
         className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}
       >
         <div className={styles.container}>
+          {/* User's joined sports bar */}
+          <div className={styles.userSportsBar}>
+            <h3>Your Joined Sports:</h3>
+            {userSportsLoading ? (
+              <span>Loading...</span>
+            ) : userSportsError ? (
+              <span className={styles.error}>{userSportsError}</span>
+            ) : userSports.length === 0 ? (
+              <span>You have not joined any sports yet.</span>
+            ) : (
+              <div className={styles.userSportsList}>
+                {userSports.map(sport => (
+                  <span key={sport.sport} className={styles.userSportItem}>
+                    {sport.sportName}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
           <div className={styles.header}>
             <h1 style={lightModeStyles.text}>Training & Coaches</h1>
             <p>Book private or group sessions with our expert coaches</p>
@@ -363,6 +422,16 @@ const TrainingCoaches = () => {
                       <option key={specialty} value={specialty}>{specialty}</option>
                     ))}
                   </select>
+                </div>
+                <div className={styles.filterBox}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={showAllCoaches}
+                      onChange={() => setShowAllCoaches(val => !val)}
+                    />
+                    Show all coaches
+                  </label>
                 </div>
               </div>
               

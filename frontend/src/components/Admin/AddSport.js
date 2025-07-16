@@ -8,12 +8,13 @@ const AddSport = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedSport, setSelectedSport] = useState(null);
+    const [coaches, setCoaches] = useState([]);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
         category: '',
         schedule: '',
-        instructorName: '',
+        coaches: [], // new field for coach IDs
         maxCapacity: 20,
         availability: 'Available',
         image: null,
@@ -24,6 +25,16 @@ const AddSport = () => {
     // Fetch sports on component mount
     useEffect(() => {
         fetchSports();
+        // Fetch coaches for assignment
+        const fetchCoaches = async () => {
+            try {
+                const response = await axios.get('http://localhost:8070/coaches');
+                if (response.data.success && response.data.coaches) {
+                    setCoaches(response.data.coaches);
+                }
+            } catch (err) {}
+        };
+        fetchCoaches();
     }, []);
     
     const fetchSports = async () => {
@@ -47,6 +58,11 @@ const AddSport = () => {
         setFormData({ ...formData, image: e.target.files[0] });
     };
 
+    const handleCoachesChange = (e) => {
+        const selected = Array.from(e.target.selectedOptions, option => option.value);
+        setFormData({ ...formData, coaches: selected });
+    };
+
     // Reset form to default values
     const resetForm = () => {
         setFormData({
@@ -54,7 +70,7 @@ const AddSport = () => {
             description: '',
             category: '',
             schedule: '',
-            instructorName: '',
+            coaches: [],
             maxCapacity: 20,
             availability: 'Available',
             image: null,
@@ -69,10 +85,10 @@ const AddSport = () => {
             description: sport.description || '',
             category: sport.category || '',
             schedule: sport.schedule || '',
-            instructorName: sport.instructorName || '',
+            coaches: (sport.coaches || []).map(c => typeof c === 'string' ? c : c._id),
             maxCapacity: sport.maxCapacity || 20,
             availability: sport.availability || 'Available',
-            image: null, // Reset image for editing
+            image: null,
         });
         setShowEditModal(true);
     };
@@ -86,7 +102,12 @@ const AddSport = () => {
         try {
             const sportData = new FormData();
             Object.keys(formData).forEach((key) => {
-                sportData.append(key, formData[key]);
+                if (key === 'image' && !formData[key]) return;
+                if (key === 'coaches') {
+                    sportData.append('coaches', JSON.stringify(formData.coaches));
+                } else {
+                    sportData.append(key, formData[key]);
+                }
             });
 
             const token = sessionStorage.getItem('adminToken');
@@ -126,7 +147,11 @@ const AddSport = () => {
                     // Don't send image if not changed
                     return;
                 }
-                sportData.append(key, formData[key]);
+                if (key === 'coaches') {
+                    sportData.append('coaches', JSON.stringify(formData.coaches));
+                } else {
+                    sportData.append(key, formData[key]);
+                }
             });
 
             const token = sessionStorage.getItem('adminToken');
@@ -209,7 +234,7 @@ const AddSport = () => {
                                     <th>Image</th>
                                     <th>Name</th>
                                     <th>Category</th>
-                                    <th>Instructor</th>
+                                    <th>Coaches</th>
                                     <th>Capacity</th>
                                     <th>Availability</th>
                                     <th>Actions</th>
@@ -229,7 +254,7 @@ const AddSport = () => {
                                         </td>
                                         <td>{sport.name}</td>
                                         <td>{sport.category || 'N/A'}</td>
-                                        <td>{sport.instructorName || 'N/A'}</td>
+                                        <td>{(sport.coaches && sport.coaches.length > 0) ? sport.coaches.map(c => c.name || c).join(', ') : 'N/A'}</td>
                                         <td>{sport.maxCapacity}</td>
                                         <td>
                                             <span className={sport.availability === 'Available' ? styles.available : styles.closed}>
@@ -306,14 +331,19 @@ const AddSport = () => {
                                     />
                                 </div>
                                 <div className={styles.formGroup}>
-                                    <label htmlFor="instructorName">Instructor Name</label>
-                                    <input
-                                        type="text"
-                                        id="instructorName"
-                                        name="instructorName"
-                                        value={formData.instructorName}
-                                        onChange={handleInputChange}
-                                    />
+                                    <label htmlFor="coaches">Assign Coaches</label>
+                                    <select
+                                        id="coaches"
+                                        name="coaches"
+                                        multiple
+                                        value={formData.coaches}
+                                        onChange={handleCoachesChange}
+                                        className={styles.formControl}
+                                    >
+                                        {coaches.map(coach => (
+                                            <option key={coach._id} value={coach._id}>{coach.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label htmlFor="maxCapacity">Max Capacity</label>
@@ -418,14 +448,19 @@ const AddSport = () => {
                                     />
                                 </div>
                                 <div className={styles.formGroup}>
-                                    <label htmlFor="edit-instructorName">Instructor Name</label>
-                                    <input
-                                        type="text"
-                                        id="edit-instructorName"
-                                        name="instructorName"
-                                        value={formData.instructorName}
-                                        onChange={handleInputChange}
-                                    />
+                                    <label htmlFor="edit-coaches">Assign Coaches</label>
+                                    <select
+                                        id="edit-coaches"
+                                        name="coaches"
+                                        multiple
+                                        value={formData.coaches}
+                                        onChange={handleCoachesChange}
+                                        className={styles.formControl}
+                                    >
+                                        {coaches.map(coach => (
+                                            <option key={coach._id} value={coach._id}>{coach.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className={styles.formGroup}>
                                     <label htmlFor="edit-maxCapacity">Max Capacity</label>

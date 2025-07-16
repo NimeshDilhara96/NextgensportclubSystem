@@ -3,6 +3,8 @@ const Sport = require('../models/Sport');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const TrainingPlan = require('../models/TrainingPlan');
+const Coach = require('../models/Coach');
 
 // Configure multer for image upload
 const storage = multer.diskStorage({
@@ -67,7 +69,7 @@ router.post('/create', upload.single('image'), async (req, res) => {
 // Get all sports
 router.get('/', async (req, res) => {
     try {
-        const sports = await Sport.find();
+        const sports = await Sport.find().populate('coaches');
         res.status(200).json({
             status: 'success',
             sports
@@ -189,22 +191,36 @@ router.post('/join/:sportId', async (req, res) => {
             role: 'member',
             status: 'active'
         });
+        await user.save();
 
-        // Save both documents
-        const [updatedSport, updatedUser] = await Promise.all([
-            sport.save(),
-            user.save()
-        ]);
+        // --- Create a default training plan for the user joining this sport ---
+        // Find a coach for this sport (by specialty)
+        let coach = await Coach.findOne({ specialty: sport.name, isActive: true });
+        // If no coach with exact specialty, just get any active coach
+        if (!coach) coach = await Coach.findOne({ isActive: true });
+
+        // Create a default training plan
+        const plan = new TrainingPlan({
+            user: user._id,
+            sport: sport._id,
+            coach: coach ? coach._id : null,
+            title: `Starter Plan for ${sport.name}`,
+            description: `Welcome to ${sport.name}! This is your starter training plan.`,
+            sessions: []
+        });
+        await plan.save();
+        // --- End training plan creation ---
         
         res.status(200).json({
             status: 'success',
             message: 'Successfully joined the sport',
-            sport: updatedSport,
+            sport: sport,
             user: {
-                name: updatedUser.name,
-                email: updatedUser.email,
-                sports: updatedUser.sports
-            }
+                name: user.name,
+                email: user.email,
+                sports: user.sports
+            },
+            trainingPlan: plan
         });
     } catch (error) {
         console.error('Error joining sport:', error);
@@ -476,6 +492,13 @@ router.delete('/:sportId', async (req, res) => {
         if (sport.image && !sport.image.includes('placeholder') && fs.existsSync(path.join(__dirname, '..', sport.image))) {
             fs.unlinkSync(path.join(__dirname, '..', sport.image));
         }
+
+        // Remove this sport from all users' sports arrays
+        const User = require('../models/User');
+        await User.updateMany(
+            {},
+            { $pull: { sports: { sport: sport._id } } }
+        );
 
         await Sport.findByIdAndDelete(req.params.sportId);
         res.status(200).json({

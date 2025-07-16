@@ -440,10 +440,15 @@ router.patch("/updateStatus/:id", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    
+    // Check for missing email or password
+    if (!email || !password) {
+      return res.status(400).json({
+        status: "error",
+        message: "Email and password are required"
+      });
+    }
     // Find the user by email
     const user = await User.findOne({ email });
-    
     // Check if user exists
     if (!user) {
       return res.status(401).json({
@@ -451,7 +456,6 @@ router.post("/login", async (req, res) => {
         message: "Invalid email or password"
       });
     }
-    
     // Check if user is blocked
     if (user.membershipStatus === 'blocked') {
       return res.status(403).json({
@@ -459,7 +463,6 @@ router.post("/login", async (req, res) => {
         message: "Your account has been blocked. Please contact the administrator."
       });
     }
-    
     // Check if password is correct
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
@@ -468,14 +471,12 @@ router.post("/login", async (req, res) => {
         message: "Invalid email or password"
       });
     }
-    
     // Generate JWT token
     const token = jwt.sign(
       { id: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET || 'your_jwt_secret_key',
       { expiresIn: '24h' }
     );
-    
     res.json({
       status: "success",
       message: "Login successful",

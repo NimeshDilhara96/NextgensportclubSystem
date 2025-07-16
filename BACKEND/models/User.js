@@ -31,20 +31,11 @@ const UserSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Sport'
         },
-        joinedAt: {
-            type: Date,
-            default: Date.now
-        },
-        role: {
-            type: String,
-            enum: ['member', 'coach', 'admin'],
-            default: 'member'
-        },
-        status: {
-            type: String,
-            enum: ['active', 'inactive'],
-            default: 'active'
-        }
+        sportName: { type: String }, // <-- Add this
+        category: { type: String },  // <-- Add this
+        joinedAt: { type: Date, default: Date.now },
+        role: { type: String, enum: ['member', 'coach', 'admin'], default: 'member' },
+        status: { type: String, enum: ['active', 'inactive'], default: 'active' }
     }],
     bookings: [{
         facility: {

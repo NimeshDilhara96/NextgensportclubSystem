@@ -417,6 +417,25 @@ const SportsFacilities = () => {
                           </p>
                         )}
                       </div>
+                      {sport.coaches && sport.coaches.length > 0 ? (
+                        <div className={styles.sportCoaches}>
+                          <strong>Coaches:</strong>
+                          <div className={styles.coachAvatarList}>
+                            {sport.coaches.map(coach => (
+                              <div key={coach._id || coach} className={styles.coachAvatarItem}>
+                                {coach.image && (
+                                  <img src={`http://localhost:8070${coach.image}`} alt={coach.name} className={styles.coachAvatar} width="32" height="32" />
+                                )}
+                                <span>{coach.name || coach}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className={styles.sportCoaches}>
+                          <strong>Coaches:</strong> <span>No coaches assigned.</span>
+                        </div>
+                      )}
                       <button 
                         className={styles.joinButton}
                         onClick={() => handleJoinSport(sport._id)}

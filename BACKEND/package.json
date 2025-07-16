@@ -8,6 +8,7 @@
     "dev": "nodemon server.js",
     "lint": "eslint src/",
     "format": "prettier --write src/"
+   ,"test": "mocha tests/**/*.test.js"
   },
   "author": "Nimesh Dilhara",
   "license": "ISC",
@@ -29,6 +30,9 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@ljharb/tsconfig": "^0.3.2"
+    "@ljharb/tsconfig": "^0.3.2",
+    "chai": "^5.2.1",
+    "mocha": "^11.7.1",
+    "supertest": "^7.1.3"
   }
 }

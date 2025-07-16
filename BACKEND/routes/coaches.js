@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Coach = require('../models/Coach');
+const Sport = require('../models/Sport');
 // Replace bcrypt with crypto
 const crypto = require('crypto');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const trainingPlansRouter = require('./trainingPlans');
 
 // Helper functions for password hashing using crypto instead of bcrypt
 function generateSalt() {
@@ -99,7 +101,7 @@ router.get('/:id', async (req, res) => {
 // Create a new coach
 router.post('/create', upload.single('image'), async (req, res) => {
     try {
-        const { username, password, name, specialty, experience, bio, email, phone, availability } = req.body;
+        const { username, password, name, specialty, experience, bio, email, phone, availability, sports } = req.body;
         
         // Check if username already exists
         const existingCoach = await Coach.findOne({ username });
@@ -126,7 +128,8 @@ router.post('/create', upload.single('image'), async (req, res) => {
                 email,
                 phone
             },
-            availability: availability ? JSON.parse(availability) : []
+            availability: availability ? JSON.parse(availability) : [],
+            sports: sports ? JSON.parse(sports) : []
         });
         
         // Add image path if uploaded
@@ -136,6 +139,14 @@ router.post('/create', upload.single('image'), async (req, res) => {
         
         // Save coach
         const savedCoach = await newCoach.save();
+        
+        // Bidirectional assignment: add coach to each sport's coaches array
+        if (newCoach.sports && newCoach.sports.length > 0) {
+            await Sport.updateMany(
+                { _id: { $in: newCoach.sports } },
+                { $addToSet: { coaches: savedCoach._id } }
+            );
+        }
         
         // Exclude password from response
         const coachResponse = savedCoach.toObject();
@@ -159,7 +170,7 @@ router.post('/create', upload.single('image'), async (req, res) => {
 // Update coach
 router.put('/:id', upload.single('image'), async (req, res) => {
     try {
-        const { name, specialty, experience, bio, email, phone, availability, isActive } = req.body;
+        const { name, specialty, experience, bio, email, phone, availability, isActive, sports } = req.body;
         
         // Find coach
         const coach = await Coach.findById(req.params.id);
@@ -189,6 +200,28 @@ router.put('/:id', upload.single('image'), async (req, res) => {
         
         if (isActive !== undefined) {
             coach.isActive = isActive;
+        }
+
+        if (sports) {
+            const newSports = JSON.parse(sports);
+            // Remove coach from sports no longer assigned
+            const prevSports = coach.sports.map(id => id.toString());
+            const toRemove = prevSports.filter(id => !newSports.includes(id));
+            if (toRemove.length > 0) {
+                await Sport.updateMany(
+                    { _id: { $in: toRemove } },
+                    { $pull: { coaches: coach._id } }
+                );
+            }
+            // Add coach to new sports
+            const toAdd = newSports.filter(id => !prevSports.includes(id));
+            if (toAdd.length > 0) {
+                await Sport.updateMany(
+                    { _id: { $in: toAdd } },
+                    { $addToSet: { coaches: coach._id } }
+                );
+            }
+            coach.sports = newSports;
         }
         
         // Update image if uploaded
@@ -362,5 +395,7 @@ router.post('/login', async (req, res) => {
         });
     }
 });
+
+router.use('/training-plans', trainingPlansRouter);
 
 module.exports = router;

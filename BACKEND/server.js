@@ -73,7 +73,13 @@ app.get('/biometric-login.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'biometric-login.html'));
 });
 
-app.listen(PORT, () => {
-    console.log(`server is up and running on port ${PORT}`);
-    console.log(`Biometric login page available at: ${process.env.NGROK_URL || `http://localhost:${PORT}`}/biometric-login.html`);
-});
+// ✅ Export app for testing
+module.exports = app;
+
+// ✅ Only run server if not being imported (i.e., not in test mode)
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`server is up and running on port ${PORT}`);
+        console.log(`Biometric login page available at: ${process.env.NGROK_URL || `http://localhost:${PORT}`}/biometric-login.html`);
+    });
+}
