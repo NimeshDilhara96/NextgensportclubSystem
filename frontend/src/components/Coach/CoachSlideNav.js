@@ -75,24 +75,9 @@ const CoachSlideNav = () => {
                                     My Sessions
                                 </Link>
                             </li>
-                            <li className={window.location.pathname === '/coach/schedule' ? styles.active : ''}>
-                                <Link to="/coach/schedule" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    Schedule
-                                </Link>
-                            </li>
-                            <li className={window.location.pathname === '/coach/clients' ? styles.active : ''}>
-                                <Link to="/coach/clients" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    My Clients
-                                </Link>
-                            </li>
-                            <li className={window.location.pathname === '/coach/availability' ? styles.active : ''}>
-                                <Link to="/coach/availability" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    Set Availability
-                                </Link>
-                            </li>
-                            <li className={window.location.pathname === '/coach/profile' ? styles.active : ''}>
-                                <Link to="/coach/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    My Profile
+                            <li className={window.location.pathname === '/coach/training-plans' ? styles.active : ''}>
+                                <Link to="/coach/training-plans" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    Training Plans
                                 </Link>
                             </li>
                             <li className={window.location.pathname === '/coach/messages' ? styles.active : ''}>
