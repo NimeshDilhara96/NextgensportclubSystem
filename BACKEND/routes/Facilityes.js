@@ -507,8 +507,10 @@ router.get('/user/bookings/:email', async (req, res) => {
       });
     }
 
-    const facilities = await Facility.find({ "bookings.user": user._id })
-      .select('name description image location hours bookings');
+    // Do NOT use .populate('bookings.facility') here
+    const facilities = await Facility.find({ 'bookings.user': user._id });
+    // const facilities = await Facility.find({ "bookings.user": user._id })
+    //   .select('name description image location hours bookings');
 
     let activeBookings = [];
     facilities.forEach(facility => {
