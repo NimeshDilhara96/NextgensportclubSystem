@@ -102,6 +102,16 @@ router.route("/delete/:email").delete(async (req, res) => {
         if (!user) {
             return res.status(404).json({ status: "User not found" });
         }
+
+        // Remove user from all sports' members arrays and update memberCount
+        const Sport = require('../models/Sport');
+        const sports = await Sport.find({ "members.userEmail": userEmail });
+
+        for (const sport of sports) {
+            sport.members = sport.members.filter(m => m.userEmail !== userEmail);
+            sport.memberCount = sport.members.length;
+            await sport.save();
+        }
         
         res.status(200).json({ status: "user deleted" });
     } catch (err) {
