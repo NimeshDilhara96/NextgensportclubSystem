@@ -3,7 +3,6 @@ import axios from 'axios';
 import SlideNav from '../appnavbar/slidenav';
 import { FaStar, FaCalendarAlt, FaEnvelope, FaPhone, FaUser, FaSearch, FaFilter } from 'react-icons/fa';
 import styles from './TrainingCoaches.module.css';
-import { useLocation } from 'react-router-dom';
 
 // Light mode styles
 const lightModeStyles = {
@@ -53,9 +52,6 @@ const TrainingCoaches = () => {
   const [userSports, setUserSports] = useState([]);
   const [userSportsLoading, setUserSportsLoading] = useState(true);
   const [userSportsError, setUserSportsError] = useState(null);
-
-  const location = useLocation();
-  const sport = location.state?.sport;
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
