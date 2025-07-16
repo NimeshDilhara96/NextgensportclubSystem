@@ -722,8 +722,8 @@ const AddFacility = () => {
                                         <tbody>
                                             {getFilteredBookings().map((booking, index) => (
                                                 <tr key={index} className={styles[`status-${booking.status.toLowerCase()}`]}>
-                                                    <td>{booking.userName}</td>
-                                                    <td>{booking.userEmail}</td>
+                                                    <td>{booking.userName || 'N/A'}</td>
+                                                    <td>{booking.userEmail || 'N/A'}</td>
                                                     <td>{formatDateTime(booking.startTime)}</td>
                                                     <td>{formatDateTime(booking.endTime)}</td>
                                                     <td>

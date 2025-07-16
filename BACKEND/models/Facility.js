@@ -41,6 +41,25 @@ const FacilitySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Sport'
     }],
+    bookings: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        userName: { type: String }, // Optional: for quick access
+        startTime: { type: Date, required: true },
+        endTime: { type: Date, required: true },
+        status: {
+            type: String,
+            enum: ['confirmed', 'pending', 'cancelled', 'completed'],
+            default: 'confirmed'
+        },
+        bookedAt: {
+            type: Date,
+            default: Date.now
+        }
+    }],
     createdAt: {
         type: Date,
         default: Date.now

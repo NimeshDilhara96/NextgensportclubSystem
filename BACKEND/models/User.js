@@ -37,23 +37,6 @@ const UserSchema = new mongoose.Schema({
         role: { type: String, enum: ['member', 'coach', 'admin'], default: 'member' },
         status: { type: String, enum: ['active', 'inactive'], default: 'active' }
     }],
-    bookings: [{
-        facility: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Facility'
-        },
-        startTime: Date,
-        endTime: Date,
-        status: {
-            type: String,
-            enum: ['confirmed', 'pending', 'cancelled', 'completed'],
-            default: 'pending'
-        },
-        bookedAt: {
-            type: Date,
-            default: Date.now
-        }
-    }],
     preferredSports: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Sport'

@@ -104,7 +104,7 @@ const SportsFacilities = () => {
       console.log('Fetching bookings for:', userEmail);
       
       // Use the new endpoint with email parameter
-      const response = await axios.get(`http://localhost:8070/user/bookings/${userEmail}`, {
+      const response = await axios.get(`http://localhost:8070/facilities/user/bookings/${userEmail}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -237,30 +237,28 @@ const SportsFacilities = () => {
   };
 
   // Add a function to handle booking cancellation
-  const handleCancelBooking = async (bookingId) => {
+  const handleCancelBooking = async (booking) => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) {
       return;
     }
-    
+
     try {
       const token = sessionStorage.getItem('token');
       const userEmail = sessionStorage.getItem('userEmail');
-      
+
       if (!token || !userEmail) {
         alert('Please login to cancel bookings');
         return;
       }
-      
-      console.log(`Cancelling booking ${bookingId} for user ${userEmail}`);
-      
+
+      // booking.facilityId is now available from the backend response
       const response = await axios.delete(
-        `http://localhost:8070/facilities/booking/${bookingId}?email=${encodeURIComponent(userEmail)}`,
+        `http://localhost:8070/facilities/booking/${booking.facilityId}/${booking._id}?email=${encodeURIComponent(userEmail)}`,
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
-      
+
       if (response.data.status === 'success') {
         alert('Booking cancelled successfully');
-        // Refresh the bookings list
         fetchUserBookings();
       } else {
         alert(response.data.message || 'Failed to cancel booking');
@@ -269,6 +267,19 @@ const SportsFacilities = () => {
       console.error('Error cancelling booking:', err);
       alert(err.response?.data?.message || 'Failed to cancel booking');
     }
+  };
+
+  // Add this function inside your SportsFacilities.js component
+  const getMinDateTime = () => {
+    const now = new Date();
+    // Pad month, day, hour, minute with leading zeros if needed
+    const pad = (n) => n.toString().padStart(2, '0');
+    const yyyy = now.getFullYear();
+    const mm = pad(now.getMonth() + 1);
+    const dd = pad(now.getDate());
+    const hh = pad(now.getHours());
+    const min = pad(now.getMinutes());
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
   };
 
   // Show loading indicator
@@ -489,7 +500,7 @@ const SportsFacilities = () => {
                         {booking.status !== 'Cancelled' && (
                           <button 
                             className={styles.cancelButton}
-                            onClick={() => handleCancelBooking(booking._id)}
+                            onClick={() => handleCancelBooking(booking)}
                           >
                             Cancel Booking
                           </button>
@@ -526,6 +537,7 @@ const SportsFacilities = () => {
                   value={bookingData.startTime}
                   onChange={handleBookingInputChange}
                   required
+                  min={getMinDateTime()} // Prevent past dates/times
                 />
               </div>
               
@@ -538,6 +550,7 @@ const SportsFacilities = () => {
                   value={bookingData.endTime}
                   onChange={handleBookingInputChange}
                   required
+                  min={getMinDateTime()} // Prevent past dates/times
                 />
               </div>
               

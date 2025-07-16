@@ -242,11 +242,10 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Book a facility
-// Authenticated users only
 router.post('/book/:id', async (req, res) => {
     try {
         const { startTime, endTime, userEmail } = req.body;
-        
+
         if (!startTime || !endTime || !userEmail) {
             return res.status(400).json({
                 status: "error",
@@ -271,7 +270,6 @@ router.post('/book/:id', async (req, res) => {
         }
 
         // Parse the operating hours
-        // Expected format: "9:00 AM - 9:00 PM" or similar
         const bookingStartTime = new Date(startTime);
         const bookingEndTime = new Date(endTime);
 
@@ -298,13 +296,11 @@ router.post('/book/:id', async (req, res) => {
             const time = new Date(dateRef);
             const [hourMin, period] = timeStr.trim().split(' ');
             let [hour, minute] = hourMin.split(':').map(num => parseInt(num));
-            
             if (period && period.toUpperCase() === 'PM' && hour < 12) {
                 hour += 12;
             } else if (period && period.toUpperCase() === 'AM' && hour === 12) {
                 hour = 0;
             }
-            
             time.setHours(hour, minute, 0, 0);
             return time;
         };
@@ -329,45 +325,28 @@ router.post('/book/:id', async (req, res) => {
             });
         }
 
-        // Check for overlapping bookings for this user
-        const overlappingUserBooking = user.bookings?.find(booking => 
-            booking.facility.toString() === req.params.id &&
+        // Check for overlapping bookings for this user in this facility
+        const overlappingBooking = facility.bookings.find(booking =>
+            booking.user.toString() === user._id.toString() &&
             new Date(startTime) < new Date(booking.endTime) &&
             new Date(endTime) > new Date(booking.startTime) &&
             booking.status !== 'cancelled'
         );
 
-        if (overlappingUserBooking) {
+        if (overlappingBooking) {
             return res.status(400).json({
                 status: "error",
                 message: "You already have a booking for this facility during this time"
             });
         }
 
-        // Check facility capacity - find all active bookings for this time slot
-        const allUsers = await User.find({
-            'bookings': {
-                $elemMatch: {
-                    facility: new mongoose.Types.ObjectId(req.params.id),
-                    startTime: { $lt: new Date(endTime) },
-                    endTime: { $gt: new Date(startTime) },
-                    status: 'confirmed'
-                }
-            }
-        });
-        
-        // Count total bookings for this time slot
-        const concurrentBookings = allUsers.reduce((count, user) => {
-            const activeBookings = user.bookings.filter(booking => 
-                booking.facility.toString() === req.params.id &&
-                new Date(startTime) < new Date(booking.endTime) &&
-                new Date(endTime) > new Date(booking.startTime) &&
-                booking.status === 'confirmed'
-            ).length;
-            return count + activeBookings;
-        }, 0);
+        // Check facility capacity - count confirmed bookings for this time slot
+        const concurrentBookings = facility.bookings.filter(booking =>
+            new Date(startTime) < new Date(booking.endTime) &&
+            new Date(endTime) > new Date(booking.startTime) &&
+            booking.status === 'confirmed'
+        ).length;
 
-        // Check if adding one more booking exceeds capacity
         if (concurrentBookings >= facility.capacity) {
             return res.status(400).json({
                 status: "error",
@@ -375,21 +354,16 @@ router.post('/book/:id', async (req, res) => {
             });
         }
 
-        // Initialize bookings array if it doesn't exist
-        if (!user.bookings) {
-            user.bookings = [];
-        }
-
-        // Add booking
-        user.bookings.push({
-            facility: req.params.id,
-            facilityName: facility.name,
-            startTime: new Date(startTime),
-            endTime: new Date(endTime),
+        // Add booking to facility
+        facility.bookings.push({
+            user: user._id,
+            userName: user.name,
+            startTime: bookingStartTime,
+            endTime: bookingEndTime,
             status: 'confirmed'
         });
 
-        await user.save();
+        await facility.save();
 
         return res.status(200).json({
             status: "success",
@@ -404,43 +378,53 @@ router.post('/book/:id', async (req, res) => {
     }
 });
 
-// Get all bookings for a facility
-// Admin access only
+// Get all bookings for a facility (Admin access only)
 router.get('/:id/bookings', async (req, res) => {
   try {
     const facilityId = req.params.id;
-    
-    // Find all users with bookings for this facility
-    const users = await User.find({
-      'bookings.facility': new mongoose.Types.ObjectId(facilityId)
-    }).select('name email bookings');
-    
-    // Extract and format bookings
-    let bookings = [];
-    users.forEach(user => {
-      const facilityBookings = user.bookings
-        .filter(booking => booking.facility.toString() === facilityId)
-        .map(booking => ({
-          userName: user.name,
-          userEmail: user.email,
-          startTime: booking.startTime,
-          endTime: booking.endTime,
-          status: booking.status,
-          bookedAt: booking.bookedAt || new Date(booking.startTime).setHours(0, 0, 0, 0) // Fallback if bookedAt isn't available
-        }));
-      
-      bookings = [...bookings, ...facilityBookings];
-    });
-    
+
+    // Find the facility and get its bookings
+    const facility = await Facility.findById(facilityId).select('bookings name');
+    if (!facility) {
+      return res.status(404).json({
+        status: "error",
+        message: "Facility not found"
+      });
+    }
+
+    // Optionally, populate user info for each booking
+    const bookingsWithUser = await Promise.all(
+      facility.bookings.map(async (booking) => {
+        let userName = booking.userName;
+        let userEmail = '';
+        // If userName is not stored, fetch from User model
+        if (!userName && booking.user) {
+          const user = await User.findById(booking.user).select('name email');
+          if (user) {
+            userName = user.name;
+            userEmail = user.email;
+          }
+        } else if (booking.user) {
+          // If userName is stored, fetch email
+          const user = await User.findById(booking.user).select('email');
+          if (user) userEmail = user.email;
+        }
+        return {
+          ...booking.toObject(),
+          userName,
+          userEmail
+        };
+      })
+    );
+
     // Sort bookings by start time (newest first)
-    bookings.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
-    
+    bookingsWithUser.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+
     return res.status(200).json({
       status: "success",
-      count: bookings.length,
-      bookings
+      count: bookingsWithUser.length,
+      bookings: bookingsWithUser
     });
-    
   } catch (error) {
     console.error('Error fetching facility bookings:', error);
     return res.status(500).json({
@@ -450,12 +434,11 @@ router.get('/:id/bookings', async (req, res) => {
   }
 });
 
-// Cancel a booking
-// Authenticated users only
-router.delete('/booking/:id', async (req, res) => {
+// Cancel a booking (new version)
+router.delete('/booking/:facilityId/:bookingId', async (req, res) => {
   try {
-    const bookingId = req.params.id;
-    const email = req.body.email || req.query.email; // Accept from body or query
+    const { facilityId, bookingId } = req.params;
+    const email = req.body.email || req.query.email;
 
     if (!email) {
       return res.status(400).json({
@@ -463,8 +446,7 @@ router.delete('/booking/:id', async (req, res) => {
         message: 'User email is required'
       });
     }
-    
-    // Find the user
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
@@ -472,32 +454,98 @@ router.delete('/booking/:id', async (req, res) => {
         message: 'User not found'
       });
     }
-    
-    // Find the booking in the user's bookings array
-    const bookingIndex = user.bookings.findIndex(b => b._id.toString() === bookingId);
-    
-    if (bookingIndex === -1) {
+
+    const facility = await Facility.findById(facilityId);
+    if (!facility) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Facility not found'
+      });
+    }
+
+    const booking = facility.bookings.id(bookingId);
+    if (!booking) {
       return res.status(404).json({
         status: 'error',
         message: 'Booking not found'
       });
     }
-    
-    // Remove the booking from the array
-    user.bookings.splice(bookingIndex, 1);
-    
-    // Save the updated user document
-    await user.save();
-    
+
+    // Only allow user who made the booking or admin to cancel
+    if (booking.user.toString() !== user._id.toString()) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'You are not authorized to cancel this booking'
+      });
+    }
+
+    booking.status = 'cancelled';
+    await facility.save();
+
     return res.status(200).json({
       status: 'success',
-      message: 'Booking deleted successfully'
+      message: 'Booking cancelled successfully'
     });
   } catch (error) {
     console.error('Error cancelling booking:', error);
     return res.status(500).json({
       status: 'error',
       message: 'Server error while cancelling booking'
+    });
+  }
+});
+
+// Get all active bookings for a user with facility details
+router.get('/user/bookings/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found'
+      });
+    }
+
+    const facilities = await Facility.find({ "bookings.user": user._id })
+      .select('name description image location hours bookings');
+
+    let activeBookings = [];
+    facilities.forEach(facility => {
+      facility.bookings.forEach(booking => {
+        if (
+          booking.user.toString() === user._id.toString() &&
+          booking.status === 'confirmed'
+        ) {
+          activeBookings.push({
+            _id: booking._id,
+            facilityId: facility._id,
+            facilityName: facility.name,
+            facilityDescription: facility.description,
+            facilityImage: facility.image,
+            facilityLocation: facility.location,
+            facilityHours: facility.hours,
+            startTime: booking.startTime,
+            endTime: booking.endTime,
+            status: booking.status,
+            bookedAt: booking.bookedAt
+          });
+        }
+      });
+    });
+
+    activeBookings.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+
+    return res.status(200).json({
+      status: "success",
+      count: activeBookings.length,
+      bookings: activeBookings
+    });
+  } catch (error) {
+    console.error('Error fetching user active bookings:', error);
+    return res.status(500).json({
+      status: "error",
+      message: "Server error while fetching bookings"
     });
   }
 });
