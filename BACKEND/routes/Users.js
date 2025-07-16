@@ -314,31 +314,37 @@ router.get("/bySport/:sportId", async (req, res) => {
 // Get user's bookings
 router.get('/:id/bookings', async (req, res) => {
   try {
-    const user = await User.findById(req.params.id)
-      .populate({
-        path: 'bookings.facility',
-        select: 'name description hours availability'
-      });
-    
+    // Find the user by ID
+    const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({
         status: 'error',
         message: 'User not found'
       });
     }
-    
-    // Map bookings to include facility name
-    const bookings = user.bookings.map(booking => {
-      return {
-        _id: booking._id,
-        facilityName: booking.facility ? booking.facility.name : booking.facilityName,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        status: booking.status,
-        bookedAt: booking.bookedAt
-      };
+
+    // Find all facilities where this user has bookings
+    const Facility = require('../models/Facility');
+    const facilities = await Facility.find({ 'bookings.user': user._id });
+
+    // Collect all bookings for this user, with facility info
+    const bookings = [];
+    facilities.forEach(facility => {
+      facility.bookings.forEach(booking => {
+        if (booking.user.toString() === user._id.toString()) {
+          bookings.push({
+            _id: booking._id,
+            facilityId: facility._id,
+            facilityName: facility.name,
+            startTime: booking.startTime,
+            endTime: booking.endTime,
+            status: booking.status,
+            bookedAt: booking.bookedAt
+          });
+        }
+      });
     });
-    
+
     return res.status(200).json({
       status: 'success',
       bookings
@@ -355,39 +361,34 @@ router.get('/:id/bookings', async (req, res) => {
 // Get user's bookings by email
 router.get('/bookings/:email', async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.params.email })
-      .populate({
-        path: 'bookings.facility',
-        select: 'name description hours availability'
-      });
-    
+    const user = await User.findOne({ email: req.params.email });
     if (!user) {
       return res.status(404).json({
         status: 'error',
         message: 'User not found'
       });
     }
-    
-    // Check if user has bookings
-    if (!user.bookings || user.bookings.length === 0) {
-      return res.status(200).json({
-        status: 'success',
-        bookings: []
+
+    const Facility = require('../models/Facility');
+    const facilities = await Facility.find({ 'bookings.user': user._id });
+
+    const bookings = [];
+    facilities.forEach(facility => {
+      facility.bookings.forEach(booking => {
+        if (booking.user.toString() === user._id.toString()) {
+          bookings.push({
+            _id: booking._id,
+            facilityId: facility._id,
+            facilityName: facility.name,
+            startTime: booking.startTime,
+            endTime: booking.endTime,
+            status: booking.status,
+            bookedAt: booking.bookedAt
+          });
+        }
       });
-    }
-    
-    // Map bookings to include facility name
-    const bookings = user.bookings.map(booking => {
-      return {
-        _id: booking._id,
-        facilityName: booking.facility ? booking.facility.name : booking.facilityName,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        status: booking.status,
-        bookedAt: booking.bookedAt
-      };
     });
-    
+
     return res.status(200).json({
       status: 'success',
       bookings
