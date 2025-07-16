@@ -23,6 +23,7 @@ import CoachDashboard from './components/Coach/CoachDashboard';  // Add this imp
 // Import coach components
 import CoachManagement from './components/Admin/CoachManagement';
 import TrainingCoaches from './components/Dashboard/TrainingCoaches';  // Add TrainingCoaches import
+import SendTrainingPlan from './components/Coach/SendTrainingPlan'; // Add this import
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -145,6 +146,14 @@ function App() {
                 <CoachDashboard />
               </CoachProtectedRoute>
             } 
+          />
+          <Route 
+            path="/coach/send-training-plan"
+            element={
+              <CoachProtectedRoute>
+                <SendTrainingPlan />
+              </CoachProtectedRoute>
+            }
           />
 
           {/* Protected User routes with SlideNav */}
