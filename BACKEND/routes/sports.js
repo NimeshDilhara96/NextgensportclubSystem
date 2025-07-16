@@ -176,22 +176,9 @@ router.post('/join/:sportId', async (req, res) => {
             status: 'active'
         });
         sport.memberCount = sport.memberCount + 1;
+        await sport.save(); // Only save the sport
 
-        // Initialize sports array if it doesn't exist
-        if (!user.sports) {
-            user.sports = [];
-        }
-
-        // Add sport to user's sports array
-        user.sports.push({
-            sport: sportId,
-            sportName: sport.name, // Add this line to store sport name
-            category: sport.category, // Add this line
-            joinedAt: new Date(),
-            role: 'member',
-            status: 'active'
-        });
-        await user.save();
+        // Do NOT update user.preferredSports or user.sports here
 
         // --- Create a default training plan for the user joining this sport ---
         // Find a coach for this sport (by specialty)

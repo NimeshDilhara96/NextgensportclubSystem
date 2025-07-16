@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
     contact: { type: String, required: true },
     profilePicture: { 
         type: String, 
-        default: "default-profile.png" // You can set a default profile picture
+        default: "default-profile.png"
     },
     membershipPackage: {
         type: String,
@@ -25,27 +25,21 @@ const UserSchema = new mongoose.Schema({
         default: "inactive"
     },
     joinedDate: { type: Date, default: Date.now },
-    // New fields to connect with Sports and Facilities
-    sports: [{
-        sport: {
+    // Store both sport ObjectId and name in preferredSports
+    preferredSports: [{
+        sportId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Sport'
         },
-        sportName: { type: String }, // <-- Add this
-        category: { type: String },  // <-- Add this
-        joinedAt: { type: Date, default: Date.now },
-        role: { type: String, enum: ['member', 'coach', 'admin'], default: 'member' },
-        status: { type: String, enum: ['active', 'inactive'], default: 'active' }
-    }],
-    preferredSports: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Sport'
+        name: {
+            type: String
+        }
     }]
 });
 
 // Hash password before saving to the database
 UserSchema.pre("save", async function(next) {
-    if (!this.isModified("password")) return next(); // Only hash if password is new or modified
+    if (!this.isModified("password")) return next();
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
