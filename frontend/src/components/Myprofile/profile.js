@@ -175,190 +175,188 @@ const Profile = () => {
       <SlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="profile-container">
         <div className="profile-header">
-          <div className="profile-image-container">
-            <img 
-              src={formData.profilePicture 
-                ? `http://localhost:8070/uploads/profile-pictures/${formData.profilePicture}`
-                : 'https://via.placeholder.com/150'} 
-              alt="Profile" 
-              className="profile-image" 
-            />
-            <label className="image-upload-label" title="Change Profile Picture">
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={handleImageUpload} 
-                className="image-upload-input" 
+          <div className="profile-header-content">
+            <div className="profile-image-container">
+              <img 
+                src={formData.profilePicture 
+                  ? `http://localhost:8070/uploads/profile-pictures/${formData.profilePicture}`
+                  : 'https://via.placeholder.com/150'} 
+                alt="Profile" 
+                className="profile-image" 
               />
-              <i className="fas fa-camera upload-icon"></i>
-            </label>
-          </div>
-          <h1>{user?.name}</h1>
-          <div className="member-info">
-            <span className="member-since">Member since {user?.joinedDate ? new Date(user.joinedDate).toLocaleDateString() : 'N/A'}</span>
-            <span className={`membership-badge ${formData.membershipPackage}`}>
-              {formData.membershipPackage?.toUpperCase()}
-            </span>
-            <span className={`status-badge ${formData.membershipStatus}`}>
-              {formData.membershipStatus}
-            </span>
+              <label className="image-upload-label" title="Change Profile Picture">
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleImageUpload} 
+                  className="image-upload-input" 
+                />
+                <i className="fas fa-camera upload-icon"></i>
+              </label>
+            </div>
+            <h1>{user?.name}</h1>
+            <div className="member-info">
+              <span className="member-since">Member since {user?.joinedDate ? new Date(user.joinedDate).toLocaleDateString() : 'N/A'}</span>
+              <span className={`membership-badge ${formData.membershipPackage}`}>
+                {formData.membershipPackage?.toUpperCase()}
+              </span>
+              <span className={`status-badge ${formData.membershipStatus}`}>
+                {formData.membershipStatus}
+              </span>
+            </div>
           </div>
         </div>
 
         <div className="profile-content">
-          {isEditing ? (
-            <form onSubmit={handleSubmit} className="edit-form">
-              <div className="form-group">
-                <label>Name:</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Age:</label>
-                <input
-                  type="number"
-                  name="age"
-                  value={formData.age}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Contact:</label>
-                <input
-                  type="text"
-                  name="contact"
-                  value={formData.contact}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Gender:</label>
-                <select name="gender" value={formData.gender} onChange={handleInputChange}>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Date of Birth:</label>
-                <input
-                  type="date"
-                  name="dob"
-                  value={formData.dob?.split('T')[0]}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label>Membership Package:</label>
-                <select 
-                  name="membershipPackage" 
-                  value={formData.membershipPackage} 
-                  onChange={handleInputChange}
-                  disabled
-                >
-                  <option value="none">None</option>
-                  <option value="basic">Basic</option>
-                  <option value="premium">Premium</option>
-                  <option value="platinum">Platinum</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Membership Status:</label>
-                <div className={`status-badge ${formData.membershipStatus}`}>
-                  {formData.membershipStatus}
+          <div className="profile-section">
+            <h2>Personal Information</h2>
+            {isEditing ? (
+              <form onSubmit={handleSubmit} className="edit-form">
+                <div className="form-group">
+                  <label>Name:</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                  />
                 </div>
-              </div>
-              <div className="button-group">
-                <button type="submit" className="save-btn">Save Changes</button>
+                <div className="form-group">
+                  <label>Age:</label>
+                  <input
+                    type="number"
+                    name="age"
+                    value={formData.age}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Contact:</label>
+                  <input
+                    type="text"
+                    name="contact"
+                    value={formData.contact}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Gender:</label>
+                  <select name="gender" value={formData.gender} onChange={handleInputChange}>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Date of Birth:</label>
+                  <input
+                    type="date"
+                    name="dob"
+                    value={formData.dob?.split('T')[0]}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Membership Package:</label>
+                  <select 
+                    name="membershipPackage" 
+                    value={formData.membershipPackage} 
+                    onChange={handleInputChange}
+                    disabled
+                  >
+                    <option value="none">None</option>
+                    <option value="basic">Basic</option>
+                    <option value="premium">Premium</option>
+                    <option value="platinum">Platinum</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Membership Status:</label>
+                  <div className={`status-badge ${formData.membershipStatus}`}>
+                    {formData.membershipStatus}
+                  </div>
+                </div>
+                <div className="button-group">
+                  <button type="submit" className="save-btn">Save Changes</button>
+                  <button 
+                    type="button" 
+                    className="cancel-btn"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="profile-details">
+                <div className="detail-group">
+                  <label>Email:</label>
+                  <span>{user.email}</span>
+                </div>
+                <div className="detail-group">
+                  <label>Age:</label>
+                  <span>{user.age}</span>
+                </div>
+                <div className="detail-group">
+                  <label>Contact:</label>
+                  <span>{user.contact}</span>
+                </div>
+                <div className="detail-group">
+                  <label>Gender:</label>
+                  <span>{user.gender}</span>
+                </div>
+                <div className="detail-group">
+                  <label>Date of Birth:</label>
+                  <span>{user.dob ? new Date(user.dob).toLocaleDateString() : 'Not set'}</span>
+                </div>
+                <div className="detail-group">
+                  <label>Role:</label>
+                  <span>{user.role}</span>
+                </div>
+                <div className="detail-group">
+                  <label>Membership Package:</label>
+                  <span className={`membership-badge ${user.membershipPackage}`}>
+                    {user.membershipPackage?.toUpperCase() || 'NONE'}
+                  </span>
+                </div>
+                <div className="detail-group">
+                  <label>Membership Status:</label>
+                  <span className={`status-badge ${user.membershipStatus}`}>
+                    {user.membershipStatus || 'INACTIVE'}
+                  </span>
+                </div>
                 <button 
-                  type="button" 
-                  className="cancel-btn"
-                  onClick={handleCancel}
+                  className="edit-btn"
+                  onClick={() => setIsEditing(true)}
                 >
-                  Cancel
+                  Edit Profile
                 </button>
               </div>
-            </form>
-          ) : (
-            <div className="profile-details">
-              <div className="detail-group">
-                <label>Email:</label>
-                <span>{user.email}</span>
-              </div>
-              <div className="detail-group">
-                <label>Age:</label>
-                <span>{user.age}</span>
-              </div>
-              <div className="detail-group">
-                <label>Contact:</label>
-                <span>{user.contact}</span>
-              </div>
-              <div className="detail-group">
-                <label>Gender:</label>
-                <span>{user.gender}</span>
-              </div>
-              <div className="detail-group">
-                <label>Date of Birth:</label>
-                <span>{user.dob ? new Date(user.dob).toLocaleDateString() : 'Not set'}</span>
-              </div>
-              <div className="detail-group">
-                <label>Role:</label>
-                <span>{user.role}</span>
-              </div>
-              <div className="detail-group">
-                <label>Membership Package:</label>
-                <span className={`membership-badge ${user.membershipPackage}`}>
-                  {user.membershipPackage?.toUpperCase() || 'NONE'}
-                </span>
-              </div>
-              <div className="detail-group">
-                <label>Membership Status:</label>
-                <span className={`status-badge ${user.membershipStatus}`}>
-                  {user.membershipStatus || 'INACTIVE'}
-                </span>
-              </div>
-              <button 
-                className="edit-btn"
-                onClick={() => setIsEditing(true)}
-              >
-                Edit Profile
-              </button>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* --- NEW: Joined Sports Section --- */}
-          <div className="joined-sports-section" style={{ marginTop: 30 }}>
+          {/* Joined Sports Section */}
+          <div className="profile-section">
             <h2>Joined Sports</h2>
             {joinedSports.length === 0 ? (
-              <p>You have not joined any sports yet.</p>
+              <p style={{ color: '#65676b', textAlign: 'center', padding: '20px' }}>
+                You have not joined any sports yet.
+              </p>
             ) : (
-              <div className="joined-sports-list" style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}>
+              <div className="joined-sports-list">
                 {joinedSports.map((sport) => (
-                  <div key={sport._id} className="sport-card" style={{
-                    border: '1px solid #eee',
-                    borderRadius: 8,
-                    padding: 16,
-                    minWidth: 180,
-                    textAlign: 'center',
-                    background: '#fafafa'
-                  }}>
+                  <div key={sport._id} className="sport-card">
                     <img
                       src={sport.image?.startsWith('http') ? sport.image : `http://localhost:8070/${sport.image}`}
                       alt={sport.name}
-                      style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8, marginBottom: 8 }}
                     />
-                    <div style={{ fontWeight: 600 }}>{sport.name}</div>
-                    <div style={{ fontSize: 13, color: '#666' }}>{sport.category}</div>
+                    <div>{sport.name}</div>
+                    <div>{sport.category}</div>
                   </div>
                 ))}
               </div>
             )}
           </div>
-          {/* --- END NEW --- */}
         </div>
       </div>
     </>

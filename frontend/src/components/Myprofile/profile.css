@@ -1,348 +1,485 @@
+/* Modern Facebook-style Profile CSS */
 .profile-container {
-  margin-left: 280px !important; /* Match sidebar width */
-  padding: 90px 30px 30px !important; /* Add top padding to account for header */
-  transition: margin-left 0.3s ease !important;
+  margin-left: 280px;
+  padding: 20px;
+  padding-top: 80px;
+  background: #f0f2f5;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
 }
 
-/* When sidebar is closed */
 .sidebar.closed + .profile-container {
-  margin-left: 0 !important;
+  margin-left: 0;
 }
 
+/* Profile Header - Facebook Style */
 .profile-header {
-  text-align: center !important;
-  margin-bottom: 40px !important;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.profile-header-content {
+  padding: 20px;
+  text-align: center;
+  position: relative;
 }
 
 .profile-image-container {
-  position: relative !important;
-  width: 150px !important;
-  height: 150px !important;
-  margin: 0 auto !important;
-  border-radius: 50% !important;
-  overflow: visible !important;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
-  margin-bottom: 20px !important;
+  position: relative;
+  width: 168px;
+  height: 168px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .profile-image {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  border-radius: 50% !important;
-  transition: transform 0.3s ease !important;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
 }
 
 .profile-image:hover {
-  transform: scale(1.05) !important;
-}
-
-.profile-image-wrapper {
-  position: relative !important;
-  width: fit-content !important;
-  margin: 0 auto !important;
-  margin-bottom: 60px !important; /* Space for the upload button */
+  transform: scale(1.02);
 }
 
 .image-upload-label {
-  position: absolute !important;
-  bottom: 0 !important;
-  right: 0 !important;
-  background: white !important;
-  width: 36px !important;
-  height: 36px !important;
-  border-radius: 50% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-  border: 2px solid #2196f3 !important;
-  z-index: 10 !important;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: #1877f2;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid white;
 }
 
 .image-upload-label:hover {
-  background: #2196f3 !important;
-  transform: scale(1.1) !important;
+  background: #166fe5;
+  transform: scale(1.1);
 }
 
 .upload-icon {
-  color: #2196f3 !important;
-  font-size: 16px !important;
-}
-
-.image-upload-label:hover .upload-icon {
-  color: white !important;
+  color: white;
+  font-size: 14px;
 }
 
 .image-upload-input {
-  display: none !important;
+  display: none;
 }
 
-/* Update tooltip position for bottom placement */
-.image-upload-label::before {
-  content: 'Change Photo' !important;
-  position: absolute !important;
-  bottom: -40px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  padding: 6px 12px !important;
-  background: rgba(0,0,0,0.8) !important;
-  color: white !important;
-  font-size: 12px !important;
-  border-radius: 4px !important;
-  white-space: nowrap !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  transition: all 0.3s ease !important;
+.profile-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1c1e21;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
 }
 
-/* Update tooltip arrow for bottom placement */
-.image-upload-label::after {
-  content: '' !important;
-  position: absolute !important;
-  bottom: -34px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  border: 6px solid transparent !important;
-  border-bottom-color: rgba(0,0,0,0.8) !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  transition: all 0.3s ease !important;
-}
-
-.image-upload-label:hover::before,
-.image-upload-label:hover::after {
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-/* Add a subtle line connecting the button to the photo */
-.image-upload-label::before {
-  content: '' !important;
-  position: absolute !important;
-  top: -20px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  width: 2px !important;
-  height: 20px !important;
-  background-color: #e0e0e0 !important;
-  transition: background-color 0.3s ease !important;
-}
-
-.image-upload-label:hover::before {
-  background-color: #109ad6 !important;
-}
-
-/* Remove the overlay since the button is outside */
-.profile-image-container::after {
-  display: none !important;
+.member-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .member-since {
-  color: #666 !important;
-  font-size: 0.9rem !important;
+  color: #65676b;
+  font-size: 14px;
+  font-weight: 400;
 }
 
+.membership-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.membership-badge.none {
+  background-color: #e4e6eb;
+  color: #65676b;
+}
+
+.membership-badge.basic {
+  background-color: #e7f3ff;
+  color: #1877f2;
+}
+
+.membership-badge.premium {
+  background-color: #f3e5f5;
+  color: #9c27b0;
+}
+
+.membership-badge.platinum {
+  background-color: #fff8e1;
+  color: #f57c00;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.active {
+  background-color: #e8f5e8;
+  color: #42a846;
+}
+
+.status-badge.inactive {
+  background-color: #ffeaea;
+  color: #e74c3c;
+}
+
+.status-badge.suspended {
+  background-color: #fff3e0;
+  color: #ff9800;
+}
+
+.status-badge.expired {
+  background-color: #f5f5f5;
+  color: #9e9e9e;
+}
+
+/* Profile Content - Modern Card Layout */
 .profile-content {
-  max-width: 600px !important;
-  margin: 0 auto !important;
-  background: white !important;
-  padding: 30px !important;
-  border-radius: 10px !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-.profile-details .detail-group,
-.edit-form .form-group {
-  margin-bottom: 20px !important;
+.profile-section {
+  padding: 20px;
+  border-bottom: 1px solid #e4e6eb;
 }
 
-.detail-group label,
-.form-group label {
-  display: block !important;
-  color: #666 !important;
-  margin-bottom: 5px !important;
-  font-weight: 500 !important;
+.profile-section:last-child {
+  border-bottom: none;
+}
+
+.profile-section h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1c1e21;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e4e6eb;
+}
+
+/* Profile Details - Modern Grid Layout */
+.profile-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.detail-group {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e4e6eb;
+  transition: all 0.2s ease;
+}
+
+.detail-group:hover {
+  background: #f0f2f5;
+  border-color: #d8dadf;
+}
+
+.detail-group label {
+  display: block;
+  color: #65676b;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
 }
 
 .detail-group span {
-  font-size: 1.1rem !important;
+  color: #1c1e21;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Edit Form - Modern Styling */
+.edit-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.form-group {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e4e6eb;
+}
+
+.form-group label {
+  display: block;
+  color: #65676b;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
 }
 
 .form-group input,
 .form-group select {
-  width: 100% !important;
-  padding: 8px 12px !important;
-  border: 1px solid #ddd !important;
-  border-radius: 4px !important;
-  font-size: 1rem !important;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d8dadf;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
 }
 
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #1877f2;
+  box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+}
+
+.form-group input:disabled,
+.form-group select:disabled {
+  background: #f0f2f5;
+  color: #65676b;
+  cursor: not-allowed;
+}
+
+/* Button Styling - Facebook Style */
 .button-group {
-  display: flex !important;
-  gap: 10px !important;
-  margin-top: 30px !important;
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 0 16px 16px;
 }
 
 .edit-btn,
 .save-btn,
 .cancel-btn {
-  padding: 10px 20px !important;
-  border: none !important;
-  border-radius: 5px !important;
-  cursor: pointer !important;
-  font-weight: 500 !important;
-  transition: background-color 0.2s !important;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .edit-btn {
-  background: #109ad6 !important;
-  color: white !important;
-  width: 100% !important;
-}
-
-.save-btn {
-  background: #28a745 !important;
-  color: white !important;
-  flex: 1 !important;
-}
-
-.cancel-btn {
-  background: #dc3545 !important;
-  color: white !important;
-  flex: 1 !important;
+  background: #1877f2;
+  color: white;
+  width: 100%;
 }
 
 .edit-btn:hover {
-  background: #0d8bc2 !important;
+  background: #166fe5;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.save-btn {
+  background: #42a846;
+  color: white;
+  flex: 1;
 }
 
 .save-btn:hover {
-  background: #218838 !important;
+  background: #3a9a3e;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cancel-btn {
+  background: #e4e6eb;
+  color: #1c1e21;
+  flex: 1;
 }
 
 .cancel-btn:hover {
-  background: #c82333 !important;
+  background: #d8dadf;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.loading,
-.error,
-.no-data {
-  text-align: center !important;
-  padding: 20px !important;
-  margin-top: 100px !important;
+/* Joined Sports Section */
+.joined-sports-section {
+  padding: 20px;
 }
 
-.error {
-  color: #dc3545 !important;
+.joined-sports-section h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1c1e21;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e4e6eb;
 }
 
-.member-info {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  gap: 8px !important;
-  margin-top: 10px !important;
+.joined-sports-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
 }
 
-.membership-badge {
-  padding: 4px 12px !important;
-  border-radius: 20px !important;
-  font-size: 0.9em !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
+.sport-card {
+  background: white;
+  border: 1px solid #e4e6eb;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
-.membership-badge.none {
-  background-color: #e0e0e0 !important;
-  color: #757575 !important;
+.sport-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #d8dadf;
 }
 
-.membership-badge.basic {
-  background-color: #2196F3 !important;
-  color: white !important;
+.sport-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 2px solid #e4e6eb;
 }
 
-.membership-badge.premium {
-  background-color: #9C27B0 !important;
-  color: white !important;
+.sport-card div:first-of-type {
+  font-weight: 600;
+  color: #1c1e21;
+  font-size: 14px;
+  margin-bottom: 4px;
 }
 
-.membership-badge.platinum {
-  background-color: #FFD700 !important;
-  color: black !important;
+.sport-card div:last-of-type {
+  font-size: 12px;
+  color: #65676b;
+  font-weight: 400;
 }
 
-.status-badge {
-  padding: 4px 12px !important;
-  border-radius: 20px !important;
-  font-size: 0.9em !important;
-  font-weight: 500 !important;
-  text-transform: capitalize !important;
-}
-
-.status-badge.active {
-  background-color: #4CAF50 !important;
-  color: white !important;
-}
-
-.status-badge.inactive {
-  background-color: #f44336 !important;
-  color: white !important;
-}
-
-.status-badge.suspended {
-  background-color: #ff9800 !important;
-  color: white !important;
-}
-
-.status-badge.expired {
-  background-color: #9e9e9e !important;
-  color: white !important;
-}
-
-.detail-group {
-  background-color: white !important;
-  padding: 15px !important;
-  border-radius: 8px !important;
-  margin-bottom: 15px !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
-}
-
-.detail-group label {
-  font-weight: 600 !important;
-  color: #333 !important;
-  margin-bottom: 5px !important;
-}
-
-.detail-group span {
-  color: #666 !important;
-}
-
+/* Loading and Error States */
 .loading-container {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  height: 100vh !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #f0f2f5;
 }
 
 .spinner {
-  width: 50px !important;
-  height: 50px !important;
-  border: 5px solid #f3f3f3 !important;
-  border-top: 5px solid #3498db !important;
-  border-radius: 50% !important;
-  animation: spin 2s linear infinite !important;
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e4e6eb;
+  border-top: 3px solid #1877f2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg) !important;
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: #65676b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.error,
+.no-data {
+  text-align: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+}
+
+.error {
+  color: #e74c3c;
+  font-weight: 500;
+}
+
+.no-data {
+  color: #65676b;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-container {
+    margin-left: 0;
+    padding: 16px;
+    padding-top: 80px;
   }
-  100% {
-    transform: rotate(360deg) !important;
+  
+  .profile-details,
+  .edit-form {
+    grid-template-columns: 1fr;
+  }
+  
+  .joined-sports-list {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .profile-image-container {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .profile-header h1 {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 12px;
+    padding-top: 80px;
+  }
+  
+  .profile-section {
+    padding: 16px;
+  }
+  
+  .joined-sports-list {
+    grid-template-columns: 1fr;
   }
 }
