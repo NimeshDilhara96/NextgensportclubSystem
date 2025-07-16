@@ -142,7 +142,7 @@ const TrainingCoaches = () => {
     }
   }, [activeTab]);
 
-  // Fetch user's joined sports on mount
+  // Fetch user's joined sports from Sport model (not User)
   useEffect(() => {
     const fetchUserSports = async () => {
       setUserSportsLoading(true);
@@ -154,9 +154,14 @@ const TrainingCoaches = () => {
           setUserSportsLoading(false);
           return;
         }
-        const response = await axios.get(`http://localhost:8070/user/get/${userEmail}`);
-        if (response.data && response.data.user && response.data.user.sports) {
-          setUserSports(response.data.user.sports);
+        // Fetch all sports
+        const response = await axios.get('http://localhost:8070/sports');
+        if (response.data && response.data.sports) {
+          // Filter sports where user is a member
+          const joinedSports = response.data.sports.filter(sport =>
+            sport.members && sport.members.some(member => member.userEmail === userEmail)
+          );
+          setUserSports(joinedSports);
         } else {
           setUserSports([]);
         }
@@ -366,8 +371,8 @@ const TrainingCoaches = () => {
             ) : (
               <div className={styles.userSportsList}>
                 {userSports.map(sport => (
-                  <span key={sport.sport} className={styles.userSportItem}>
-                    {sport.sportName}
+                  <span key={sport._id} className={styles.userSportItem}>
+                    {sport.name}
                   </span>
                 ))}
               </div>

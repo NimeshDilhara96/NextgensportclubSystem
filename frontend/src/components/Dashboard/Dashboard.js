@@ -4,6 +4,7 @@ import axios from 'axios';
 import styles from './Dashboard.module.css'; // Changed to import styles
 import SlideNav from '../appnavbar/slidenav';
 import Container from '../common/Container';
+import logo from '../../assets/logo.png'; // Use your transparent logo
 
 const Dashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -20,6 +21,7 @@ const Dashboard = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [workoutGoals, setWorkoutGoals] = useState([]);
   const [userBookings, setUserBookings] = useState([]);
+  const [serverError, setServerError] = useState(false);
   const navigate = useNavigate();
 
   // Fetch user data and other dashboard data
@@ -28,15 +30,12 @@ const Dashboard = () => {
       try {
         setIsLoading(true);
 
-        // Get user email from session or local storage
         const userEmail = sessionStorage.getItem('userEmail') || localStorage.getItem('userEmail');
         if (!userEmail) {
-          console.error('User email not found in storage');
           navigate('/login');
           return;
         }
 
-        // Fetch user data
         const userResponse = await axios.get(`http://localhost:8070/user/get/${userEmail}`);
         const user = userResponse.data.user;
 
@@ -99,7 +98,15 @@ const Dashboard = () => {
           setUserBookings(bookingsRes.data.bookings || []);
         }
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        // Only set server error for network/server issues
+        if (!error.response) {
+          // Network error or server is down
+          setServerError(true);
+        } else {
+          // Handle other errors (e.g., user not found) as needed
+          // Optionally show a different message or redirect
+          setServerError(false);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -135,9 +142,36 @@ const Dashboard = () => {
     return booking.status;
   };
 
+  if (serverError) {
+    return (
+      <div className={styles.loadingContainer} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', textAlign: 'center' }}>
+      <img
+        src={logo}
+        alt="FTC Club Logo"
+        style={{ width: 140, marginBottom: 24 }}
+      />
+      <h2 style={{ color: '#e74c3c', marginBottom: 12, fontWeight: 700, letterSpacing: 1 }}>Server Down</h2>
+      <p style={{ color: '#888', fontSize: 18, marginBottom: 10, lineHeight: 1.5 }}>
+        Sorry, we are unable to connect to the server.<br />
+        Please try again later.
+      </p>
+      <div style={{ marginTop: 18, fontSize: 16, color: '#888', opacity: 0.85 }}>
+        <span style={{ fontWeight: 500 }}>Powered by <span style={{ color: '#3498db' }}>Mommentx</span></span>
+        <br />
+        <span style={{ fontWeight: 500 }}>Design by <span style={{ color: '#27ae60' }}>Nimeshdilhara96</span></span>
+      </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
+        <img
+          src={require('../../assets/logo.png')}
+          alt="NextGen Sport Club Logo"
+          style={{ width: 120, marginBottom: 20 }}
+        />
         <div className={styles.loadingSpinner}></div>
         <p className={styles.loadingText}>Preparing your dashboard...</p>
       </div>
@@ -473,7 +507,7 @@ const Dashboard = () => {
               <div className={styles.footerCredits}>
                 <p>Powered by <span className={styles.highlight}>MommentX</span></p>
                 <p>Developed by <span className={styles.highlight}>Nimeshdilhara96</span></p>
-                <p className={styles.versionBadge}>UI v2.3.1</p>
+                <p className={styles.versionBadge}>version v4.8.0</p>
               </div>
             </div>
           </div>

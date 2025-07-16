@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const TrainingPlan = require('../models/TrainingPlan');
+const User = require('../models/User'); // Add this import
 
-// Create a new training plan
-router.post('/create', async (req, res) => {
+// Create a new training plan (accepts POST at /training-plans or /training-plans/create)
+router.post(['/', '/create'], async (req, res) => {
     try {
         const { user, sport, coach, title, description, sessions } = req.body;
         const plan = new TrainingPlan({ user, sport, coach, title, description, sessions });
@@ -70,4 +71,15 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-module.exports = router; 
+// Get all users with their joined sports populated
+router.get('/all-users-with-sports', async (req, res) => {
+    try {
+        const users = await User.find({})
+            .populate('sports.sport', 'name category'); // Make sure this is correct
+        res.json({ success: true, users });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to fetch users', error: error.message });
+    }
+});
+
+module.exports = router;
