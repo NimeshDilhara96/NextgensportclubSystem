@@ -365,6 +365,10 @@ const SportsFacilities = () => {
     return sport.members.some(member => member.userEmail === userEmail);
   };
 
+  const now = new Date();
+  const upcomingBookings = userBookings.filter(b => new Date(b.endTime) > now);
+  const pastBookings = userBookings.filter(b => new Date(b.endTime) <= now);
+
   return (
     <div className={styles.pageWrapper}>
       <SlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
@@ -524,23 +528,56 @@ const SportsFacilities = () => {
             <div className={styles.bookingsSection}>
               <h2>My Facility Bookings</h2>
               
+              {/* Upcoming Bookings */}
+              <h3>Upcoming Bookings</h3>
               {bookingsLoading ? (
                 <div className={styles.loadingContainer}>
                   <p>Loading your bookings...</p>
                 </div>
-              ) : userBookings.length === 0 ? (
+              ) : upcomingBookings.length === 0 ? (
                 <div className={styles.emptyBookings}>
-                  <p>You don't have any bookings yet.</p>
-                  <button 
-                    className={styles.browseButton} 
-                    onClick={() => setActiveTab('facilities')}
-                  >
-                    Browse Facilities
-                  </button>
+                  <p>No upcoming bookings.</p>
                 </div>
               ) : (
                 <div className={styles.bookingsGrid}>
-                  {userBookings.map(booking => (
+                  {upcomingBookings.map(booking => (
+                    <div className={styles.bookingCard} key={booking._id}>
+                      <div className={styles.bookingHeader}>
+                        <h3>{booking.facilityName}</h3>
+                        <span className={`${styles.statusTag} ${styles[booking.status.toLowerCase()]}`}>
+                          {booking.status}
+                        </span>
+                      </div>
+                      
+                      <div className={styles.bookingDetails}>
+                        <div className={styles.bookingTime}>
+                          <p><strong>Start:</strong> {new Date(booking.startTime).toLocaleString()}</p>
+                          <p><strong>End:</strong> {new Date(booking.endTime).toLocaleString()}</p>
+                        </div>
+                        
+                        {booking.status !== 'Cancelled' && (
+                          <button 
+                            className={styles.cancelButton}
+                            onClick={() => handleCancelBooking(booking)}
+                          >
+                            Cancel Booking
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Past Bookings */}
+              <h3 style={{ marginTop: 30 }}>Past Bookings</h3>
+              {pastBookings.length === 0 ? (
+                <div className={styles.emptyBookings}>
+                  <p>No past bookings.</p>
+                </div>
+              ) : (
+                <div className={styles.bookingsGrid}>
+                  {pastBookings.map(booking => (
                     <div className={styles.bookingCard} key={booking._id}>
                       <div className={styles.bookingHeader}>
                         <h3>{booking.facilityName}</h3>
