@@ -50,6 +50,19 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET /events/upcoming
+// @desc    Get all upcoming events
+// @access  Public
+router.get('/upcoming', async (req, res) => {
+  try {
+    const now = new Date();
+    const events = await Event.find({ date: { $gte: now } }).sort({ date: 1 });
+    res.json(events);
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   GET /events/with-counts
 // @desc    Get all events with attendee counts
 // @access  Private (Admin only)
