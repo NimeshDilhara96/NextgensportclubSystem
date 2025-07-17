@@ -11,7 +11,6 @@ const Messenger = () => {
     const [messageText, setMessageText] = useState('');
     const [messages, setMessages] = useState([]);
     const [isSending, setIsSending] = useState(false);
-    const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const messagesEndRef = useRef(null);
     const prevMessagesLength = useRef(0);
@@ -84,6 +83,9 @@ const Messenger = () => {
     }, [messages, selectedCoachEmail]);
 
     // Send message
+
+    const [error, setError] = useState('');
+
     const handleSend = async (e) => {
         e.preventDefault();
         setIsSending(true);
@@ -110,14 +112,9 @@ const Messenger = () => {
         } catch (err) {
             // Only show error if POST fails
             console.error('Send message error:', err?.response?.data || err.message);
-            setError(
-                err?.response?.data?.error ||
-                err?.response?.data?.message ||
-                'Failed to send message.'
-            );
-        } finally {
-            setIsSending(false);
+            setError('Failed to send message. Please try again.');
         }
+        setIsSending(false);
     };
 
     const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
