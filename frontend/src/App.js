@@ -26,6 +26,7 @@ import TrainingCoaches from './components/Dashboard/TrainingCoaches';  // Add Tr
 import SendTrainingPlan from './components/Coach/SendTrainingPlan'; // Add this import
 import SendMessage from './components/Coach/sendmessage'; // Add this import
 import Messenger from './components/Dashboard/messenger';
+import ViewFeedback  from './components/Admin/viewfeedback';
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -133,7 +134,13 @@ function App() {
               <AddFacility />
             </AdminProtectedRoute>
           } />
-          
+
+          <Route path="/admin/view-feedback" element={
+            <AdminProtectedRoute>
+              <ViewFeedback />
+            </AdminProtectedRoute>
+          } />
+
           {/* New coach management routes */}
           <Route path="/coach/login" element={<CoachLogin />} />
           <Route path="/admin/coaches" element={
