@@ -24,6 +24,8 @@ import CoachDashboard from './components/Coach/CoachDashboard';  // Add this imp
 import CoachManagement from './components/Admin/CoachManagement';
 import TrainingCoaches from './components/Dashboard/TrainingCoaches';  // Add TrainingCoaches import
 import SendTrainingPlan from './components/Coach/SendTrainingPlan'; // Add this import
+import SendMessage from './components/Coach/sendmessage'; // Add this import
+import Messenger from './components/Dashboard/messenger';
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -155,6 +157,14 @@ function App() {
               </CoachProtectedRoute>
             }
           />
+          <Route 
+            path="/coach/send-message"
+            element={
+              <CoachProtectedRoute>
+                <SendMessage />
+              </CoachProtectedRoute>
+            }
+          />
 
           {/* Protected User routes with SlideNav */}
           <Route path="/profile" element={
@@ -214,6 +224,12 @@ function App() {
           <Route path="/settings" element={
             <ProtectedRoute>
               <div>Settings Page</div>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/messenger" element={
+            <ProtectedRoute>
+              <Messenger />
             </ProtectedRoute>
           } />
 

@@ -80,8 +80,8 @@ const CoachSlideNav = () => {
                                     Send Training Plan
                                 </Link>
                             </li>
-                            <li className={window.location.pathname === '/coach/messages' ? styles.active : ''}>
-                                <Link to="/coach/messages" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <li className={window.location.pathname === '/coach/send-message' ? styles.active : ''}>
+                                <Link to="/coach/send-message" style={{ textDecoration: 'none', color: 'inherit' }}>
                                     Messages
                                 </Link>
                             </li>

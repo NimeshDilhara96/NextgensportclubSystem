@@ -67,6 +67,7 @@ app.use("/events", require("./routes/events"));
 app.use("/sponsors", require("./routes/sponsors"));
 app.use("/products", require("./routes/products"));
 app.use("/facilities", require("./routes/Facilityes"));
+app.use("/messages", require("./routes/messages"));
 
 // Serve biometric login page directly at root level (for email links)
 app.get('/biometric-login.html', (req, res) => {
