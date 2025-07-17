@@ -124,10 +124,8 @@ router.post('/create', upload.single('image'), async (req, res) => {
             specialty,
             experience,
             bio,
-            contact: {
-                email,
-                phone
-            },
+            email,
+            phone,
             availability: availability ? JSON.parse(availability) : [],
             sports: sports ? JSON.parse(sports) : []
         });
@@ -187,13 +185,8 @@ router.put('/:id', upload.single('image'), async (req, res) => {
         coach.experience = experience !== undefined ? experience : coach.experience;
         coach.bio = bio !== undefined ? bio : coach.bio;
         
-        if (email || phone) {
-            coach.contact = {
-                email: email || coach.contact?.email,
-                phone: phone || coach.contact?.phone
-            };
-        }
-        
+        if (email) coach.email = email;
+        if (phone) coach.phone = phone;
         if (availability) {
             coach.availability = JSON.parse(availability);
         }
@@ -377,7 +370,8 @@ router.post('/login', async (req, res) => {
             specialty: coach.specialty,
             experience: coach.experience,
             image: coach.image,
-            contact: coach.contact
+            email: coach.email,
+            phone: coach.phone
         };
         
         return res.status(200).json({

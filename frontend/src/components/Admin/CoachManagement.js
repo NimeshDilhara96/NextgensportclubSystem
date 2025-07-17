@@ -298,17 +298,6 @@ const CoachManagement = () => {
 
     // Removed unused handleSportsEditChange function
 
-    const handleContactChange = (e) => {
-        const { name, value } = e.target;
-        setSelectedCoach({
-            ...selectedCoach,
-            contact: {
-                ...selectedCoach.contact,
-                [name]: value
-            }
-        });
-    };
-
     const handleUpdateCoach = async (e) => {
         e.preventDefault();
         
@@ -321,8 +310,8 @@ const CoachManagement = () => {
             formData.append('specialty', selectedCoach.specialty);
             formData.append('experience', selectedCoach.experience || 0);
             formData.append('bio', selectedCoach.bio || '');
-            formData.append('email', selectedCoach.contact?.email || '');
-            formData.append('phone', selectedCoach.contact?.phone || '');
+            formData.append('email', selectedCoach.email || '');
+            formData.append('phone', selectedCoach.phone || '');
             formData.append('isActive', selectedCoach.isActive !== false);
             
             // Only append password if it has been changed
@@ -760,8 +749,8 @@ const CoachManagement = () => {
                                                         type="email"
                                                         id="email"
                                                         name="email"
-                                                        value={selectedCoach.contact?.email || ''}
-                                                        onChange={handleContactChange}
+                                                        value={selectedCoach.email || ''}
+                                                        onChange={handleEditInputChange}
                                                         className={styles.formControl}
                                                     />
                                                 </div>
@@ -772,8 +761,8 @@ const CoachManagement = () => {
                                                         type="text"
                                                         id="phone"
                                                         name="phone"
-                                                        value={selectedCoach.contact?.phone || ''}
-                                                        onChange={handleContactChange}
+                                                        value={selectedCoach.phone || ''}
+                                                        onChange={handleEditInputChange}
                                                         className={styles.formControl}
                                                     />
                                                 </div>

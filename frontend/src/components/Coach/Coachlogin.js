@@ -19,6 +19,7 @@ const CoachLogin = () => {
       
       // Check if login was successful and coach data exists
       if (response.data.success && response.data.coach) {
+        sessionStorage.setItem('coachEmail', response.data.coach.email); // <-- ADD THIS LINE
         // Store coach data in session storage
         sessionStorage.setItem('coachId', response.data.coach._id);
         sessionStorage.setItem('coachName', response.data.coach.name);

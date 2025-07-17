@@ -21,7 +21,7 @@ const coachSchema = new mongoose.Schema({
         required: true
     },
     experience: {
-        type: Number,  // Years of experience
+        type: Number,
         default: 0
     },
     bio: {
@@ -29,14 +29,19 @@ const coachSchema = new mongoose.Schema({
         default: ''
     },
     image: {
-        type: String  // Path to profile image
+        type: String
     },
-    contact: {
-        email: String,
-        phone: String
+    email: { // <-- moved out of contact
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
+    phone: { // <-- moved out of contact
+        type: String
     },
     availability: {
-        type: [String],  // Days/times available
+        type: [String],
         default: []
     },
     isActive: {
@@ -51,6 +56,4 @@ const coachSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const Coach = mongoose.model('Coach', coachSchema);
-
-module.exports = Coach;
+module.exports = mongoose.model('Coach', coachSchema);
