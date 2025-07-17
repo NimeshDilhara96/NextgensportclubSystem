@@ -36,6 +36,7 @@ const coachRoutes = require('./routes/coaches'); // Add coach routes
 const membershipsRoute = require('./routes/memberships');
 const notificationsRoute = require('./routes/notifications');
 const orderRouter = require('./routes/orders');
+const feedbacksRouter = require('./routes/feedbacks'); // Import feedbacks router
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -68,6 +69,7 @@ app.use("/sponsors", require("./routes/sponsors"));
 app.use("/products", require("./routes/products"));
 app.use("/facilities", require("./routes/Facilityes"));
 app.use("/messages", require("./routes/messages"));
+app.use("/feedbacks", feedbacksRouter); // Add feedbacks route
 
 // Serve biometric login page directly at root level (for email links)
 app.get('/biometric-login.html', (req, res) => {
