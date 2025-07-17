@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaSearch, FaExclamationTriangle, FaUser } from 'react-icons/fa';
 import AdminSlideNav from './AdminSlideNav';
-import styles from './CoachManagement.module.css'; // Reuse coach management styles
+import styles from './adminMemberManagement.module.css'; // Updated import
 
 const ViewFeedback = () => {
     const [feedbacks, setFeedbacks] = useState([]);
@@ -33,50 +33,66 @@ const ViewFeedback = () => {
     );
 
     return (
-        <>
+        <div className={styles.admin_dashboard}>
             <AdminSlideNav />
-            <div className={styles.coachManagementContainer}>
-                <h1 className={styles.pageTitle}>User Feedback</h1>
-                <div className={styles.searchContainer}>
-                    <div className={styles.searchBox}>
-                        <FaSearch className={styles.searchIcon} />
-                        <input
-                            type="text"
-                            placeholder="Search feedback by user or message..."
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            className={styles.searchInput}
-                        />
+            <div className={styles.main_content}>
+                <h1 className={styles.dashboard_title}>User Feedback</h1>
+                <div className={styles.members_section}>
+                    <div className={styles.section_header}>
+                        <h2>All Feedback</h2>
+                        <div className={styles.search_bar}>
+                            <FaSearch className={styles.search_icon} />
+                            <input
+                                type="text"
+                                placeholder="Search feedback by user or message..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                            />
+                        </div>
                     </div>
+                    {loading ? (
+                        <div className={styles.loading}>Loading feedback...</div>
+                    ) : error ? (
+                        <div className={styles.error}>{error}</div>
+                    ) : (
+                        <div className={styles.members_table_container}>
+                            <table className={styles.members_table}>
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Message</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredFeedbacks.length > 0 ? (
+                                        filteredFeedbacks.map(fb => (
+                                            <tr key={fb._id}>
+                                                <td>
+                                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <FaUser style={{ color: '#2196f3' }} />
+                                                        {fb.user}
+                                                    </span>
+                                                </td>
+                                                <td>{fb.message}</td>
+                                                <td>{new Date(fb.createdAt).toLocaleString()}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="3" className={styles.no_results}>
+                                                <FaExclamationTriangle style={{ marginRight: 8 }} />
+                                                No feedback found. {searchQuery ? 'Try a different search term.' : 'No feedback submitted yet.'}
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </div>
-                {error && <div className={styles.errorMessage}>{error}</div>}
-                {loading ? (
-                    <div className={styles.loadingMessage}>Loading feedback...</div>
-                ) : filteredFeedbacks.length === 0 ? (
-                    <div className={styles.noCoachesMessage}>
-                        <FaExclamationTriangle />
-                        <p>No feedback found. {searchQuery ? 'Try a different search term.' : 'No feedback submitted yet.'}</p>
-                    </div>
-                ) : (
-                    <div className={styles.coachesGrid}>
-                        {filteredFeedbacks.map(fb => (
-                            <div key={fb._id} className={styles.coachCard}>
-                                <div className={styles.coachImage}>
-                                    <FaUser />
-                                </div>
-                                <div className={styles.coachDetails}>
-                                    <h3>{fb.user}</h3>
-                                    <p>{fb.message}</p>
-                                    <span style={{ fontSize: '0.9em', color: '#888' }}>
-                                        {new Date(fb.createdAt).toLocaleString()}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
             </div>
-        </>
+        </div>
     );
 };
 

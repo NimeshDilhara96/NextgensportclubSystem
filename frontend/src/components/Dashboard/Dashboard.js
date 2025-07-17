@@ -5,6 +5,7 @@ import styles from './Dashboard.module.css'; // Changed to import styles
 import SlideNav from '../appnavbar/slidenav';
 import Container from '../common/Container';
 import logo from '../../assets/logo.png'; // Use your transparent logo
+import FeedbackForm from './FeedbackForm'; // Add this import
 
 const Dashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -492,11 +493,14 @@ const Dashboard = () => {
       <SlideNav 
         isSidebarOpen={isSidebarOpen} 
         toggleSidebar={toggleSidebar}
-        userRole={userData.role} // Add role to handle different navigation menus
+        userRole={userData.role}
       />
       <Container isSidebarOpen={isSidebarOpen}>
         <div className={styles.dashboardContent}>
           {renderDashboardContent()}
+          
+          <br />
+          <FeedbackForm userName={userData.name} />
 
           {/* Footer with branding and version - same for all users */}
           <div className={styles.dashboardFooter}>
