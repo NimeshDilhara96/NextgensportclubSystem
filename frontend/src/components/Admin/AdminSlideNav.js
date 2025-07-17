@@ -104,7 +104,7 @@ const AdminSlideNav = () => {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/admin/feedbacks" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <Link to="/admin/view-feedback" style={{ textDecoration: 'none', color: 'inherit' }}>
                                     FeedBacks
                                 </Link>
                             </li>
