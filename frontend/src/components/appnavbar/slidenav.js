@@ -142,17 +142,19 @@ const SlideNav = ({ isSidebarOpen, toggleSidebar }) => {
         <div className="user-controls">
           <div className="icon-buttons">
             <div className="message-container">
-              <button 
+              <Link
+                to="/messenger"
                 className="message-btn"
                 onClick={() => {
-                  setShowMessages(!showMessages);
+                  setShowMessages(false);
                   setShowNotifications(false);
                   setShowProfileMenu(false);
                 }}
+                style={{ textDecoration: 'none', color: 'inherit' }}
               >
                 <span className="icon">💬</span>
                 <span className="notification-badge">3</span>
-              </button>
+              </Link>
               {showMessages && (
                 <div className="popup-menu messages-menu">
                   <div className="popup-header">
