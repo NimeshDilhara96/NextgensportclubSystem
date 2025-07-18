@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Membership = require('../models/Membership');
 const User = require('../models/User');
+const Payment = require('../models/Payment'); // Add this at the top
 
 // Get all membership plans
 router.get('/', async (req, res) => {
@@ -55,10 +56,45 @@ router.post('/purchase', async (req, res) => {
     if (!user) return res.status(404).json({ status: 'error', message: 'User not found' });
     const membership = await Membership.findOne({ name: membershipName });
     if (!membership) return res.status(404).json({ status: 'error', message: 'Membership plan not found' });
+
+    // Set membership duration
+    const now = new Date();
+    let end;
+    if (membershipName.toLowerCase() === "big") {
+      end = new Date(now);
+      end.setMonth(end.getMonth() + 1); // 1 month
+    } else if (membershipName.toLowerCase() === "premium") {
+      end = new Date(now);
+      end.setFullYear(end.getFullYear() + 1); // 1 year
+    } else {
+      end = null;
+    }
+
     user.membershipPackage = membership.name.toLowerCase();
     user.membershipStatus = 'active';
+    user.membershipStart = now;
+    user.membershipEnd = end;
     await user.save();
-    res.json({ status: 'success', message: 'Membership updated', user });
+
+    await Payment.create({
+      userEmail,
+      planName: membership.name,
+      amount: membership.price,
+      paymentId: req.body.paymentId || 'FAKE_PAYMENT_ID_' + Math.floor(Math.random() * 100000),
+      status: 'success',
+      type: 'membership' // <-- Set type
+    });
+
+    res.json({
+      status: 'success',
+      message: 'Membership updated',
+      user: {
+        membershipPackage: user.membershipPackage,
+        membershipStatus: user.membershipStatus,
+        membershipStart: user.membershipStart,
+        membershipEnd: user.membershipEnd
+      }
+    });
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
   }
@@ -125,4 +161,21 @@ router.post('/seed-plans', async (req, res) => {
   }
 });
 
-module.exports = router; 
+// Example function to downgrade expired memberships
+const downgradeExpiredMemberships = async () => {
+  const now = new Date();
+  await User.updateMany(
+    { membershipEnd: { $lt: now }, membershipStatus: 'active' },
+    {
+      $set: {
+        membershipPackage: 'free',
+        membershipStatus: 'inactive',
+        membershipStart: null,
+        membershipEnd: null
+      }
+    }
+  );
+};
+
+module.exports = router;
+
