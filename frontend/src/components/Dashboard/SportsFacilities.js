@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SlideNav from '../appnavbar/slidenav';
 import styles from './SportsFacilities.module.css';
+import ReactDatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 // Light mode styles
 const lightModeStyles = {
@@ -272,11 +274,7 @@ const SportsFacilities = () => {
     }
   };
 
-  // Add this function to handle booking form input changes
-  const handleBookingInputChange = (e) => {
-    const { name, value } = e.target;
-    setBookingData(prev => ({ ...prev, [name]: value }));
-  };
+  // (Removed unused handleBookingInputChange function)
 
   // Add a function to handle booking cancellation
   const handleCancelBooking = async (booking) => {
@@ -311,18 +309,7 @@ const SportsFacilities = () => {
     }
   };
 
-  // Add this function inside your SportsFacilities.js component
-  const getMinDateTime = () => {
-    const now = new Date();
-    // Pad month, day, hour, minute with leading zeros if needed
-    const pad = (n) => n.toString().padStart(2, '0');
-    const yyyy = now.getFullYear();
-    const mm = pad(now.getMonth() + 1);
-    const dd = pad(now.getDate());
-    const hh = pad(now.getHours());
-    const min = pad(now.getMinutes());
-    return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
-  };
+  // (Removed unused getMinDateTime function)
 
   // Show loading indicator
   if (loading) {
@@ -617,7 +604,7 @@ const SportsFacilities = () => {
               <h2>My Facility Bookings</h2>
               
               {/* Upcoming Bookings */}
-              <h3>Upcoming Bookings</h3>
+              <h3 className={styles.upcomingBookingsTitle}>Upcoming Bookings</h3>
               {bookingsLoading ? (
                 <div className={styles.loadingContainer}>
                   <p>Loading your bookings...</p>
@@ -627,25 +614,21 @@ const SportsFacilities = () => {
                   <p>No upcoming bookings.</p>
                 </div>
               ) : (
-                <div className={styles.bookingsGrid}>
+                <div className={styles.upcomingBookingsGrid}>
                   {upcomingBookings.map(booking => (
-                    <div className={styles.bookingCard} key={booking._id}>
-                      <div className={styles.bookingHeader}>
-                        <h3>{booking.facilityName}</h3>
-                        <span className={`${styles.statusTag} ${styles[booking.status.toLowerCase()]}`}>
-                          {booking.status}
-                        </span>
+                    <div className={styles.upcomingBookingCard} key={booking._id}>
+                      <div className={styles.upcomingBookingHeader}>
+                        <span className={styles.upcomingBookingFacility}>{booking.facilityName}</span>
+                        <span className={styles.upcomingBookingStatus}>{booking.status}</span>
                       </div>
-                      
-                      <div className={styles.bookingDetails}>
-                        <div className={styles.bookingTime}>
+                      <div className={styles.upcomingBookingDetails}>
+                        <div className={styles.upcomingBookingTime}>
                           <p><strong>Start:</strong> {new Date(booking.startTime).toLocaleString()}</p>
                           <p><strong>End:</strong> {new Date(booking.endTime).toLocaleString()}</p>
                         </div>
-                        
                         {booking.status !== 'Cancelled' && (
                           <button 
-                            className={styles.cancelButton}
+                            className={styles.upcomingBookingCancelBtn}
                             onClick={() => handleCancelBooking(booking)}
                           >
                             Cancel Booking
@@ -712,37 +695,73 @@ const SportsFacilities = () => {
             
             <form onSubmit={handleBookingSubmit} className={styles.bookingForm}>
               <div className={styles.formGroup}>
-                <label htmlFor="startTime">Start Time</label>
-                <input
-                  type="datetime-local"
+                <label htmlFor="startTime" className={styles.formLabel}>
+                  <span className={styles.formLabelIcon}>🗓️</span> Start Time
+                </label>
+                <ReactDatePicker
                   id="startTime"
-                  name="startTime"
-                  value={bookingData.startTime}
-                  onChange={handleBookingInputChange}
+                  selected={bookingData.startTime ? new Date(bookingData.startTime) : null}
+                  onChange={date =>
+                    setBookingData(prev => ({
+                      ...prev,
+                      startTime: date ? date.toISOString() : ''
+                    }))
+                  }
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="yyyy-MM-dd h:mm aa"
+                  minDate={new Date()}
+                  className={styles.dateTimeInput}
+                  placeholderText="Select start date and time"
                   required
-                  min={getMinDateTime()} // Prevent past dates/times
+                  popperPlacement="bottom"
+                  calendarClassName={styles.datePickerCalendar}
                 />
+                {bookingData.startTime && (
+                  <div className={styles.selectedDatePreview}>
+                    <span>Selected: {new Date(bookingData.startTime).toLocaleString()}</span>
+                  </div>
+                )}
               </div>
-              
+
               <div className={styles.formGroup}>
-                <label htmlFor="endTime">End Time</label>
-                <input
-                  type="datetime-local"
+                <label htmlFor="endTime" className={styles.formLabel}>
+                  <span className={styles.formLabelIcon}>⏰</span> End Time
+                </label>
+                <ReactDatePicker
                   id="endTime"
-                  name="endTime"
-                  value={bookingData.endTime}
-                  onChange={handleBookingInputChange}
+                  selected={bookingData.endTime ? new Date(bookingData.endTime) : null}
+                  onChange={date =>
+                    setBookingData(prev => ({
+                      ...prev,
+                      endTime: date ? date.toISOString() : ''
+                    }))
+                  }
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="yyyy-MM-dd h:mm aa"
+                  minDate={bookingData.startTime ? new Date(bookingData.startTime) : new Date()}
+                  className={styles.dateTimeInput}
+                  placeholderText="Select end date and time"
                   required
-                  min={getMinDateTime()} // Prevent past dates/times
+                  popperPlacement="bottom"
+                  calendarClassName={styles.datePickerCalendar}
                 />
+                {bookingData.endTime && (
+                  <div className={styles.selectedDatePreview}>
+                    <span>Selected: {new Date(bookingData.endTime).toLocaleString()}</span>
+                  </div>
+                )}
               </div>
               
               <div className={styles.modalButtons}>
                 <button type="submit" className={styles.submitButton}>
                   Book Now
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className={styles.cancelButton}
                   onClick={() => setShowBookingModal(false)}
                 >
