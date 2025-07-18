@@ -5,6 +5,7 @@ import styles from './ClubStore.module.css';
 import axios from 'axios';
 import Logo from '../../assets/logo.png';
 import OrderSummary from './OrderSummary';
+import PaymentGateway from '../payments/paymentgetway';
 
 const ClubStore = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -26,6 +27,8 @@ const ClubStore = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [storePaymentInfo, setStorePaymentInfo] = useState(null);
 
   // Check if sidebar should be open by default on larger screens
   useEffect(() => {
@@ -186,24 +189,50 @@ const ClubStore = () => {
       alert('Please fill in all checkout fields.');
       return;
     }
-    const orderProducts = cart.map(item => ({ product: item._id, quantity: item.quantity }));
-    const total = parseFloat(calculateTotal());
+    const orderProducts = cart.map(item => ({
+      product: item._id,
+      quantity: item.quantity,
+      name: item.name,      // Add this line
+      price: item.price     // Optional: add price if you want to show it
+    }));
+    const total = Number(cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2));
+    setStorePaymentInfo({
+      amount: total,
+      orderProducts,
+      address: checkoutInfo.address,
+      phone: checkoutInfo.phone,
+      email: checkoutInfo.email
+    });
+    setShowCheckoutModal(false);
+    setShowPaymentModal(true);
+    return;
+  };
+
+  const handleStorePaymentSuccess = async (payment) => {
+    // Now submit the order to backend, including paymentId
     try {
       const res = await axios.post('http://localhost:8070/orders', {
-        userId,
-        products: orderProducts,
-        total,
-        address: checkoutInfo.address,
-        phone: checkoutInfo.phone,
-        email: checkoutInfo.email
+        userId: sessionStorage.getItem('userId'),
+        products: storePaymentInfo.orderProducts,
+        total: storePaymentInfo.amount, // should be a number
+        address: storePaymentInfo.address,
+        phone: storePaymentInfo.phone,
+        email: storePaymentInfo.email,
+        paymentId: payment.paymentId
       });
       setOrderSummary(res.data.order);
       setCart([]);
       localStorage.removeItem('clubStoreCart');
-      setShowCheckoutModal(false);
+      setShowPaymentModal(false);
     } catch (err) {
       alert('Failed to place order. Please try again.');
+      setShowPaymentModal(false);
     }
+  };
+
+  const handleStorePaymentFailure = () => {
+    setShowPaymentModal(false);
+    alert('Payment failed! Please try again.');
   };
 
   return (
@@ -324,10 +353,10 @@ const ClubStore = () => {
                   </div>
                 </div>
               ))
-            )}
-          </div>
+  )}
+</div>
 
-          {!loading && filteredProducts.length === 0 && (
+{!loading && filteredProducts.length === 0 && (
   <div className={styles.emptyProductsContainer}>
     <FaShoppingCart className={styles.emptyProductsIcon} />
     <h3>No products available</h3>
@@ -424,6 +453,15 @@ const ClubStore = () => {
             <OrderSummary order={orderSummary} onClose={() => setOrderSummary(null)} />
           )}
 
+          <PaymentGateway
+  open={showPaymentModal}
+  onClose={() => setShowPaymentModal(false)}
+  amount={storePaymentInfo?.amount}
+  planName="Club Store Order"
+  userEmail={storePaymentInfo?.email}
+  onSuccess={handleStorePaymentSuccess}
+  onFailure={handleStorePaymentFailure}
+/>
         </div>
       </div>
     </div>
