@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import AdminSlideNav from './AdminSlideNav';
 import { getMemberCount } from './adminMemberManagement';
 import { FaUsers, FaRunning, FaBuilding, FaCalendarCheck, FaShoppingBag, FaBell, FaChartLine, FaMoneyBillWave } from 'react-icons/fa';
+import { Bar } from 'react-chartjs-2';
+import { Chart, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
 import './adminDashboard.css';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
+Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState({
@@ -17,22 +23,38 @@ const AdminDashboard = () => {
     
     const [loading, setLoading] = useState(true);
     const [recentActivities, setRecentActivities] = useState([]);
-    
+    const [showPaymentsModal, setShowPaymentsModal] = useState(false);
+    const [allPayments, setAllPayments] = useState([]);
+    const [dashboardPayments, setDashboardPayments] = useState([]);
+    const summaryRef = useRef();
+
     useEffect(() => {
         const fetchStats = async () => {
             try {
                 setLoading(true);
-                // Get member count
+
+                // Fetch payments
+                const paymentsRes = await fetch('http://localhost:8070/payments');
+                const paymentsData = await paymentsRes.json();
+                const payments = paymentsData.payments || [];
+                setDashboardPayments(payments); // <-- Add this line
+
+                // Calculate totals
+                const membershipPayments = payments.filter(p => p.type === 'membership' && p.status === 'success');
+                const storePayments = payments.filter(p => p.type === 'store' && p.status === 'success');
+
+                const revenueTotal = payments
+                    .filter(p => p.status === 'success')
+                    .reduce((sum, p) => sum + (p.amount || 0), 0);
+
+                const ordersCount = storePayments.length;
                 const memberCount = await getMemberCount();
-                
-                // You can fetch real counts from your API for these as well
-                // For now using placeholder values
-                const sportCount = 6; 
+
+                // You can fetch real counts for sports/facilities/bookings if needed
+                const sportCount = 6;
                 const facilityCount = 4;
                 const bookingsCount = 28;
-                const revenueTotal = 12500;
-                const ordersCount = 15;
-                
+
                 setStats({
                     totalSports: sportCount,
                     totalFacilities: facilityCount,
@@ -41,16 +63,25 @@ const AdminDashboard = () => {
                     totalRevenue: revenueTotal,
                     totalOrders: ordersCount
                 });
-                
-                // Sample recent activities data
+
+                // Optionally, update recentActivities with payment info
                 setRecentActivities([
-                    { id: 1, type: 'member', action: 'New member registered', name: 'John Smith', time: '2 hours ago' },
-                    { id: 2, type: 'booking', action: 'Facility booked', name: 'Tennis Court #2', time: '3 hours ago' },
-                    { id: 3, type: 'order', action: 'New order placed', name: 'Club Merchandise', time: '5 hours ago' },
-                    { id: 4, type: 'member', action: 'Membership renewed', name: 'Sarah Johnson', time: '1 day ago' },
-                    { id: 5, type: 'facility', action: 'Maintenance scheduled', name: 'Swimming Pool', time: '1 day ago' }
+                    ...storePayments.slice(0, 3).map(p => ({
+                        id: p._id,
+                        type: 'order',
+                        action: 'Store purchase',
+                        name: p.userEmail,
+                        time: new Date(p.date).toLocaleString()
+                    })),
+                    ...membershipPayments.slice(0, 3).map(p => ({
+                        id: p._id,
+                        type: 'member',
+                        action: 'Membership payment',
+                        name: p.userEmail,
+                        time: new Date(p.date).toLocaleString()
+                    }))
                 ]);
-                
+
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching dashboard stats:', error);
@@ -63,12 +94,67 @@ const AdminDashboard = () => {
 
     // Format currency for display
     const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('en-US', {
+        return new Intl.NumberFormat('en-LK', {
             style: 'currency',
-            currency: 'USD',
+            currency: 'LKR',
             minimumFractionDigits: 0
         }).format(amount);
     };
+
+    const fetchAllPayments = async () => {
+        try {
+            const res = await fetch('http://localhost:8070/payments');
+            const data = await res.json();
+            setAllPayments(data.payments || []);
+            setShowPaymentsModal(true);
+        } catch (err) {
+            alert('Failed to fetch payments');
+        }
+    };
+
+    // Prepare monthly revenue data for the current year
+const getMonthlyRevenueData = () => {
+    const months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    const monthlyRevenue = Array(12).fill(0);
+
+    dashboardPayments.forEach(payment => {
+        if (payment.status === 'success') {
+            const date = new Date(payment.date);
+            const year = date.getFullYear();
+            const currentYear = new Date().getFullYear();
+            if (year === currentYear) {
+                const month = date.getMonth();
+                monthlyRevenue[month] += payment.amount || 0;
+            }
+        }
+    });
+
+    return {
+        labels: months,
+        datasets: [
+            {
+                label: 'Revenue (LKR)',
+                data: monthlyRevenue,
+                backgroundColor: 'rgba(76, 175, 80, 0.7)'
+            }
+        ]
+    };
+};
+
+// Download Payments Table as PDF
+const downloadPaymentsPDF = async () => {
+    const tableElement = document.getElementById('payments-table');
+    if (!tableElement) return;
+    const canvas = await html2canvas(tableElement);
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('l', 'mm', 'a4');
+    pdf.text('All Payments', 10, 10);
+    pdf.addImage(imgData, 'PNG', 10, 20, 270, 0);
+    pdf.save('payments.pdf');
+};
 
     return (
         <div className="admin-dashboard">
@@ -171,8 +257,36 @@ const AdminDashboard = () => {
                             </div>
                         </div>
                         
-                        <div className="chart-placeholder">
-                            <div className="chart-message">Revenue chart visualization would display here</div>
+                        <div className="chart-placeholder" id="revenue-chart">
+                            {dashboardPayments.length > 0 ? (
+                                <Bar
+                                    data={getMonthlyRevenueData()}
+                                    options={{
+                                        responsive: true,
+                                        plugins: {
+                                            legend: { display: false },
+                                            tooltip: { callbacks: { label: ctx => `LKR ${ctx.parsed.y}` } }
+                                        },
+                                        scales: {
+                                            y: { beginAtZero: true, ticks: { callback: v => `LKR ${v}` } }
+                                        }
+                                    }}
+                                    height={220}
+                                />
+                            ) : (
+                                <div className="chart-message">No payment data for this year.</div>
+                            )}
+                        </div>
+
+                        {/* Move the View Payments button here */}
+                        <div style={{ marginTop: 24, textAlign: 'right' }}>
+                            <button
+                                className="action-button view-payments"
+                                onClick={fetchAllPayments}
+                                style={{ padding: '8px 20px', fontWeight: 600 }}
+                            >
+                                View Payments
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -222,10 +336,54 @@ const AdminDashboard = () => {
                             <Link to="/admin/club-store" className="action-button view-orders">
                                 View Orders
                             </Link>
+                            <Link to="#" className="action-button view-payments" onClick={fetchAllPayments}>
+                                View Payments
+                            </Link>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {showPaymentsModal && (
+  <div className="modal-overlay" onClick={() => setShowPaymentsModal(false)}>
+    <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <h2>All Payments</h2>
+      <button className="close-modal" onClick={() => setShowPaymentsModal(false)}>Close</button>
+      <button className="download-btn" onClick={downloadPaymentsPDF}>Download PDF</button>
+      <table className="payments-table" id="payments-table">
+        <thead>
+          <tr>
+            <th>User Email</th>
+            <th>Type</th>
+            <th>Plan/Order</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {allPayments.map(payment => (
+            <tr key={payment._id}>
+              <td>{payment.userEmail}</td>
+              <td>{payment.type}</td>
+              <td>{payment.planName}</td>
+              <td>{formatCurrency(payment.amount)}</td>
+              <td>{payment.status}</td>
+              <td>{new Date(payment.date).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+
+<div id="admin-summary-pdf" ref={summaryRef}>
+  <div className="revenue-section">
+    {/* ...revenue stats and chart... */}
+  </div>
+</div>
+
         </div>
     );
 };
