@@ -27,6 +27,7 @@ import SendTrainingPlan from './components/Coach/SendTrainingPlan'; // Add this 
 import SendMessage from './components/Coach/sendmessage'; // Add this import
 import Messenger from './components/Dashboard/messenger';
 import ViewFeedback  from './components/Admin/viewfeedback';
+import PaymentGateway from './components/payments/paymentgetway'; // Add this import
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -237,6 +238,12 @@ function App() {
           <Route path="/messenger" element={
             <ProtectedRoute>
               <Messenger />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/payment-gateway" element={
+            <ProtectedRoute>
+              <PaymentGateway />
             </ProtectedRoute>
           } />
 
