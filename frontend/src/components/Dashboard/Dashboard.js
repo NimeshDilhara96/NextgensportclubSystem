@@ -45,7 +45,7 @@ const Dashboard = () => {
           name: user.name || 'User',
           membershipType: user.membershipPackage || 'Standard',
           memberSince: new Date(user.joinedDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-          nextPayment: user.nextPaymentDate ? new Date(user.nextPaymentDate).toISOString().split('T')[0] : 'N/A',
+          nextPayment: user.membershipEnd ? new Date(user.membershipEnd).toISOString().split('T')[0] : 'N/A',
           role: user.role || 'member', // Store user role
         });
 
