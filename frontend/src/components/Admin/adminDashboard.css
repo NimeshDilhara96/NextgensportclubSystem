@@ -389,6 +389,43 @@
     border-color: #bee3f8;
 }
 
+/* Modal styles */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 9999;
+}
+.modal-content {
+  background: #fff; padding: 2rem; border-radius: 10px; min-width: 700px; max-height: 80vh; overflow-y: auto; position: relative;
+}
+.close-modal {
+  position: absolute; top: 10px; right: 20px; background: #f44336; color: #fff; border: none; border-radius: 4px; padding: 5px 12px; cursor: pointer;
+}
+.payments-table {
+  width: 100%; border-collapse: collapse; margin-top: 1rem;
+}
+.payments-table th, .payments-table td {
+  border: 1px solid #ddd; padding: 8px; text-align: left;
+}
+.payments-table th {
+  background: #f5f5f5;
+}
+
+/* Download Button */
+.download-btn {
+    margin-left: 12px;
+    padding: 6px 16px;
+    background: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.download-btn:hover {
+    background: #388e3c;
+}
+
 /* Responsive Styles */
 @media screen and (max-width: 1200px) {
     .dashboard-bottom {
