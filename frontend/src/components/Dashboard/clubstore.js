@@ -319,7 +319,7 @@ const ClubStore = () => {
                 <div key={product._id} className={styles.productCard}>
                   <div className={styles.productImageContainer}>
                     <img 
-                      src={product.image ? `http://localhost:8070/${product.image}` : Logo}
+                      src={product.image ? `http://localhost:8070${product.image.startsWith('/') ? '' : '/'}${product.image}` : Logo}
                       alt={product.name} 
                       className={styles.productImage}
                     />
