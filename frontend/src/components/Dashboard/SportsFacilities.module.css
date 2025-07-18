@@ -360,20 +360,148 @@ p {
 .bookingForm {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 22px;
+  margin-top: 18px;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 7px;
 }
 
 .formGroup input {
   padding: 0.75rem;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.formLabel {
+  font-weight: 600;
+  color: #1877f2;
+  margin-bottom: 2px;
+  font-size: 1.08em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.formLabelIcon {
+  font-size: 1.15em;
+  margin-right: 2px;
+}
+
+.dateTimeInput {
+  padding: 12px 14px;
+  border: 1.5px solid #b6c6e3;
+  border-radius: 8px;
+  font-size: 1.08em;
+  background: #f8fafc;
+  color: #222;
+  transition: border 0.2s, box-shadow 0.2s;
+  outline: none;
+  box-shadow: 0 1px 3px rgba(24,119,242,0.04);
+}
+
+.dateTimeInput:focus {
+  border: 1.5px solid #1877f2;
+  background-color: #fff;
+  box-shadow: 0 0 0 2px #e3f2fd;
+}
+
+.selectedDatePreview {
+  margin-top: 6px;
+  font-size: 1em;
+  color: #1877f2;
+  background: #e3f2fd;
+  border-left: 4px solid #1877f2;
+  border-radius: 6px;
+  padding: 6px 12px;
+  display: inline-block;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(24,119,242,0.07);
+  letter-spacing: 0.2px;
+}
+
+.modalButtons {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.submitButton {
+  background: linear-gradient(90deg, #1877f2 80%, #63a4ff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 10px 28px;
+  font-weight: 700;
+  font-size: 1.08em;
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s;
+  box-shadow: 0 1px 4px rgba(24,119,242,0.08);
+}
+
+.submitButton:hover {
+  background: linear-gradient(90deg, #1565c0 80%, #63a4ff 100%);
+}
+
+.cancelButton {
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 10px 28px;
+  font-weight: 700;
+  font-size: 1.08em;
+  cursor: pointer;
+  transition: background 0.18s, box-shadow 0.18s;
+  box-shadow: 0 1px 4px rgba(244,67,54,0.08);
+}
+
+.cancelButton:hover {
+  background: #d32f2f;
+}
+
+.datePickerCalendar {
+  font-family: inherit;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 24px rgba(24,119,242,0.13) !important;
+  border: 1.5px solid #b6c6e3 !important;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .bookingForm {
+    gap: 14px;
+  }
+  .formGroup {
+    gap: 4px;
+  }
+  .dateTimeInput {
+    font-size: 1em;
+    padding: 10px 8px;
+  }
+  .selectedDatePreview {
+    font-size: 0.97em;
+    padding: 4px 8px;
+  }
+  .modalButtons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .submitButton, .cancelButton {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 600px) {
+  .dateTimeInput {
+    font-size: 1em;
+    padding: 10px 38px 10px 10px;
+  }
 }
 
 .modalButtons {
@@ -553,7 +681,16 @@ p {
 }
 
 .bookingTime p {
-  margin: 5px 0;
+  margin: 3px 0;
+}
+
+.bookingTime p {
+  color: #2e7d32; /* Green shade for date/time */
+}
+
+.bookingTime strong {
+  color: #1877f2;
+  font-weight: 700;
 }
 
 .statusTag {
@@ -594,7 +731,124 @@ p {
   background-color: #d32f2f;
 }
 
-/* Responsive styles */
+/* --- My Bookings Section Improvements --- */
+
+.myBookingsSection {
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.myBookingsTitle {
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #1877f2;
+  letter-spacing: 0.5px;
+}
+
+.myBookingsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.myBookingCard {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(24,119,242,0.08);
+  padding: 22px 24px 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.myBookingCard:hover {
+  box-shadow: 0 6px 24px rgba(24,119,242,0.13);
+  transform: translateY(-3px) scale(1.01);
+}
+
+.myBookingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.myBookingFacility {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #1877f2;
+}
+
+.myBookingDate {
+  font-size: 1em;
+  color: #555;
+}
+
+.myBookingStatus {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 12px;
+  font-size: 0.95em;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.myBookingStatus.confirmed {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.myBookingStatus.completed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.myBookingStatus.cancelled {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.myBookingActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.myBookingCancelBtn {
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.myBookingCancelBtn:hover {
+  background: #d32f2f;
+}
+
+@media (max-width: 600px) {
+  .myBookingsList {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .myBookingCard {
+    padding: 14px 10px 12px 10px;
+  }
+
+  .upcomingBookingsGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .upcomingBookingCard {
+    padding: 14px 10px 12px 10px;
+  }
+}
+
 @media screen and (max-width: 1024px) {
   .mainContent {
     margin-left: 0;
@@ -707,5 +961,168 @@ p {
 
   .sportName, .memberCount {
     color: #2d88ff;
+  }
+}
+
+/* --- Upcoming Bookings Section --- */
+.upcomingBookingsTitle {
+  color: #1877f2;
+  font-size: 1.25em;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.upcomingBookingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+  justify-items: center; /* Center cards in grid */
+}
+
+.upcomingBookingCard {
+  max-width: 340px;      /* Limit card width */
+  width: 100%;           /* Responsive */
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(24,119,242,0.10), 0 1.5px 6px rgba(0,0,0,0.04);
+  padding: 22px 18px 16px 18px; /* Slightly less padding */
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-left: 5px solid #1877f2;
+  position: relative;
+  transition: box-shadow 0.18s, transform 0.18s;
+  min-width: 0;
+}
+
+.upcomingBookingCard:hover {
+  box-shadow: 0 8px 32px rgba(24,119,242,0.16), 0 3px 12px rgba(0,0,0,0.08);
+  transform: translateY(-3px) scale(1.012);
+}
+
+.upcomingBookingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.upcomingBookingFacility {
+  font-size: 1.13em;
+  font-weight: 700;
+  color: #1877f2;
+  flex: 1;
+  word-break: break-word;
+}
+
+.upcomingBookingStatus {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 12px;
+  font-size: 0.97em;
+  font-weight: 600;
+  background: #e3f2fd;
+  color: #1565c0;
+  margin-left: 8px;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(24,119,242,0.07);
+}
+
+.upcomingBookingDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 1em;
+  color: #555;
+}
+
+.upcomingBookingTime {
+  font-size: 0.99em;
+  color: #444;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.upcomingBookingTime p {
+  margin: 2px 0;
+  color: #2e7d32;
+  font-size: 0.98em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.upcomingBookingTime strong {
+  color: #1877f2;
+  font-weight: 700;
+  margin-right: 2px;
+}
+
+.bookingDateValue {
+  color: #2e7d32;
+  font-weight: 600;
+  font-size: 1em;
+}
+
+.upcomingBookingCancelBtn {
+  background: linear-gradient(90deg, #f44336 80%, #e57373 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  align-self: flex-end;
+  transition: background 0.18s, box-shadow 0.18s;
+  box-shadow: 0 1px 4px rgba(244,67,54,0.08);
+}
+
+.upcomingBookingCancelBtn:hover {
+  background: linear-gradient(90deg, #d32f2f 80%, #e57373 100%);
+  box-shadow: 0 2px 8px rgba(244,67,54,0.13);
+}
+
+@media (max-width: 900px) {
+  .upcomingBookingsGrid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .upcomingBookingCard {
+    max-width: 98vw;
+    padding: 16px 8px 12px 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .upcomingBookingsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .upcomingBookingCard {
+    padding: 12px 4px 10px 8px;
+    border-radius: 10px;
+  }
+  .upcomingBookingHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .upcomingBookingFacility {
+    font-size: 1em;
+  }
+  .upcomingBookingStatus {
+    font-size: 0.93em;
+    margin-left: 0;
+    margin-top: 2px;
+  }
+  .upcomingBookingCancelBtn {
+    width: 100%;
+    align-self: stretch;
+    margin-top: 10px;
+    padding: 10px 0;
   }
 }
