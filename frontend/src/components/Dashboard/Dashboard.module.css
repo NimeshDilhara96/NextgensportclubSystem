@@ -929,6 +929,36 @@
 .footerCredits p {
   margin: 4px 0;
 }
+.footerCredits .poweredBy{
+  color: #202021 !important;
+  font-weight: 700;
+  font-family: 'Orbitron', 'Arial Black', Arial, sans-serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-style: italic;
+  position: relative;
+  font-size: 1.15em;
+  /* SpaceX logo style: italic, spaced, blue, bold, futuristic */
+}
+
+
+.footerCredits .developedBy {
+  background: linear-gradient(45deg, #f58529, #dd2a7b, #8134af, #515bd4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent !important;
+  font-weight: 600;
+}
+.footerCredits .poweredByLabel {
+  color: #282a2a !important;
+  font-weight: 600;
+}
+
+.footerCredits .developedByLabel {
+  color: #1f2120 !important;
+  font-weight: 600;
+}
 
 .highlight {
   color: var(--primary-color);

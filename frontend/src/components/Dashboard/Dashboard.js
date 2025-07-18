@@ -338,21 +338,21 @@ const Dashboard = () => {
                   <button className={styles.actionButton}>Schedule Training</button>
                 </div>
               ) : (
-                trainingSchedule.map((session, index) => (
-                  <div key={index} className={styles.scheduleItem}>
-                    <div className={styles.scheduleTime}>
-                      {new Date(session.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                    <div className={styles.scheduleDetails}>
-                      <h4>{session.trainingType}</h4>
-                      <p><i className="fas fa-user-alt"></i> with {session.trainerName}</p>
-                    </div>
-                    <div className={styles.scheduleActions}>
-                      <button className={styles.scheduleBtn}><i className="fas fa-info-circle"></i></button>
-                      <button className={styles.scheduleBtn}><i className="fas fa-times"></i></button>
-                    </div>
+              trainingSchedule.map((session, index) => (
+                <div key={index} className={styles.scheduleItem}>
+                  <div className={styles.scheduleTime}>
+                    {new Date(session.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                   </div>
-                ))
+                  <div className={styles.scheduleDetails}>
+                    <h4>{session.trainingType}</h4>
+                    <p><i className="fas fa-user-alt"></i> with {session.trainerName}</p>
+                  </div>
+                  <div className={styles.scheduleActions}>
+                    <button className={styles.scheduleBtn}><i className="fas fa-info-circle"></i></button>
+                    <button className={styles.scheduleBtn}><i className="fas fa-times"></i></button>
+                  </div>
+                </div>
+              ))
               )}
             </div>
           </div>
@@ -509,9 +509,13 @@ const Dashboard = () => {
                 <i className="fas fa-running"></i> NextGen Sport Club
               </div>
               <div className={styles.footerCredits}>
-                <p>Powered by <span className={styles.highlight}>MommentX</span></p>
-                <p>Developed by <span className={styles.highlight}>Nimeshdilhara96</span></p>
-                <p className={styles.versionBadge}>version v4.8.0</p>
+                <p>
+                  <span className={styles.poweredByLabel}>Powered by</span> <span className={styles.poweredBy}>MommentX</span>
+                </p>
+                <p>
+                  <span className={styles.developedByLabel}>Developed by</span> <span className={styles.developedBy}>Nimeshdilhara96</span>
+                </p>
+                <p className={styles.versionBadge}>version v4.9.0</p>
               </div>
             </div>
           </div>
