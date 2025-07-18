@@ -24,6 +24,8 @@ const UserSchema = new mongoose.Schema({
         enum: ["active", "inactive", "suspended", "expired", "blocked"],
         default: "inactive"
     },
+    membershipStart: { type: Date },
+    membershipEnd: { type: Date },
     joinedDate: { type: Date, default: Date.now },
     // Store both sport ObjectId and name in preferredSports
     preferredSports: [{
