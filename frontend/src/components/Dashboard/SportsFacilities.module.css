@@ -341,20 +341,29 @@ p {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(24, 119, 242, 0.13);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(2px);
 }
 
 .modal {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  background: #fff;
+  padding: 2.5rem 2.2rem 2rem 2.2rem;
+  border-radius: 18px;
+  width: 95vw;
+  max-width: 420px;
+  box-shadow: 0 12px 36px rgba(24,119,242,0.13), 0 2px 8px rgba(44,62,80,0.08);
+  animation: modalFadeIn 0.22s;
+  text-align: center;
+  position: relative;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(40px);}
+  to { opacity: 1; transform: translateY(0);}
 }
 
 .bookingForm {
@@ -368,95 +377,95 @@ p {
   display: flex;
   flex-direction: column;
   gap: 7px;
-}
-
-.formGroup input {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  align-items: flex-start;
 }
 
 .formLabel {
-  font-weight: 600;
-  color: #1877f2;
+  font-weight: 700;
+  color: #2563eb;
   margin-bottom: 2px;
-  font-size: 1.08em;
+  font-size: 1.13em;
   display: flex;
   align-items: center;
   gap: 6px;
+  letter-spacing: 0.2px;
 }
 
 .formLabelIcon {
-  font-size: 1.15em;
+  font-size: 1.18em;
   margin-right: 2px;
 }
 
 .dateTimeInput {
-  padding: 12px 14px;
-  border: 1.5px solid #b6c6e3;
-  border-radius: 8px;
-  font-size: 1.08em;
+  padding: 13px 16px;
+  border: 1.7px solid #b6c6e3;
+  border-radius: 9px;
+  font-size: 1.12em;
   background: #f8fafc;
   color: #222;
   transition: border 0.2s, box-shadow 0.2s;
   outline: none;
-  box-shadow: 0 1px 3px rgba(24,119,242,0.04);
+  box-shadow: 0 1px 4px rgba(24,119,242,0.06);
 }
 
 .dateTimeInput:focus {
-  border: 1.5px solid #1877f2;
+  border: 1.7px solid #2563eb;
   background-color: #fff;
   box-shadow: 0 0 0 2px #e3f2fd;
 }
 
 .selectedDatePreview {
-  margin-top: 6px;
-  font-size: 1em;
-  color: #1877f2;
+  margin-top: 7px;
+  font-size: 1.04em;
+  color: #2563eb;
   background: #e3f2fd;
-  border-left: 4px solid #1877f2;
-  border-radius: 6px;
-  padding: 6px 12px;
+  border-left: 4px solid #2563eb;
+  border-radius: 7px;
+  padding: 7px 14px;
   display: inline-block;
-  font-weight: 600;
-  box-shadow: 0 1px 4px rgba(24,119,242,0.07);
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(24,119,242,0.09);
   letter-spacing: 0.2px;
 }
 
 .modalButtons {
   display: flex;
-  gap: 16px;
-  margin-top: 10px;
+  gap: 18px;
+  margin-top: 14px;
+  justify-content: center;
 }
 
 .submitButton {
-  background: linear-gradient(90deg, #1877f2 80%, #63a4ff 100%);
+  background: linear-gradient(90deg, #2563eb 70%, #3b82f6 100%);
   color: #fff;
   border: none;
-  border-radius: 7px;
-  padding: 10px 28px;
+  border-radius: 8px;
+  padding: 12px 32px;
   font-weight: 700;
-  font-size: 1.08em;
+  font-size: 1.13em;
   cursor: pointer;
   transition: background 0.18s, box-shadow 0.18s;
-  box-shadow: 0 1px 4px rgba(24,119,242,0.08);
+  box-shadow: 0 2px 8px rgba(59,130,246,0.10);
+  letter-spacing: 0.5px;
 }
 
 .submitButton:hover {
-  background: linear-gradient(90deg, #1565c0 80%, #63a4ff 100%);
+  background: linear-gradient(90deg, #1d4ed8 70%, #2563eb 100%);
+  box-shadow: 0 4px 16px rgba(59,130,246,0.13);
 }
 
 .cancelButton {
   background: #f44336;
   color: #fff;
   border: none;
-  border-radius: 7px;
-  padding: 10px 28px;
+  border-radius: 8px;
+  padding: 12px 32px;
   font-weight: 700;
-  font-size: 1.08em;
+  font-size: 1.13em;
   cursor: pointer;
   transition: background 0.18s, box-shadow 0.18s;
   box-shadow: 0 1px 4px rgba(244,67,54,0.08);
+  letter-spacing: 0.5px;
 }
 
 .cancelButton:hover {
@@ -529,21 +538,25 @@ p {
 }
 
 .statusMessage {
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin: 1rem 0;
+  padding: 1rem 1.2rem;
+  border-radius: 7px;
+  margin: 1.2rem 0 0.7rem 0;
+  font-size: 1.08em;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  box-shadow: 0 1px 4px rgba(24,119,242,0.07);
 }
 
 .successMessage {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
+  background-color: #e8f5e9;
+  color: #059669;
+  border: 1.5px solid #059669;
 }
 
 .errorMessage {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+  background-color: #ffebee;
+  color: #d32f2f;
+  border: 1.5px solid #d32f2f;
 }
 
 /* Bookings styles */
