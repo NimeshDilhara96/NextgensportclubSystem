@@ -3,13 +3,14 @@ const router = express.Router();
 const Order = require('../models/Order');
 const User = require('../models/User');
 const Product = require('../models/Product');
+const Payment = require('../models/Payment');
 const mongoose = require('mongoose');
 const axios = require('axios');
 
 // Create a new order
 router.post('/', async (req, res) => {
   try {
-    let { userId, products, total, address, phone, email } = req.body;
+    let { userId, products, total, address, phone, email, paymentId } = req.body;
     console.log('ORDER BODY:', req.body);
     if ((!userId && !email) || !products || !address || !phone || !email) {
       return res.status(400).json({ success: false, message: 'Missing required fields' });
@@ -62,6 +63,29 @@ router.post('/', async (req, res) => {
       email
     });
     const savedOrder = await order.save();
+
+    // Send order summary email
+    try {
+      await axios.post('http://localhost:8070/notify/order-summary', {
+        email,
+        order: savedOrder
+      });
+    } catch (notifyErr) {
+      console.error('Failed to send order summary email:', notifyErr.message);
+    }
+
+    // If paymentId is provided, create a payment record
+    if (paymentId) {
+      await Payment.create({
+        userEmail: email,
+        planName: 'Club Store Order',
+        amount: total,
+        paymentId: paymentId,
+        status: 'success',
+        type: 'store' // <-- Set type
+      });
+    }
+
     res.status(201).json({ success: true, order: savedOrder });
   } catch (error) {
     console.error('Error creating order:', error);
@@ -119,4 +143,4 @@ router.put('/:id/status', async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;
