@@ -163,7 +163,9 @@ router.get("/getByEmail/:email", async (req, res) => {
         membershipPackage: user.membershipPackage,
         membershipStatus: user.membershipStatus,
         profilePicture: user.profilePicture,
-        joinedDate: user.joinedDate
+        joinedDate: user.joinedDate,
+        membershipStart: user.membershipStart,      // <-- add this
+        membershipEnd: user.membershipEnd           // <-- add this
       }
     });
   } catch (err) {
