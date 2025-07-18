@@ -17,7 +17,11 @@ router.get('/', async (req, res) => {
 // Add a new membership plan (admin only)
 router.post('/', async (req, res) => {
   try {
-    const { name, price, period, features, recommended } = req.body;
+    let { name, price, period, features, recommended } = req.body;
+    // Set period based on plan name if not provided
+    if (!period) {
+      period = name && name.toLowerCase() === 'premium' ? '/year' : '/month';
+    }
     const membership = new Membership({ name, price, period, features, recommended });
     await membership.save();
     res.status(201).json({ status: 'success', membership });
@@ -139,7 +143,7 @@ router.post('/seed-plans', async (req, res) => {
       {
         name: 'Premium',
         price: 89.99,
-        period: '/month',
+        period: '/year', // <-- Change this to '/year'
         features: [
           '24/7 gym access',
           'Unlimited group classes',

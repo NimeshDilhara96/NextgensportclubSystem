@@ -114,6 +114,62 @@
   font-weight: 500 !important;
 }
 
+.recommended-badge.above-card {
+  position: absolute !important;
+  top: -28px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 2 !important;
+  background: gold !important;
+  color: #333 !important;
+  padding: 8px 22px !important;
+  border-radius: 20px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(218, 165, 32, 0.15) !important;
+  border: 2px solid #fff !important;
+  pointer-events: none !important;
+}
+
+.recommended-badge.below-card {
+  display: block;
+  margin: 8px auto 0 auto;
+  background: gold !important;
+  color: #333 !important;
+  padding: 8px 22px !important;
+  border-radius: 20px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(218, 165, 32, 0.15) !important;
+  width: fit-content;
+  text-align: center;
+}
+
+.premium-card {
+  border: 2px solid gold !important;
+  box-shadow: 0 2px 12px rgba(218, 165, 32, 0.15) !important;
+}
+
+.premium-card .card-header {
+  background: gold !important;
+  color: #333 !important;
+}
+
+.recommended-badge {
+  background: gold !important;
+  color: #333 !important;
+}
+
+.big-card {
+  border: 2px solid silver !important;
+  box-shadow: 0 2px 12px rgba(192, 192, 192, 0.15) !important;
+}
+
+.big-card .card-header {
+  background: silver !important;
+  color: #333 !important;
+}
+
 /* Card Header */
 .card-header {
   background: #109ad6 !important;
@@ -190,8 +246,21 @@
   width: 100% !important;
 }
 
-.subtitle {
-  font-size: 16px !important;
-  color: #666 !important;
-  margin-bottom: 30px !important;
+.ribbon-badge {
+  position: absolute !important;
+  top: 18px !important;
+  right: -38px !important;
+  width: 160px !important;
+  background: linear-gradient(90deg, rgb(172, 7, 209) 80%, #fff0 100%) !important;
+  color: #110f0f !important;
+  text-align: center !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  padding: 6px 0 !important;
+  transform: rotate(45deg);
+  box-shadow: 0 2px 8px rgba(218, 165, 32, 0.15) !important;
+  z-index: 10 !important;
+  letter-spacing: 1px !important;
+  border-radius: 4px !important;
+  pointer-events: none !important;
 }

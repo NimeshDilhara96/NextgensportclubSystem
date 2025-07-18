@@ -128,35 +128,36 @@ const Membership = () => {
                     periodLabel = '/month';
                   }
                   return (
-                    <div 
-                      key={plan._id} 
-                      className={`membership-card ${plan.recommended ? 'recommended' : ''} ${isCurrent ? 'current-plan' : ''}`}
-                    >
-                      {plan.recommended && (
-                        <div className="recommended-badge">Most Popular</div>
-                      )}
-                      <div className="card-header">
-                        <h2>{plan.name}</h2>
-                        <div className="price">
-                          <span className="amount">LKR {plan.price}</span>
-                          <span className="period">{periodLabel}</span>
+                    <React.Fragment key={plan._id}>
+                      <div
+                        className={`membership-card ${plan.name.toLowerCase() === 'premium' ? 'premium-card' : ''} ${plan.name.toLowerCase() === 'big' ? 'big-card' : ''} ${isCurrent ? 'current-plan' : ''}`}
+                      >
+                        {plan.name.toLowerCase() === 'premium' && (
+                          <div className="ribbon-badge">Most Popular</div>
+                        )}
+                        <div className="card-header">
+                          <h2 style={{ position: 'relative', zIndex: 1 }}>{plan.name}</h2>
+                          <div className="price">
+                            <span className="amount">LKR {plan.price}</span>
+                            <span className="period">{periodLabel}</span>
+                          </div>
+                        </div>
+                        <div className="card-content">
+                          <ul>
+                            {plan.features.map((feature, index) => (
+                              <li key={index}>{feature}</li>
+                            ))}
+                          </ul>
+                          <button
+                            className="select-plan-btn"
+                            onClick={() => handleSelectPlan(plan.name)}
+                            disabled={isCurrent}
+                          >
+                            {isCurrent ? 'Current Plan' : 'Select Plan'}
+                          </button>
                         </div>
                       </div>
-                      <div className="card-content">
-                        <ul>
-                          {plan.features.map((feature, index) => (
-                            <li key={index}>{feature}</li>
-                          ))}
-                        </ul>
-                        <button 
-                          className="select-plan-btn"
-                          onClick={() => handleSelectPlan(plan.name)}
-                          disabled={isCurrent}
-                        >
-                          {isCurrent ? 'Current Plan' : 'Select Plan'}
-                        </button>
-                      </div>
-                    </div>
+                    </React.Fragment>
                   );
                 })}
               </div>
