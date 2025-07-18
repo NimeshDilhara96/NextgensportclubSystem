@@ -24,7 +24,9 @@ const OrderSummary = ({ order, onClose }) => {
           <ul className={styles.productsList}>
             {order.products.map((item, idx) => (
               <li key={idx} className={styles.productItem}>
-                <span className={styles.productName}>{item.product?.name || item.product}</span>
+                <span className={styles.productName}>
+                  {item.name || item.product?.name || item.product}
+                </span>
                 <span className={styles.productQty}>x{item.quantity}</span>
                 {item.product?.price && (
                   <span className={styles.productPrice}>${item.product.price}</span>
@@ -42,4 +44,4 @@ const OrderSummary = ({ order, onClose }) => {
   );
 };
 
-export default OrderSummary; 
+export default OrderSummary;
