@@ -1,0 +1,261 @@
+
+.settingsRoot {
+  min-height: 100vh;
+  background: linear-gradient(120deg, #f4f6fb 60%, #e9f0f7 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-bottom: 80px;
+}
+
+.tabNav {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.05);
+  padding: 0.7rem 0.2rem;
+}
+
+.tabNav button {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 1.13em;
+  font-weight: 700;
+  color: #2563eb;
+  padding: 0.8rem 2.5rem;
+  border-radius: 10px 10px 0 0;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  letter-spacing: 0.6px;
+}
+
+.tabNav button:not(.activeTab):hover {
+  background: #e3eaf3;
+  color: #059669;
+}
+
+.activeTab {
+  background: linear-gradient(90deg, #e3eaf3 80%, #f7fafd 100%);
+  color: #059669;
+  box-shadow: 0 4px 16px rgba(5,150,105,0.07);
+  border-bottom: 2.5px solid #059669;
+  z-index: 2;
+}
+
+.tabContent {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 32px rgba(44, 62, 80, 0.10);
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  border: 1.5px solid #e3eaf3;
+  min-height: 340px;
+  margin-bottom: 2.5rem;
+}
+
+.termsContainer h2 {
+  color: #2563eb;
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.5px;
+}
+.termsContent h3 {
+  color: #059669;
+  margin-top: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.13em;
+  font-weight: 700;
+}
+.termsContent p {
+  color: #333;
+  font-size: 1.08em;
+  margin-bottom: 1.1rem;
+  line-height: 1.6;
+}
+
+.deleteContainer h2 {
+  color: #d32f2f;
+  font-size: 1.3em;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.5px;
+}
+.fbWarningBox {
+  background: #fff3cd;
+  color: #856404;
+  border: 1.5px solid #ffeeba;
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(255,193,7,0.07);
+}
+.fbWarningBox h3 {
+  color: #d32f2f;
+  margin-bottom: 0.5rem;
+  font-size: 1.1em;
+  font-weight: 700;
+}
+.fbWarningBox p {
+  margin: 0;
+  font-size: 1.05em;
+}
+.errorBox {
+  background: #ffebee;
+  color: #d32f2f;
+  border: 1.5px solid #d32f2f;
+  border-radius: 7px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.1rem;
+  font-size: 1.08em;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  box-shadow: 0 1px 4px rgba(244,67,54,0.07);
+}
+.successBox {
+  background: #e8f5e9;
+  color: #059669;
+  border: 1.5px solid #059669;
+  border-radius: 7px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.1rem;
+  font-size: 1.08em;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  box-shadow: 0 1px 4px rgba(24,119,242,0.07);
+}
+.deleteButton {
+  background: linear-gradient(90deg, #d32f2f 60%, #f44336 100%);
+  color: #fff;
+  border: none;
+  padding: 13px 36px;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 1.13rem;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(244,67,54,0.10);
+  letter-spacing: 0.5px;
+  margin-top: 1.2rem;
+}
+.deleteButton:disabled {
+  background: #e57373;
+  cursor: not-allowed;
+}
+.deleteButton:hover:not(:disabled) {
+  background: linear-gradient(90deg, #b71c1c 60%, #d32f2f 100%);
+  box-shadow: 0 4px 16px rgba(244,67,54,0.13);
+}
+
+.mommentxFooter {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+  margin-bottom: 0;
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  user-select: none;
+  height: 70px;
+  background: #181818;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  box-shadow: 0 -2px 16px rgba(24,24,24,0.13);
+  font-family: 'Orbitron', 'Montserrat', 'Arial Black', Arial, sans-serif;
+}
+.spacexText {
+  color: #fff;
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+}
+.spacexXWrap {
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  margin-left: 0.13em;
+}
+.spacexX {
+  color: #2196f3;
+  font-size: 2.7rem;
+  font-style: italic;
+  font-weight: 900;
+  margin-left: 0.02em;
+  margin-right: 0.02em;
+  position: relative;
+  z-index: 2;
+  letter-spacing: 0;
+  line-height: 1;
+  font-family: 'Orbitron', 'Montserrat', 'Arial Black', Arial, sans-serif;
+  transform: skewX(-18deg);
+  /* SpaceX X is very italic */
+  animation: spacexXAnim 1.1s cubic-bezier(0.77,0,0.18,1) 0.3s 1 both;
+}
+@keyframes spacexXAnim {
+  0% { opacity: 0; transform: translateY(30px) scale(0.7) skewX(-30deg); }
+  60% { opacity: 1; transform: translateY(-6px) scale(1.15) skewX(-20deg); }
+  80% { transform: translateY(2px) scale(0.98) skewX(-15deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) skewX(-18deg); }
+}
+.spacexArcWrap {
+  position: absolute;
+  left: 50%;
+  bottom: 0.7em;
+  width: 2.7em;
+  height: 0.7em;
+  transform: translateX(-50%) rotate(-8deg);
+  pointer-events: none;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.spacexArcSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.spacexArcPath {
+  stroke: #2196f3;
+  stroke-width: 4;
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation: arcDraw 1.1s cubic-bezier(0.77,0,0.18,1) 0.7s 1 forwards;
+}
+@keyframes arcDraw {
+  to { stroke-dashoffset: 0; }
+}
+@media (max-width: 600px) {
+  .mommentxFooter {
+    font-size: 1.3rem;
+    height: 48px;
+  }
+  .spacexText {
+    font-size: 1.1rem;
+  }
+  .spacexX {
+    font-size: 1.5rem;
+  }
+  .spacexArcWrap {
+    width: 1.7em;
+    height: 0.5em;
+    bottom: 0.4em;
+  }
+}
