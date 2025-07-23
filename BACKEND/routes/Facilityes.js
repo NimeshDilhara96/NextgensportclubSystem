@@ -242,6 +242,8 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Book a facility
+// Add notification email when booking a facility
+const axios = require('axios');
 router.post('/book/:id', async (req, res) => {
     try {
         const { startTime, endTime, userEmail } = req.body;
@@ -364,6 +366,22 @@ router.post('/book/:id', async (req, res) => {
         });
 
         await facility.save();
+
+        // Send booking notification email to user
+        try {
+            await axios.post(
+                `${process.env.NOTIFICATION_URL || 'http://localhost:8070'}/notify/booking`,
+                {
+                    email: user.email,
+                    name: user.name,
+                    facilityName: facility.name,
+                    startTime: bookingStartTime,
+                    endTime: bookingEndTime
+                }
+            );
+        } catch (notifyErr) {
+            console.error('Error sending booking notification email:', notifyErr?.response?.data || notifyErr.message);
+        }
 
         return res.status(200).json({
             status: "success",
