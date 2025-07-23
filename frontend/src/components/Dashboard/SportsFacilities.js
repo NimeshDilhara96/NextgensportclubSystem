@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SlideNav from '../appnavbar/slidenav';
 import styles from './SportsFacilities.module.css';
-import ReactDatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 
 // Light mode styles
 const lightModeStyles = {
@@ -47,6 +45,26 @@ const SportsFacilities = () => {
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  // (Removed unused getCurrentDateTime function)
+
+  // Helper function to format datetime-local input value from ISO string
+  const formatDateTimeForInput = (isoString) => {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  // Helper function to convert datetime-local input value to ISO string
+  const convertToISOString = (dateTimeLocalValue) => {
+    if (!dateTimeLocalValue) return '';
+    return new Date(dateTimeLocalValue).toISOString();
   };
 
   // Fetch facilities and sports data from the backend
@@ -227,6 +245,34 @@ const SportsFacilities = () => {
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     
+    // Validation
+    if (!bookingData.startTime || !bookingData.endTime) {
+      setBookingStatus({
+        type: 'error',
+        message: 'Please select both start and end times'
+      });
+      return;
+    }
+
+    const startDate = new Date(bookingData.startTime);
+    const endDate = new Date(bookingData.endTime);
+    
+    if (endDate <= startDate) {
+      setBookingStatus({
+        type: 'error',
+        message: 'End time must be after start time'
+      });
+      return;
+    }
+
+    if (startDate < new Date()) {
+      setBookingStatus({
+        type: 'error',
+        message: 'Start time cannot be in the past'
+      });
+      return;
+    }
+    
     try {
       // Get user email from session storage
       const userEmail = sessionStorage.getItem('userEmail');
@@ -244,7 +290,8 @@ const SportsFacilities = () => {
       const response = await axios.post(
         `http://localhost:8070/facilities/book/${selectedFacility._id}`,
         {
-          ...bookingData,
+          startTime: convertToISOString(bookingData.startTime),
+          endTime: convertToISOString(bookingData.endTime),
           userEmail
         },
         {
@@ -264,6 +311,7 @@ const SportsFacilities = () => {
         setTimeout(() => {
           setShowBookingModal(false);
           setBookingStatus({ type: '', message: '' });
+          fetchUserBookings(); // Refresh bookings
         }, 2000);
       }
     } catch (err) {
@@ -274,7 +322,18 @@ const SportsFacilities = () => {
     }
   };
 
-  // (Removed unused handleBookingInputChange function)
+  // Handle input changes for booking form
+  const handleBookingInputChange = (field, value) => {
+    setBookingData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    // Clear any existing error messages when user starts typing
+    if (bookingStatus.type === 'error') {
+      setBookingStatus({ type: '', message: '' });
+    }
+  };
 
   // Add a function to handle booking cancellation
   const handleCancelBooking = async (booking) => {
@@ -308,8 +367,6 @@ const SportsFacilities = () => {
       alert(err.response?.data?.message || 'Failed to cancel booking');
     }
   };
-
-  // (Removed unused getMinDateTime function)
 
   // Show loading indicator
   if (loading) {
@@ -683,89 +740,395 @@ const SportsFacilities = () => {
 
       {/* Booking Modal */}
       {showBookingModal && selectedFacility && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal} style={lightModeStyles.card}>
-            <h2>Book {selectedFacility.name}</h2>
+        <div className={styles.modalOverlay} onClick={() => setShowBookingModal(false)}>
+          <div className={styles.modal} style={lightModeStyles.card} onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '24px',
+              paddingBottom: '16px',
+              borderBottom: '2px solid #f0f2f5'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #1877f2, #42a5f5)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '24px'
+                }}>
+                  🏢
+                </div>
+                <div>
+                  <h2 style={{ margin: 0, color: '#1877f2', fontSize: '20px', fontWeight: '700' }}>
+                    Book {selectedFacility.name}
+                  </h2>
+                  <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>
+                    Select your preferred date and time
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowBookingModal(false)}
+                style={{
+                  background: '#f8f9fa',
+                  border: 'none',
+                  borderRadius: '8px',
+                  width: '36px',
+                  height: '36px',
+                  cursor: 'pointer',
+                  fontSize: '18px',
+                  color: '#666',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#e9ecef';
+                  e.target.style.color = '#333';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#f8f9fa';
+                  e.target.style.color = '#666';
+                }}
+              >
+                ×
+              </button>
+            </div>
             
+            {/* Status Message */}
             {bookingStatus.message && (
-              <div className={`${styles.statusMessage} ${bookingStatus.type === 'success' ? styles.successMessage : styles.errorMessage}`}>
+              <div style={{
+                padding: '12px 16px',
+                borderRadius: '8px',
+                marginBottom: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                ...(bookingStatus.type === 'success' ? {
+                  background: '#d1edff',
+                  color: '#0969da',
+                  border: '1px solid #0969da'
+                } : {
+                  background: '#ffebe9',
+                  color: '#cf222e',
+                  border: '1px solid #cf222e'
+                })
+              }}>
+                <span style={{ fontSize: '16px' }}>
+                  {bookingStatus.type === 'success' ? '✅' : '⚠️'}
+                </span>
                 {bookingStatus.message}
               </div>
             )}
             
-            <form onSubmit={handleBookingSubmit} className={styles.bookingForm}>
-              <div className={styles.formGroup}>
-                <label htmlFor="startTime" className={styles.formLabel}>
-                  <span className={styles.formLabelIcon}>🗓️</span> Start Time
+            <form onSubmit={handleBookingSubmit}>
+              {/* Date Selection */}
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  color: '#333',
+                  marginBottom: '8px'
+                }}>
+                  📅 Select Date
                 </label>
-                <ReactDatePicker
-                  id="startTime"
-                  selected={bookingData.startTime ? new Date(bookingData.startTime) : null}
-                  onChange={date =>
-                    setBookingData(prev => ({
-                      ...prev,
-                      startTime: date ? date.toISOString() : ''
-                    }))
-                  }
-                  showTimeSelect
-                  timeFormat="HH:mm"
-                  timeIntervals={15}
-                  dateFormat="yyyy-MM-dd h:mm aa"
-                  minDate={new Date()}
-                  className={styles.dateTimeInput}
-                  placeholderText="Select start date and time"
+                <input
+                  type="date"
+                  value={bookingData.startTime ? formatDateTimeForInput(bookingData.startTime).split('T')[0] : ''}
+                  onChange={(e) => {
+                    const selectedDate = e.target.value;
+                    if (selectedDate) {
+                      // Set start time to 09:00 AM of selected date if not set
+                      const startDateTime = bookingData.startTime 
+                        ? new Date(bookingData.startTime)
+                        : new Date(`${selectedDate}T09:00`);
+                      
+                      startDateTime.setFullYear(new Date(selectedDate).getFullYear());
+                      startDateTime.setMonth(new Date(selectedDate).getMonth());
+                      startDateTime.setDate(new Date(selectedDate).getDate());
+                      
+                      handleBookingInputChange('startTime', startDateTime.toISOString());
+                      
+                      // Auto set end time to 1 hour later
+                      const endDateTime = new Date(startDateTime);
+                      endDateTime.setHours(endDateTime.getHours() + 1);
+                      handleBookingInputChange('endTime', endDateTime.toISOString());
+                    }
+                  }}
+                  min={new Date().toISOString().split('T')[0]}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    border: '2px solid #e1e5e9',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    backgroundColor: '#fff',
+                    cursor: 'pointer'
+                  }}
                   required
-                  popperPlacement="bottom"
-                  calendarClassName={styles.datePickerCalendar}
                 />
-                {bookingData.startTime && (
-                  <div className={styles.selectedDatePreview}>
-                    <span>Selected: {new Date(bookingData.startTime).toLocaleString()}</span>
-                  </div>
-                )}
               </div>
 
-              <div className={styles.formGroup}>
-                <label htmlFor="endTime" className={styles.formLabel}>
-                  <span className={styles.formLabelIcon}>⏰</span> End Time
-                </label>
-                <ReactDatePicker
-                  id="endTime"
-                  selected={bookingData.endTime ? new Date(bookingData.endTime) : null}
-                  onChange={date =>
-                    setBookingData(prev => ({
-                      ...prev,
-                      endTime: date ? date.toISOString() : ''
-                    }))
-                  }
-                  showTimeSelect
-                  timeFormat="HH:mm"
-                  timeIntervals={15}
-                  dateFormat="yyyy-MM-dd h:mm aa"
-                  minDate={bookingData.startTime ? new Date(bookingData.startTime) : new Date()}
-                  className={styles.dateTimeInput}
-                  placeholderText="Select end date and time"
-                  required
-                  popperPlacement="bottom"
-                  calendarClassName={styles.datePickerCalendar}
-                />
-                {bookingData.endTime && (
-                  <div className={styles.selectedDatePreview}>
-                    <span>Selected: {new Date(bookingData.endTime).toLocaleString()}</span>
+              {/* Time Selection - Only show if date is selected */}
+              {bookingData.startTime && (
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    color: '#333',
+                    marginBottom: '12px'
+                  }}>
+                    ⏰ Select Time Slot
+                  </label>
+                  
+                  {/* Quick Time Buttons */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                    gap: '8px',
+                    marginBottom: '16px'
+                  }}>
+                    {[
+                      { label: '1 Hour', duration: 1 },
+                      { label: '2 Hours', duration: 2 },
+                      { label: '3 Hours', duration: 3 },
+                      { label: '4 Hours', duration: 4 }
+                    ].map(({ label, duration }) => (
+                      <button
+                        key={duration}
+                        type="button"
+                        onClick={() => {
+                          const start = new Date(bookingData.startTime);
+                          const end = new Date(start);
+                          end.setHours(start.getHours() + duration);
+                          handleBookingInputChange('endTime', end.toISOString());
+                        }}
+                        style={{
+                          padding: '8px 12px',
+                          border: '2px solid #e1e5e9',
+                          borderRadius: '6px',
+                          background: '#fff',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          fontWeight: '500',
+                          transition: 'all 0.2s ease',
+                          color: '#333'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.borderColor = '#1877f2';
+                          e.target.style.background = '#f0f8ff';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.borderColor = '#e1e5e9';
+                          e.target.style.background = '#fff';
+                        }}
+                      >
+                        {label}
+                      </button>
+                    ))}
                   </div>
-                )}
-              </div>
+
+                  {/* Custom Time Inputs */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '16px'
+                  }}>
+                    <div>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#666',
+                        marginBottom: '6px'
+                      }}>
+                        Start Time
+                      </label>
+                      <input
+                        type="time"
+                        value={bookingData.startTime ? formatDateTimeForInput(bookingData.startTime).split('T')[1] : '09:00'}
+                        onChange={(e) => {
+                          if (bookingData.startTime) {
+                            const date = formatDateTimeForInput(bookingData.startTime).split('T')[0];
+                            const newDateTime = `${date}T${e.target.value}`;
+                            handleBookingInputChange('startTime', convertToISOString(newDateTime));
+                            
+                            // Auto adjust end time to maintain duration
+                            if (bookingData.endTime) {
+                              const duration = new Date(bookingData.endTime) - new Date(bookingData.startTime);
+                              const newEndTime = new Date(convertToISOString(newDateTime)).getTime() + duration;
+                              handleBookingInputChange('endTime', new Date(newEndTime).toISOString());
+                            }
+                          }
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          border: '2px solid #e1e5e9',
+                          borderRadius: '6px',
+                          fontSize: '14px',
+                          cursor: 'pointer'
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{
+                        display: 'block',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        color: '#666',
+                        marginBottom: '6px'
+                      }}>
+                        End Time
+                      </label>
+                      <input
+                        type="time"
+                        value={bookingData.endTime ? formatDateTimeForInput(bookingData.endTime).split('T')[1] : '10:00'}
+                        onChange={(e) => {
+                          if (bookingData.startTime) {
+                            const date = formatDateTimeForInput(bookingData.startTime).split('T')[0];
+                            const newDateTime = `${date}T${e.target.value}`;
+                            handleBookingInputChange('endTime', convertToISOString(newDateTime));
+                          }
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          border: '2px solid #e1e5e9',
+                          borderRadius: '6px',
+                          fontSize: '14px',
+                          cursor: 'pointer'
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Booking Summary */}
+              {bookingData.startTime && bookingData.endTime && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #f0f8ff, #e6f3ff)',
+                  border: '2px solid #1877f2',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  marginBottom: '24px'
+                }}>
+                  <h4 style={{ margin: '0 0 12px 0', color: '#1877f2', fontSize: '16px', fontWeight: '600' }}>
+                    📋 Booking Summary
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '14px' }}>
+                    <div>
+                      <strong style={{ color: '#333' }}>Date:</strong>
+                      <br />
+                      <span style={{ color: '#666' }}>
+                        {new Date(bookingData.startTime).toLocaleDateString('en-US', { 
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </span>
+                    </div>
+                    <div>
+                      <strong style={{ color: '#333' }}>Duration:</strong>
+                      <br />
+                      <span style={{ color: '#666' }}>
+                        {Math.round((new Date(bookingData.endTime) - new Date(bookingData.startTime)) / (1000 * 60 * 60))} hours
+                      </span>
+                    </div>
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <strong style={{ color: '#333' }}>Time:</strong>
+                      <br />
+                      <span style={{ color: '#666' }}>
+                        {new Date(bookingData.startTime).toLocaleTimeString('en-US', { 
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })} - {new Date(bookingData.endTime).toLocaleTimeString('en-US', { 
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
               
-              <div className={styles.modalButtons}>
-                <button type="submit" className={styles.submitButton}>
-                  Book Now
-                </button>
+              {/* Action Buttons */}
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'flex-end'
+              }}>
                 <button
                   type="button"
-                  className={styles.cancelButton}
                   onClick={() => setShowBookingModal(false)}
+                  style={{
+                    padding: '12px 24px',
+                    border: '2px solid #e1e5e9',
+                    borderRadius: '8px',
+                    background: '#fff',
+                    color: '#666',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.borderColor = '#f44336';
+                    e.target.style.color = '#f44336';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.borderColor = '#e1e5e9';
+                    e.target.style.color = '#666';
+                  }}
                 >
                   Cancel
+                </button>
+                <button 
+                  type="submit"
+                  disabled={!bookingData.startTime || !bookingData.endTime}
+                  style={{
+                    padding: '12px 32px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    background: (!bookingData.startTime || !bookingData.endTime) 
+                      ? '#cccccc' 
+                      : 'linear-gradient(135deg, #1877f2, #42a5f5)',
+                    color: '#fff',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: (!bookingData.startTime || !bookingData.endTime) ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: (!bookingData.startTime || !bookingData.endTime) 
+                      ? 'none' 
+                      : '0 4px 12px rgba(24, 119, 242, 0.3)'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!e.target.disabled) {
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '0 6px 16px rgba(24, 119, 242, 0.4)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!e.target.disabled) {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = '0 4px 12px rgba(24, 119, 242, 0.3)';
+                    }
+                  }}
+                >
+                  🚀 Confirm Booking
                 </button>
               </div>
             </form>
