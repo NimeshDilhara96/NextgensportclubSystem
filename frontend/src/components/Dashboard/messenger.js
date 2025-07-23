@@ -84,12 +84,9 @@ const Messenger = () => {
 
     // Send message
 
-    const [error, setError] = useState('');
-
     const handleSend = async (e) => {
         e.preventDefault();
         setIsSending(true);
-        setError('');
         try {
             await axios.post('http://localhost:8070/messages', {
                 senderValue: userEmail,
@@ -112,7 +109,7 @@ const Messenger = () => {
         } catch (err) {
             // Only show error if POST fails
             console.error('Send message error:', err?.response?.data || err.message);
-            setError('Failed to send message. Please try again.');
+            // Optionally, you can show a toast or alert here if you want to notify the user.
         }
         setIsSending(false);
     };
