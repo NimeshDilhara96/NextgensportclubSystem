@@ -242,4 +242,51 @@ router.post('/order-summary', async (req, res) => {
   }
 });
 
+// POST /notify/booking
+router.post('/booking', async (req, res) => {
+  try {
+    const { email, name, facilityName, startTime, endTime } = req.body;
+    if (!email || !name || !facilityName || !startTime || !endTime) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const mailOptions = {
+      from: `"NextGen Sports Club" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `Facility Booking Confirmation - ${facilityName} - NextGen Sports Club`,
+      html: `
+        <div style="font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f8fafc; color:#1a1a1a; padding:32px; max-width:600px; margin:0 auto; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.08); border:1px solid #e2e8f0;">
+          <h2 style="color:#0f172a;">Booking Confirmed!</h2>
+          <p style="font-size:16px;">Hello <b>${name}</b>,</p>
+          <p style="font-size:15px;">Your booking for <b>${facilityName}</b> is confirmed.</p>
+          <div style="margin:18px 0 24px 0; padding:16px; background:#e0f2fe; border-radius:8px;">
+            <div><b>Start:</b> ${new Date(startTime).toLocaleString()}</div>
+            <div><b>End:</b> ${new Date(endTime).toLocaleString()}</div>
+          </div>
+          <div style="margin-top:32px;font-size:13px;color:#64748b;">If you have any questions or need to cancel, please reply to this email or contact support.</div>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: 'Booking confirmation email sent!' });
+  } catch (error) {
+    console.error('❌ Error sending booking confirmation email:', error);
+    res.status(500).json({ message: 'Failed to send booking confirmation email', error: error.message });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = router;
