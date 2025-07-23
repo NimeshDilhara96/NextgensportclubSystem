@@ -25,17 +25,17 @@ Create `.env` file inside `BACKEND/` folder:
 
 ```env
 # Database
-MONGODB_URL=mongodb+srv://ftc:ndklanka@nextgensport.q1nxq.mongodb.net/nextgensportsclub?retryWrites=true&w=majority&appName=nextgensport
+MONGODB_URL=......Replace with Your MongoDB.............................
 
 # Cloudflare Tunnel URL (will update after starting tunnel)
 PUBLIC_URL=https://your-tunnel-url.trycloudflare.com
 
 # Email Configuration for MommentX Auth
-EMAIL_USER=slcfcricinfo@gmail.com
-EMAIL_PASS=muce ujjq qwfh ltez
+EMAIL_USER=ADD YOUR Gmail Email ID
+EMAIL_PASS=ADD YOUR Gmail App Password
 
 # JWT Secret (use a strong random key)
-JWT_SECRET=your_super_secret_jwt_key_here_make_it_strong_and_random_2024
+JWT_SECRET=your_generated_secure_random_key_here
 
 # Server Port
 PORT=8070
@@ -210,7 +210,7 @@ node -e "console.log('PUBLIC_URL:', process.env.PUBLIC_URL)"
 ## 🆘 Support
 
 For issues or questions:
-- Email: support@nextgensportsclub.com
+- Email: Nimeshdilhara2001@gmail.com
 - Security: Powered by MommentX
 
 ---
