@@ -833,243 +833,266 @@
   transform: translateX(4px);
 }
 
-/* Footer */
+/* Professional Footer Styles - Add these to your Landing.module.css */
+
+/* Footer Section */
 .footer {
-  background: #111;
-  color: #9ca3af;
-  text-align: center;
-  padding: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.footerContent p {
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
-}
-
-/* Utility Classes */
-.visuallyHidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: white;
+  padding: 4rem 2rem 2rem;
+  position: relative;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }
 
-/* Responsive Design */
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+  z-index: 1;
+}
+
+.footerContent {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.footerBranding {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.brandingItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brandingItem:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.clubLogo,
+.mommentxLogo {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: white;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.brandingItem:hover .clubLogo,
+.brandingItem:hover .mommentxLogo {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.brandingText {
+  text-align: left;
+}
+
+.brandingText h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.025em;
+}
+
+.brandingText p {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin: 0;
+  font-weight: 500;
+}
+
+.brandingDivider {
+  font-size: 2rem;
+  color: #2563eb;
+  font-weight: 300;
+  margin: 0 1rem;
+  user-select: none;
+  opacity: 0.7;
+}
+
+.footerDivider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  margin: 1rem 0;
+}
+
+.footerInfo {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: #9ca3af;
+}
+
+.footerInfo p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.footerInfo p:first-child {
+  color: #e5e7eb;
+  font-weight: 500;
+}
+
+.footerInfo strong {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.footerLinks {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.footerLink {
+  color: #9ca3af;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.footerLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #2563eb;
+  transition: width 0.3s ease;
+}
+
+.footerLink:hover {
+  color: white;
+}
+
+.footerLink:hover::after {
+  width: 100%;
+}
+
+.socialLinks {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.socialLink {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.socialLink:hover {
+  background: #2563eb;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+}
+
+/* Responsive Footer */
 @media (max-width: 768px) {
-  .navbar {
-    padding: 1rem;
+  .footer {
+    padding: 3rem 1rem 1.5rem;
   }
   
-  .navLinks {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    height: 100vh;
-    width: 80%;
-    max-width: 300px;
-    background: white;
+  .footerBranding {
     flex-direction: column;
-    justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    gap: 1.5rem;
   }
   
-  .navLinks.active {
-    right: 0;
+  .brandingDivider {
+    display: none;
   }
   
-  .menuIcon {
-    display: flex;
-  }
-  
-  .animatedTitle {
-    font-size: 2.5rem;
-  }
-  
-  .heroSubtitle {
-    font-size: 1.1rem;
-  }
-  
-  .heroButtons {
+  .brandingItem {
     flex-direction: column;
-    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+    padding: 1.5rem;
   }
   
-  .ctaButton,
-  .secondaryButton {
-    width: 100%;
-    max-width: 280px;
-    justify-content: center;
+  .brandingText {
+    text-align: center;
   }
   
-  .sectionHeader h2 {
-    font-size: 2rem;
+  .footerLinks {
+    flex-direction: column;
+    gap: 1rem;
   }
   
-  .features {
-    grid-template-columns: 1fr;
-  }
-  
-  .testimonialCards {
-    grid-template-columns: 1fr;
-  }
-  
-  .newsGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .contactContent {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  
-  .contactInfo h2 {
-    font-size: 2rem;
+  .socialLinks {
+    gap: 0.75rem;
   }
 }
 
 @media (max-width: 480px) {
-  .hero {
-    padding: 1rem;
+  .footer {
+    padding: 2rem 1rem 1rem;
   }
   
-  .heroContent {
-    padding: 1rem;
+  .clubLogo,
+  .mommentxLogo {
+    width: 48px;
+    height: 48px;
   }
   
-  .animatedTitle {
-    font-size: 2rem;
+  .brandingText h4 {
+    font-size: 1.1rem;
   }
   
-  .featuresSection,
-  .testimonialsSection,
-  .newsSection,
-  .contactSection {
-    padding: 4rem 1rem;
+  .brandingText p {
+    font-size: 0.85rem;
   }
   
-  .navbar {
-    padding: 0.75rem 1rem;
-  }
-  
-  .navbar.scrolled {
-    padding: 0.5rem 1rem;
-  }
-}
-
-/* Animation Classes */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes heroGlow {
-  0% {
-    opacity: 0.6;
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05) rotate(180deg);
-  }
-  100% {
-    opacity: 0.6;
-    transform: scale(1) rotate(360deg);
-  }
-}
-
-@keyframes heroParticles {
-  0% {
-    transform: rotate(0deg) translateX(0);
-  }
-  100% {
-    transform: rotate(360deg) translateX(20px);
-  }
-}
-
-@keyframes heroContent {
-  0% {
-    opacity: 0;
-    transform: translateY(50px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes heroButtons {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes titleGlow {
-  0% {
-    opacity: 0.5;
-    transform: scale(0.95);
-  }
-  100% {
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
-}
-
-.feature,
-.testimonialCard,
-.newsCard {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-  .navbar {
-    background: rgba(17, 17, 17, 0.95);
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .navbar.scrolled {
-    background: rgba(17, 17, 17, 0.98);
-  }
-  
-  .navLinks a {
-    color: #e5e7eb;
-  }
-  
-  .navLinks a:hover {
-    color: #60a5fa;
-  }
-  
-  .menuIcon span {
-    background: #e5e7eb;
+  .footerInfo {
+    font-size: 0.9rem;
   }
 }

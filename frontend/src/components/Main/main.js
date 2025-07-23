@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styles from './Landing.module.css';
 import logo from '../../assets/logo.png';
+import mommentxLogo from '../../assets/momex.jpg';
 
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -374,12 +375,71 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Footer - Professional */}
-      <footer className={styles.footer} role="contentinfo">
+     {/* Professional Footer */}
+      <footer className={styles.footer}>
         <div className={styles.footerContent}>
-          <p>&copy; 2025 CLUB FTC Professional Training Center. All rights reserved.</p>
-          <p>Powered by MommentX | Nextgen Sport Club | Designed by @nimeshdilhara96</p>
-          <p>Version 3.1 - Development Edition</p>
+          {/* Optional Navigation Links */}
+          <div className={styles.footerLinks}>
+            <Link to="/" className={styles.footerLink}>Home</Link>
+            <Link to="/about" className={styles.footerLink}>About</Link>
+            <Link to="/facilities" className={styles.footerLink}>Facilities</Link>
+            <Link to="/gallery" className={styles.footerLink}>Gallery</Link>
+            <Link to="/contact" className={styles.footerLink}>Contact</Link>
+          </div>
+
+          {/* Social Links (Optional) */}
+          <div className={styles.socialLinks}>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink} aria-label="Facebook">
+              <span>📘</span>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink} aria-label="Instagram">
+              <span>📷</span>
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink} aria-label="Twitter">
+              <span>🐦</span>
+            </a>
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.socialLink}
+              aria-label="LinkedIn"
+            >
+              <span>💼</span>
+            </a>
+          </div>
+
+          <div className={styles.footerDivider}></div>
+
+          {/* Main Branding */}
+          <div className={styles.footerBranding}>
+            <div className={styles.brandingItem}>
+              <img src={logo} alt="Club FTC - Premium Fitness Center" className={styles.clubLogo} />
+              <div className={styles.brandingText}>
+                <h4>Club FTC</h4>
+                <p>Premium Fitness & Training Center</p>
+              </div>
+            </div>
+            
+            <div className={styles.brandingDivider}>×</div>
+            
+            <div className={styles.brandingItem}>
+              <img src={mommentxLogo} alt="MommentX - Web Development" className={styles.mommentxLogo} />
+              <div className={styles.brandingText}>
+                <h4>MommentX</h4>
+                <p>Digital Solutions & Development</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Info */}
+          <div className={styles.footerInfo}>
+            <p>© {new Date().getFullYear()} Club FTC. All rights reserved.</p>
+            <p>
+              Designed & Developed by <strong>Nimeshdilhara96</strong> | 
+              Professional web solutions for modern businesses
+            </p>
+          </div>
         </div>
       </footer>
     </div>
