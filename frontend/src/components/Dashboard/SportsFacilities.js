@@ -741,7 +741,15 @@ const SportsFacilities = () => {
       {/* Booking Modal */}
       {showBookingModal && selectedFacility && (
         <div className={styles.modalOverlay} onClick={() => setShowBookingModal(false)}>
-          <div className={styles.modal} style={lightModeStyles.card} onClick={(e) => e.stopPropagation()}>
+          <div
+  className={styles.modal}
+  style={{
+    ...lightModeStyles.card,
+    maxHeight: '70vh', // Limit modal height
+    overflowY: 'auto', // Enable vertical scroll if content exceeds maxHeight
+  }}
+  onClick={(e) => e.stopPropagation()}
+>
             {/* Header */}
             <div style={{
               display: 'flex',
