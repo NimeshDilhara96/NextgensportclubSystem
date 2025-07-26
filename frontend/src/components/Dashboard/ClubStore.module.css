@@ -241,6 +241,7 @@
   cursor: pointer;
   font-weight: 500;
   transition: background-color 0.2s;
+  width: 50%;
 }
 
 .addToCartBtn:hover {

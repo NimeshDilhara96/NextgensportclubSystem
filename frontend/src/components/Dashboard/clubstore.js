@@ -343,7 +343,7 @@ const ClubStore = () => {
                   </div>
 
                   <div className={styles.productFooter}>
-                    <div className={styles.productPrice}>${formatPrice(product.price)}</div>
+                    <div className={styles.productPrice}>LKR {formatPrice(product.price)}</div>
                     <button 
                       className={styles.addToCartBtn}
                       onClick={() => addToCart(product)}
@@ -389,7 +389,7 @@ const ClubStore = () => {
                           />
                           <div className={styles.cartItemDetails}>
                             <h4>{item.name}</h4>
-                            <p className={styles.cartItemPrice}>${formatPrice(item.price)}</p>
+                            <p className={styles.cartItemPrice}>LKR {formatPrice(item.price)}</p>
                           </div>
                           <div className={styles.cartItemQuantity}>
                             <button 
@@ -411,7 +411,7 @@ const ClubStore = () => {
                     <div className={styles.cartFooter}>
                       <div className={styles.cartTotal}>
                         <span>Total:</span>
-                        <span>${calculateTotal()}</span>
+                        <span>LKR {calculateTotal()}</span>
                       </div>
                       <button onClick={handleCheckout} className={styles.checkoutBtn}>Proceed to Checkout</button>
                     </div>
@@ -442,7 +442,7 @@ const ClubStore = () => {
                     <label>Email</label>
                     <input type="email" name="email" value={checkoutInfo.email} onChange={handleCheckoutInfoChange} required className={styles.formControl} />
                   </div>
-                  <button type="submit" className={styles.checkoutBtn}>Place Order</button>
+                  <button type="submit" className={styles.checkoutBtn}>Place Order (LKR {calculateTotal()})</button>
                 </form>
               </div>
             </div>
