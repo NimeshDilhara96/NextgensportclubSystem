@@ -59,6 +59,30 @@ router.route("/").get((req, res) => {
         .catch(err => res.status(400).json("Error: " + err));
 });
 
+// Get user by email
+router.route("/by-email/:email").get(async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.params.email });
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
+        res.status(200).json({ 
+            success: true, 
+            user 
+        });
+    } catch (error) {
+        console.error('Error fetching user by email:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to fetch user',
+            error: error.message 
+        });
+    }
+});
+
 // Update user - modified to use email
 router.route("/update/:email").put(async (req, res) => {
     const userEmail = req.params.email;
@@ -153,6 +177,7 @@ router.get("/getByEmail/:email", async (req, res) => {
     res.status(200).json({
       status: "success",
       user: {
+        _id: user._id,
         name: user.name,
         email: user.email,
         contact: user.contact,
@@ -164,8 +189,8 @@ router.get("/getByEmail/:email", async (req, res) => {
         membershipStatus: user.membershipStatus,
         profilePicture: user.profilePicture,
         joinedDate: user.joinedDate,
-        membershipStart: user.membershipStart,      // <-- add this
-        membershipEnd: user.membershipEnd           // <-- add this
+        membershipStart: user.membershipStart,
+        membershipEnd: user.membershipEnd
       }
     });
   } catch (err) {
