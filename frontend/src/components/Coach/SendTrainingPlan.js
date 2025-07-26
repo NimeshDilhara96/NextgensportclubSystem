@@ -4,9 +4,7 @@ import axios from 'axios';
 import styles from './sendTraningPlan.module.css';
 
 const SendTrainingPlan = () => {
-    const [users, setUsers] = useState([]);
-    const [selectedUser, setSelectedUser] = useState('');
-    const [userSports, setUserSports] = useState([]);
+    const [coachAssignedSports, setCoachAssignedSports] = useState([]);
     const [formData, setFormData] = useState({
         sport: '',
         title: '',
@@ -14,50 +12,38 @@ const SendTrainingPlan = () => {
         sessions: [{ date: '', focus: '' }]
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [message, setMessage] = useState({ type: '', text: '' });
 
-    // Fetch users and their joined sports from Sport model
+    // Fetch coach's assigned sports
     useEffect(() => {
-        const fetchUsersAndSports = async () => {
+        const fetchCoachSports = async () => {
             try {
-                const res = await axios.get('http://localhost:8070/sports');
-                const sports = res.data.sports || [];
-                const userMap = {};
-                sports.forEach(sport => {
-                    (sport.members || []).forEach(member => {
-                        if (!userMap[member.userId]) {
-                            userMap[member.userId] = {
-                                _id: member.userId,
-                                name: member.userName,
-                                email: member.userEmail,
-                                sports: []
-                            };
-                        }
-                        userMap[member.userId].sports.push({ _id: sport._id, name: sport.name });
-                    });
-                });
-                setUsers(Object.values(userMap));
-                console.log('Users with sports:', Object.values(userMap));
-            } catch {
-                setUsers([]);
+                const coachEmail = sessionStorage.getItem('coachEmail');
+                if (!coachEmail) {
+                    setMessage({ type: 'error', text: 'Coach authentication required. Please login again.' });
+                    return;
+                }
+
+                // Get coach details to see which sports they're assigned to
+                const coachRes = await axios.get(`http://localhost:8070/coaches/by-email/${encodeURIComponent(coachEmail)}/details`);
+                const coachSports = coachRes.data.coach.sports || [];
+                setCoachAssignedSports(coachSports);
+                
+                if (coachSports.length === 0) {
+                    setMessage({ type: 'info', text: 'You are not assigned to any sports yet.' });
+                }
+            } catch (err) {
+                console.error('Error fetching coach sports:', err);
+                setMessage({ type: 'error', text: 'Failed to fetch coach sports.' });
+            } finally {
+                setIsLoading(false);
             }
         };
-        fetchUsersAndSports();
+        fetchCoachSports();
     }, []);
 
-    // When user changes, set their joined sports
-    useEffect(() => {
-        if (!selectedUser) {
-            setUserSports([]);
-            setFormData(f => ({ ...f, sport: '' }));
-            return;
-        }
-        const user = users.find(u => u._id.toString() === selectedUser.toString());
-        setUserSports(user ? user.sports : []);
-        setFormData(f => ({ ...f, sport: '' }));
-        console.log('Selected user:', user);
-        console.log('User sports:', user ? user.sports : []);
-    }, [selectedUser, users]);
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -84,26 +70,76 @@ const SendTrainingPlan = () => {
         setIsSubmitting(true);
         setMessage({ type: '', text: '' });
         try {
-            const token = sessionStorage.getItem('adminToken');
-            await axios.post('http://localhost:8070/training-plans', {
-                user: selectedUser,
+            const coachToken = sessionStorage.getItem('coachToken');
+            const coachId = sessionStorage.getItem('coachId');
+            const coachEmail = sessionStorage.getItem('coachEmail');
+            
+            if (!coachToken || !coachId || !coachEmail) {
+                setMessage({ type: 'error', text: 'Coach authentication required. Please login again.' });
+                return;
+            }
+
+            // Validate that the selected sport is one of the coach's assigned sports
+            const coachRes = await axios.get(`http://localhost:8070/coaches/by-email/${encodeURIComponent(coachEmail)}/details`);
+            const coachSports = coachRes.data.coach.sports || [];
+            const coachSportIds = coachSports.map(sport => sport.sportId);
+            
+            if (!coachSportIds.includes(formData.sport)) {
+                setMessage({ type: 'error', text: 'You can only send training plans for sports you are assigned to.' });
+                return;
+            }
+
+            // Get the selected sport details to find all members
+            const selectedSport = coachSports.find(sport => sport.sportId === formData.sport);
+            if (!selectedSport || !selectedSport.members || selectedSport.members.length === 0) {
+                setMessage({ type: 'error', text: 'No members found in the selected sport.' });
+                return;
+            }
+
+            // Send training plan to all members of the selected sport
+            const memberEmails = selectedSport.members.map(member => member.userEmail);
+
+            // Fetch user IDs for all member emails
+            const userIdPromises = memberEmails.map(email =>
+                axios.get(`http://localhost:8070/user/getByEmail/${encodeURIComponent(email)}`)
+            );
+            const userIdResults = await Promise.all(userIdPromises);
+            const userIds = userIdResults
+                .map(res => res.data && res.data.user && res.data.user._id)
+                .filter(id => !!id);
+
+            if (userIds.length === 0) {
+                setMessage({ type: 'error', text: 'No valid user IDs found for members.' });
+                return;
+            }
+
+            await axios.post('http://localhost:8070/coaches/training-plans/bulk', {
+                users: userIds,
                 sport: formData.sport,
+                coach: coachId,
                 title: formData.title,
                 description: formData.description,
                 sessions: formData.sessions
             }, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${coachToken}` }
             });
-            setMessage({ type: 'success', text: 'Training plan sent successfully!' });
+
+            setMessage({ 
+                type: 'success', 
+                text: `Training plan sent successfully to ${userIds.length} members!` 
+            });
             setFormData({
                 sport: '',
                 title: '',
                 description: '',
                 sessions: [{ date: '', focus: '' }]
             });
-            setSelectedUser('');
         } catch (err) {
-            setMessage({ type: 'error', text: 'Failed to send training plan.' });
+            console.error('Error sending training plan:', err);
+            setMessage({ 
+                type: 'error', 
+                text: err.response?.data?.message || 'Failed to send training plan.' 
+            });
         } finally {
             setIsSubmitting(false);
         }
@@ -115,45 +151,64 @@ const SendTrainingPlan = () => {
             <div className={styles.container}>
                 <div className={styles.header}>
                     <h1>Send Training Plan</h1>
+                    {coachAssignedSports.length > 0 && (
+                        <div style={{ 
+                            marginTop: '10px', 
+                            padding: '10px', 
+                            backgroundColor: '#f0f8ff', 
+                            borderRadius: '6px',
+                            fontSize: '14px'
+                        }}>
+                            <strong>Your Assigned Sports:</strong>
+                            <div style={{ marginTop: '5px' }}>
+                                {coachAssignedSports.map(sport => (
+                                    <span key={sport.sportId} style={{ 
+                                        display: 'inline-block', 
+                                        margin: '2px 8px 2px 0',
+                                        padding: '4px 8px',
+                                        backgroundColor: '#e6f3ff',
+                                        borderRadius: '4px',
+                                        fontSize: '12px'
+                                    }}>
+                                        {sport.sportName} ({sport.members ? sport.members.length : 0} members)
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
                 {message.text && (
-                    <div className={message.type === 'success' ? styles.successMessage : styles.errorMessage}>
+                    <div className={
+                        message.type === 'success' ? styles.successMessage : 
+                        message.type === 'error' ? styles.errorMessage :
+                        message.type === 'info' ? styles.infoMessage : styles.errorMessage
+                    }>
                         {message.text}
                     </div>
                 )}
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    <div className={styles.formGroup}>
-                        <label htmlFor="user">Select User*</label>
-                        <select
-                            id="user"
-                            value={selectedUser}
-                            onChange={e => setSelectedUser(e.target.value)}
-                            required
-                        >
-                            <option value="">-- Select User --</option>
-                            {users.map(user => (
-                                <option key={user._id} value={user._id.toString()}>
-                                    {user.name} ({user.email})
-                                </option>
-                            ))}
-                        </select>
+                {isLoading ? (
+                    <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+                        Loading sports...
                     </div>
-                    <div className={styles.formGroup}>
-                        <label htmlFor="sport">Select Sport*</label>
-                        <select
-                            id="sport"
-                            name="sport"
-                            value={formData.sport}
-                            onChange={handleInputChange}
-                            required
-                            disabled={!selectedUser}
-                        >
-                            <option value="">-- Select Sport --</option>
-                            {(userSports || []).map(sport => (
-                                <option key={sport._id} value={sport._id}>{sport.name}</option>
-                            ))}
-                        </select>
-                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit} className={styles.form}>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="sport">Select Sport*</label>
+                            <select
+                                id="sport"
+                                name="sport"
+                                value={formData.sport}
+                                onChange={handleInputChange}
+                                required
+                            >
+                                <option value="">-- Select Sport --</option>
+                                {coachAssignedSports.map(sport => (
+                                    <option key={sport.sportId} value={sport.sportId}>
+                                        {sport.sportName} ({sport.members ? sport.members.length : 0} members)
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     <div className={styles.formGroup}>
                         <label htmlFor="title">Plan Title*</label>
                         <input
@@ -204,6 +259,7 @@ const SendTrainingPlan = () => {
                         </button>
                     </div>
                 </form>
+                )}
             </div>
         </>
     );
