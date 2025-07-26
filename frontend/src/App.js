@@ -29,6 +29,7 @@ import Messenger from './components/Dashboard/messenger';
 import ViewFeedback  from './components/Admin/viewfeedback';
 import PaymentGateway from './components/payments/paymentgetway'; // Add this import
 import Settings from './components/Dashboard/settingpage'; // Add this import
+import ViewMemberPortal from './components/Coach/viewmember';
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -171,6 +172,14 @@ function App() {
             element={
               <CoachProtectedRoute>
                 <SendMessage />
+              </CoachProtectedRoute>
+            }
+          />
+          <Route 
+            path="/coach/view-member-portal"
+            element={
+              <CoachProtectedRoute>
+                <ViewMemberPortal />
               </CoachProtectedRoute>
             }
           />
