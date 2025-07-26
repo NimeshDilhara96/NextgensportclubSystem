@@ -403,3 +403,148 @@
     padding: 0.3rem 0.8rem;
   }
 }
+
+/* Training Plans Section */
+.trainingPlansSection {
+  margin-top: 1.5rem;
+}
+
+.trainingPlansSection h2 {
+  margin-bottom: 1.5rem;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.trainingPlansGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.trainingPlanCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.trainingPlanCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.planHeader {
+  margin-bottom: 1rem;
+}
+
+.planHeader h3 {
+  color: #1877f2;
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+}
+
+.planMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sportTag, .coachTag {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.coachTag {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.planDescription {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #1877f2;
+}
+
+.planDescription p {
+  margin: 0;
+  color: #555;
+  line-height: 1.5;
+}
+
+.planSessions {
+  margin-bottom: 1rem;
+}
+
+.planSessions h4 {
+  color: #333;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.sessionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sessionItem {
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.sessionDate {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: #1877f2;
+  font-weight: 500;
+}
+
+.sessionIcon {
+  font-size: 0.9rem;
+}
+
+.sessionFocus {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.planFooter {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e9ecef;
+  text-align: right;
+}
+
+.planFooter small {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.emptyTrainingPlans {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #666;
+}
+
+.emptyTrainingPlans p {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.loadingContainer {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}

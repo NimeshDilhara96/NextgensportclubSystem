@@ -29,15 +29,31 @@ const TrainingCoaches = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState('coaches');
   const [coaches, setCoaches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  // Fetch coaches data from backend when component mounts
+  useEffect(() => {
+    const fetchCoaches = async () => {
+      try {
+        const response = await axios.get('http://localhost:8070/coaches');
+        if (response.data && response.data.coaches) {
+          setCoaches(response.data.coaches);
+        }
+      } catch (err) {
+        // Optionally handle error here
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCoaches();
+  }, []);
   const [sessions, setSessions] = useState([]);
   const [trainingPlans, setTrainingPlans] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sessionsLoading, setSessionsLoading] = useState(false);
   const [trainingPlansLoading, setTrainingPlansLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('all');
-  const [specialties, setSpecialties] = useState([]);
+  // Removed unused specialties state
   const [showAllCoaches, setShowAllCoaches] = useState(false);
   
   // Modal states
@@ -61,138 +77,155 @@ const TrainingCoaches = () => {
 
   // Get day of week name
   const getDayName = (day) => {
-    const days = {
-      'monday': 'Monday',
-      'tuesday': 'Tuesday',
-      'wednesday': 'Wednesday',
-      'thursday': 'Thursday',
-      'friday': 'Friday',
-      'saturday': 'Saturday',
-      'sunday': 'Sunday'
-    };
-    return days[day] || day;
-  };
-  
-  // Fetch all coaches on mount.
-  useEffect(() => {
-    const fetchAllCoaches = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get('http://localhost:8070/coaches');
-        if (response.data.success && response.data.coaches) {
-          setCoaches(response.data.coaches);
-          const uniqueSpecialties = Array.from(new Set(response.data.coaches.map(coach => coach.specialty)));
-          setSpecialties(uniqueSpecialties);
-        } else {
-          setCoaches([]);
-          setSpecialties([]);
-        }
-        setError(null);
-      } catch (err) {
-        setError('Failed to load coaches.');
-        setCoaches([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAllCoaches();
-  }, []);
-
-  // Fetch user sessions
-  const fetchUserSessions = async () => {
-    const token = sessionStorage.getItem('token');
-    const userEmail = sessionStorage.getItem('userEmail');
-    
-    if (!token || !userEmail) {
-      setError('Please login to view your sessions');
-      return;
-    }
-    
-    setSessionsLoading(true);
-    setError(null);
-    
-    try {
-      // This would be replaced with your actual endpoint
-      const response = await axios.get(`http://localhost:8070/user/coaching-sessions/${userEmail}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.data && response.data.status === 'success') {
-        setSessions(response.data.sessions || []);
-      } else {
-        console.error('Unexpected response format:', response.data);
-        setSessions([]);
-      }
-    } catch (err) {
-      console.error('Error fetching user sessions:', err);
-      // If the endpoint doesn't exist yet, show empty sessions
-      if (err.response?.status === 404) {
-        setSessions([]);
-      } else {
-        setError(`Failed to load sessions: ${err.response?.data?.message || err.message}`);
-      }
-    } finally {
-      setSessionsLoading(false);
-    }
+    // TODO: Implement this function if needed
+    return day;
   };
 
   // Fetch user training plans
-  const fetchUserTrainingPlans = async () => {
-    const token = sessionStorage.getItem('token');
-    const userEmail = sessionStorage.getItem('userEmail');
-    console.log('Fetching training plans for email:', userEmail);
-
-    if (!token || !userEmail) {
-      setError('Please login to view your training plans');
-      return;
-    }
-
+  const fetchTrainingPlans = React.useCallback(async () => {
     setTrainingPlansLoading(true);
     setError(null);
 
+    const token = sessionStorage.getItem('token');
+    const userEmail = sessionStorage.getItem('userEmail');
+    if (!userEmail) {
+      setError('Please login to view your training plans');
+      setTrainingPlans([]);
+      setTrainingPlansLoading(false);
+      return;
+    }
+
     try {
-      // Get user ID first
-      const userResponse = await axios.get(`http://localhost:8070/users/by-email/${encodeURIComponent(userEmail)}`);
-      console.log('User response:', userResponse.data);
-      if (!userResponse.data.success) {
+      // Get user ID by email
+      // Use the same endpoint and response handling as profile.js
+      let userRes;
+      try {
+        userRes = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
+      } catch (err) {
+        setError('User not found.');
         setTrainingPlans([]);
+        setTrainingPlansLoading(false);
         return;
       }
-
-      const userId = userResponse.data.user._id;
-      console.log('User ID for training plans:', userId);
-
-      // Fetch training plans for the user using ObjectId
-      const response = await axios.get(`http://localhost:8070/training-plans/user/${userId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      console.log('Training plans API response:', response.data);
-
-      if (response.data && response.data.success) {
-        setTrainingPlans(response.data.plans || []);
-      } else {
+      if (userRes.data.status !== "success" || !userRes.data.user?._id) {
+        setError('User not found.');
         setTrainingPlans([]);
+        setTrainingPlansLoading(false);
+        return;
       }
+      const userId = userRes.data.user._id;
+      console.log('User ID for training plans:', userId); // Debug: show userId used for fetching
+
+      // Try with and without token
+      let plansRes;
+      try {
+        plansRes = await axios.get(
+          `http://localhost:8070/training-plans/user/${userId}`,
+          token ? { headers: { 'Authorization': `Bearer ${token}` } } : {}
+        );
+      } catch (err) {
+        // Try again without token if error is 401/403
+        if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+          plansRes = await axios.get(`http://localhost:8070/training-plans/user/${userId}`);
+        } else {
+          throw err;
+        }
+      }
+      // Debug: log backend response
+      if (!plansRes.data.success) {
+        setError('Backend error: ' + (plansRes.data.message || 'Unknown error'));
+        setTrainingPlans([]);
+        setTrainingPlansLoading(false);
+        return;
+      }
+      setTrainingPlans(plansRes.data.plans || []);
     } catch (err) {
-      console.error('Error fetching training plans:', err);
+      // Show detailed error
+      if (err.response) {
+        setError(`Failed to fetch training plans: ${err.response.status} ${err.response.data?.message || err.message}`);
+      } else {
+        setError('Failed to fetch training plans: ' + err.message);
+      }
       setTrainingPlans([]);
     } finally {
       setTrainingPlansLoading(false);
     }
-  };
+  }, []);
+
+  // Fetch user's booked sessions
+  const fetchUserSessions = React.useCallback(async () => {
+    setSessionsLoading(true);
+    setError(null);
+
+    const token = sessionStorage.getItem('token');
+    const userEmail = sessionStorage.getItem('userEmail');
+    if (!userEmail) {
+      setError('Please login to view your sessions');
+      setSessions([]);
+      setSessionsLoading(false);
+      return;
+    }
+
+    try {
+      // Get user ID by email
+      let userRes;
+      try {
+        userRes = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
+      } catch (err) {
+        setError('User not found.');
+        setSessions([]);
+        setSessionsLoading(false);
+        return;
+      }
+      if (userRes.data.status !== "success" || !userRes.data.user?._id) {
+        setError('User not found.');
+        setSessions([]);
+        setSessionsLoading(false);
+        return;
+      }
+      const userId = userRes.data.user._id;
+
+      // Try with and without token
+      let sessionsRes;
+      try {
+        sessionsRes = await axios.get(
+          `http://localhost:8070/coaches/sessions/user/${userId}`,
+          token ? { headers: { 'Authorization': `Bearer ${token}` } } : {}
+        );
+      } catch (err) {
+        // Try again without token if error is 401/403
+        if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+          sessionsRes = await axios.get(`http://localhost:8070/coaches/sessions/user/${userId}`);
+        } else {
+          throw err;
+        }
+      }
+      if (!sessionsRes.data.success) {
+        setError('Backend error: ' + (sessionsRes.data.message || 'Unknown error'));
+        setSessions([]);
+        setSessionsLoading(false);
+        return;
+      }
+      setSessions(sessionsRes.data.sessions || []);
+    } catch (err) {
+      if (err.response) {
+        setError(`Failed to fetch sessions: ${err.response.status} ${err.response.data?.message || err.message}`);
+      } else {
+        setError('Failed to fetch sessions: ' + err.message);
+      }
+      setSessions([]);
+    } finally {
+      setSessionsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (activeTab === 'sessions') {
       fetchUserSessions();
     } else if (activeTab === 'training-plans') {
-      fetchUserTrainingPlans();
+      fetchTrainingPlans();
     }
-  }, [activeTab]);
+  }, [activeTab, fetchTrainingPlans, fetchUserSessions]);
 
   // Fetch user's joined sports from Sport model (not User)
   useEffect(() => {
@@ -442,12 +475,7 @@ const TrainingCoaches = () => {
             >
               Available Coaches
             </button>
-            <button 
-              className={`${styles.tabButton} ${activeTab === 'sessions' ? styles.activeTab : ''}`}
-              onClick={() => setActiveTab('sessions')}
-            >
-              My Sessions
-            </button>
+            {/* Removed My Sessions tab */}
             <button 
               className={`${styles.tabButton} ${activeTab === 'training-plans' ? styles.activeTab : ''}`}
               onClick={() => setActiveTab('training-plans')}
@@ -472,41 +500,40 @@ const TrainingCoaches = () => {
                 
                 <div className={styles.filterBox}>
                   <FaFilter className={styles.filterIcon} />
-                  <select 
+                  <select
                     value={selectedSpecialty}
-                    onChange={(e) => setSelectedSpecialty(e.target.value)}
+                    onChange={e => setSelectedSpecialty(e.target.value)}
                   >
                     <option value="all">All Specialties</option>
-                    {specialties.map(specialty => (
-                      <option key={specialty} value={specialty}>{specialty}</option>
-                    ))}
+                    {/* Dynamically list specialties from coaches */}
+                    {[...new Set(coaches.map(coach => coach.specialty))]
+                      .filter(specialty => specialty)
+                      .map(specialty => (
+                        <option key={specialty} value={specialty}>
+                          {specialty}
+                        </option>
+                      ))}
                   </select>
                 </div>
-                <div className={styles.filterBox}>
+                <div className={styles.showAllToggle}>
                   <label>
                     <input
                       type="checkbox"
                       checked={showAllCoaches}
-                      onChange={() => setShowAllCoaches(val => !val)}
+                      onChange={e => setShowAllCoaches(e.target.checked)}
                     />
                     Show all coaches
                   </label>
                 </div>
               </div>
-              
-              {filteredCoaches.length === 0 ? (
-                <div className={styles.emptyState}>
-                  <FaUser className={styles.emptyStateIcon} />
-                  <h3>No coaches found</h3>
-                  <p>{searchQuery || selectedSpecialty !== 'all' ? 
-                    'Try adjusting your search or filters' : 
-                    'Check back soon for new coaches'}
-                  </p>
-                </div>
-              ) : (
-                <div className={styles.coachesGrid}>
-                  {filteredCoaches.map(coach => (
-                    <div key={coach._id} className={styles.coachCard} style={lightModeStyles.card}>
+              <div className={styles.coachesGrid}>
+                {filteredCoaches.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <p>No coaches found matching your criteria.</p>
+                  </div>
+                ) : (
+                  filteredCoaches.map(coach => (
+                    <div className={styles.coachCard} key={coach._id}>
                       <div className={styles.coachImage}>
                         {coach.image ? (
                           <img src={`http://localhost:8070${coach.image}`} alt={coach.name} />
@@ -517,37 +544,25 @@ const TrainingCoaches = () => {
                         )}
                       </div>
                       <div className={styles.coachInfo}>
-                        <h3 className={styles.coachName} style={lightModeStyles.accent}>{coach.name}</h3>
-                        <p className={styles.coachSpecialty}>{coach.specialty}</p>
+                        <h3>{coach.name}</h3>
+                        <p className={styles.specialty}>{coach.specialty}</p>
                         {coach.experience > 0 && (
-                          <p className={styles.coachExperience}>
+                          <p className={styles.experience}>
                             <FaStar className={styles.experienceIcon} />
                             {coach.experience} {coach.experience === 1 ? 'year' : 'years'} experience
                           </p>
                         )}
-                        {coach.availability && coach.availability.length > 0 && (
-                          <div className={styles.availabilityPreview}>
-                            <p>Available on:</p>
-                            <div className={styles.availabilityDaysList}>
-                              {coach.availability.slice(0, 3).map(day => (
-                                <span key={day} className={styles.availabilityDay}>
-                                  {getDayName(day).substring(0, 3)}
-                                </span>
-                              ))}
-                              {coach.availability.length > 3 && (
-                                <span className={styles.availabilityDay}>+{coach.availability.length - 3}</span>
-                              )}
-                            </div>
-                          </div>
+                        {coach.bio && (
+                          <p className={styles.bio}>{coach.bio}</p>
                         )}
-                        <div className={styles.coachButtons}>
-                          <button 
+                        <div className={styles.coachActions}>
+                          <button
                             className={styles.viewDetailsButton}
                             onClick={() => handleViewCoach(coach)}
                           >
                             View Details
                           </button>
-                          <button 
+                          <button
                             className={styles.bookNowButton}
                             onClick={() => handleBookCoach(coach)}
                           >
@@ -556,9 +571,9 @@ const TrainingCoaches = () => {
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                  ))
+                )}
+              </div>
             </div>
           )}
           
