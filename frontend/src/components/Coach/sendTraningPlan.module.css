@@ -32,6 +32,16 @@
   text-align: center;
 }
 
+.infoMessage {
+  background: #e6f7ff;
+  color: #1890ff;
+  border: 1px solid #91d5ff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
 .form {
   display: flex;
   flex-direction: column;
