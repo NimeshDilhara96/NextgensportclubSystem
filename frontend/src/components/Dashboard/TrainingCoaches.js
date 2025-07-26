@@ -30,9 +30,11 @@ const TrainingCoaches = () => {
   const [activeTab, setActiveTab] = useState('coaches');
   const [coaches, setCoaches] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [trainingPlans, setTrainingPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [trainingPlansLoading, setTrainingPlansLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('all');
   const [specialties, setSpecialties] = useState([]);
@@ -136,9 +138,59 @@ const TrainingCoaches = () => {
     }
   };
 
+  // Fetch user training plans
+  const fetchUserTrainingPlans = async () => {
+    const token = sessionStorage.getItem('token');
+    const userEmail = sessionStorage.getItem('userEmail');
+    console.log('Fetching training plans for email:', userEmail);
+
+    if (!token || !userEmail) {
+      setError('Please login to view your training plans');
+      return;
+    }
+
+    setTrainingPlansLoading(true);
+    setError(null);
+
+    try {
+      // Get user ID first
+      const userResponse = await axios.get(`http://localhost:8070/users/by-email/${encodeURIComponent(userEmail)}`);
+      console.log('User response:', userResponse.data);
+      if (!userResponse.data.success) {
+        setTrainingPlans([]);
+        return;
+      }
+
+      const userId = userResponse.data.user._id;
+      console.log('User ID for training plans:', userId);
+
+      // Fetch training plans for the user using ObjectId
+      const response = await axios.get(`http://localhost:8070/training-plans/user/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('Training plans API response:', response.data);
+
+      if (response.data && response.data.success) {
+        setTrainingPlans(response.data.plans || []);
+      } else {
+        setTrainingPlans([]);
+      }
+    } catch (err) {
+      console.error('Error fetching training plans:', err);
+      setTrainingPlans([]);
+    } finally {
+      setTrainingPlansLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === 'sessions') {
       fetchUserSessions();
+    } else if (activeTab === 'training-plans') {
+      fetchUserTrainingPlans();
     }
   }, [activeTab]);
 
@@ -396,6 +448,12 @@ const TrainingCoaches = () => {
             >
               My Sessions
             </button>
+            <button 
+              className={`${styles.tabButton} ${activeTab === 'training-plans' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('training-plans')}
+            >
+              Training Plans
+            </button>
           </div>
           
           {/* Coaches Tab */}
@@ -574,11 +632,80 @@ const TrainingCoaches = () => {
                     </div>
                   ))}
                 </div>
-              )}
+                        )}
+        </div>
+      )}
+      
+      {/* Training Plans Tab */}
+      {activeTab === 'training-plans' && (
+        <div className={styles.trainingPlansSection}>
+          <h2>My Training Plans</h2>
+          
+          {trainingPlansLoading ? (
+            <div className={styles.loadingContainer}>
+              <p>Loading your training plans...</p>
+            </div>
+          ) : trainingPlans.length === 0 ? (
+            <div className={styles.emptyTrainingPlans}>
+              <p>You don't have any training plans yet.</p>
+              <p>Coaches will send you training plans for your joined sports.</p>
+            </div>
+          ) : (
+            <div className={styles.trainingPlansGrid}>
+              {trainingPlans.map(plan => (
+                <div className={styles.trainingPlanCard} key={plan._id}>
+                  <div className={styles.planHeader}>
+                    <h3>{plan.title}</h3>
+                    <div className={styles.planMeta}>
+                      {plan.sport && (
+                        <span className={styles.sportTag}>
+                          {typeof plan.sport === 'object' ? plan.sport.name : plan.sport}
+                        </span>
+                      )}
+                      {plan.coach && (
+                        <span className={styles.coachTag}>
+                          Coach: {typeof plan.coach === 'object' ? plan.coach.name : plan.coach}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {plan.description && (
+                    <div className={styles.planDescription}>
+                      <p>{plan.description}</p>
+                    </div>
+                  )}
+                  
+                  {plan.sessions && plan.sessions.length > 0 && (
+                    <div className={styles.planSessions}>
+                      <h4>Training Sessions:</h4>
+                      <div className={styles.sessionsList}>
+                        {plan.sessions.map((session, idx) => (
+                          <div key={idx} className={styles.sessionItem}>
+                            <div className={styles.sessionDate}>
+                              <FaCalendarAlt className={styles.sessionIcon} />
+                              {new Date(session.date).toLocaleDateString()}
+                            </div>
+                            <div className={styles.sessionFocus}>
+                              <strong>Focus:</strong> {session.focus}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className={styles.planFooter}>
+                    <small>Created: {new Date(plan.createdAt).toLocaleDateString()}</small>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
-      </div>
+      )}
+    </div>
+  </div>
       
       {/* Coach Details Modal */}
       {showCoachModal && selectedCoach && (
