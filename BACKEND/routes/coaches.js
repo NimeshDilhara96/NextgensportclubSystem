@@ -42,14 +42,14 @@ const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
-        const fileTypes = /jpeg|jpg|png|gif/;
+        const fileTypes = /jpeg|jpg|png|gif|webp/;
         const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = fileTypes.test(file.mimetype);
         
         if (extname && mimetype) {
             return cb(null, true);
         } else {
-            cb(new Error('Only image files (jpeg, jpg, png, gif) are allowed!'));
+            cb(new Error('Only image files (jpeg, jpg, png, gif, webp) are allowed!'));
         }
     }
 });
@@ -93,6 +93,89 @@ router.get('/:id', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to fetch coach',
+            error: error.message
+        });
+    }
+});
+
+// Get coach by email with sports and members
+router.get('/by-email/:email/details', async (req, res) => {
+    try {
+        const coach = await Coach.findOne({ email: req.params.email }, { password: 0 })
+            .populate({
+                path: 'sports',
+                select: 'name members',
+            });
+
+        if (!coach) {
+            return res.status(404).json({
+                success: false,
+                message: 'Coach not found'
+            });
+        }
+
+        const sportsDetails = coach.sports.map(sport => ({
+            sportId: sport._id,
+            sportName: sport.name,
+            members: sport.members
+        }));
+
+        res.status(200).json({
+            success: true,
+            coach: {
+                _id: coach._id,
+                name: coach.name,
+                specialty: coach.specialty,
+                sports: sportsDetails
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching coach details by email:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch coach details',
+            error: error.message
+        });
+    }
+});
+
+// Get coach by ID with sports and members
+router.get('/:id/details', async (req, res) => {
+    try {
+        const coach = await Coach.findById(req.params.id, { password: 0 })
+            .populate({
+                path: 'sports',
+                select: 'name members',
+            });
+
+        if (!coach) {
+            return res.status(404).json({
+                success: false,
+                message: 'Coach not found'
+            });
+        }
+
+        // Format response: show sport name and members for each sport
+        const sportsDetails = coach.sports.map(sport => ({
+            sportId: sport._id,
+            sportName: sport.name,
+            members: sport.members
+        }));
+
+        res.status(200).json({
+            success: true,
+            coach: {
+                _id: coach._id,
+                name: coach.name,
+                specialty: coach.specialty,
+                sports: sportsDetails
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching coach details:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch coach details',
             error: error.message
         });
     }
