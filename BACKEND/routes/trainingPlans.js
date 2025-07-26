@@ -1,7 +1,34 @@
+
 const express = require('express');
 const router = express.Router();
 const TrainingPlan = require('../models/TrainingPlan');
 const User = require('../models/User'); // Add this import
+
+// Bulk create training plans for multiple users
+router.post('/bulk', async (req, res) => {
+    try {
+        const { users, sport, coach, title, description, sessions } = req.body;
+        if (!Array.isArray(users) || users.length === 0) {
+            return res.status(400).json({ success: false, message: 'No users provided.' });
+        }
+        const plans = [];
+        for (const userId of users) {
+            const plan = new TrainingPlan({
+                user: userId.toString(),
+                sport,
+                coach,
+                title,
+                description,
+                sessions
+            });
+            await plan.save();
+            plans.push(plan);
+        }
+        res.status(201).json({ success: true, plans, message: `Training plans sent to ${plans.length} users.` });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to send training plans', error: error.message });
+    }
+});
 
 // Create a new training plan (accepts POST at /training-plans or /training-plans/create)
 router.post(['/', '/create'], async (req, res) => {
@@ -19,7 +46,9 @@ router.post(['/', '/create'], async (req, res) => {
 router.get('/user/:userId', async (req, res) => {
     try {
         const { sport } = req.query;
-        const filter = { user: req.params.userId };
+        // Ensure userId is a string for compatibility
+        const userId = req.params.userId.toString();
+        const filter = { user: userId };
         if (sport) filter.sport = sport;
         const plans = await TrainingPlan.find(filter).populate('sport coach');
         res.json({ success: true, plans });
