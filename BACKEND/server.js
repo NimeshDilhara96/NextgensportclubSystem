@@ -27,7 +27,7 @@ connection.once("open", () => {
 });
 
 // Importing both UserRouter and AuthRouter
-const UserRouter = require("./routes/users.js");
+const UserRouter = require("./routes/Users.js");
 const AuthRouter = require("./routes/Auth.js"); // Assuming Auth.js is in the routes folder
 const adminRouter = require('./routes/admins');
 const biometricAuthRouter = require('./routes/biometricAuth'); // Add biometric auth router
@@ -38,6 +38,7 @@ const notificationsRoute = require('./routes/notifications');
 const orderRouter = require('./routes/orders');
 const feedbacksRouter = require('./routes/feedbacks'); // Import feedbacks router
 const paymentsRoute = require('./routes/payments'); // Import payments router
+const trainingPlansRouter = require('./routes/trainingPlans'); // Import training plans router
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -64,6 +65,7 @@ app.use('/payments', paymentsRoute); // Use paymentsRoute for /payments
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Add this line with other route configurations
+app.use('/training-plans', trainingPlansRouter); // Register training plans route
 app.use("/posts", require("./routes/posts"));
 app.use("/sports", require("./routes/sports"));
 app.use("/events", require("./routes/events"));
