@@ -1,0 +1,130 @@
+
+/* Main container */
+.container {
+  max-width: 1100px;
+  margin: 32px auto;
+  background: #f7fbff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 40px 36px;
+}
+
+.coachInfoBox {
+  background: #e6f3ff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 18px 22px;
+  margin-bottom: 18px;
+  font-size: 15px;
+  color: #31708f;
+  border: 1px solid #bce8f1;
+}
+
+/* Dashboard container for CoachSlideNav compatibility */
+.dashboardContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f7fa;
+}
+
+.sectionTitle {
+  margin-bottom: 28px;
+}
+.section_header {
+  padding-bottom: 10px;
+  border-bottom: 2px solid #007bff;
+  font-size: 1.35rem;
+  color: #007bff;
+  font-weight: 600;
+}
+
+.search_input {
+  background: #e6f3ff;
+  color: #31708f;
+  border: 1px solid #bce8f1;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+.members_table_container {
+  font-size: 15px;
+  text-align: center;
+}
+
+.noMembers {
+  background: #f8f9fa;
+}
+.members_table {
+  color: #888;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+.members_table th, .members_table td {
+  font-size: 15px;
+  text-align: center;
+}
+
+/* Removed empty ruleset for .members_table th */
+.membersLabel {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+.members_table tr:last-child td {
+  text-align: left;
+}
+
+.membersList {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  border: 1px solid #eee;
+  padding: 0;
+  margin: 0;
+}
+
+.package_badge.gold {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.package_badge.silver {
+  padding: 12px 18px;
+  margin: 8px 0;
+  background: #f7fbff;
+}
+.package_badge.bronze {
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+  font-size: 15px;
+}
+.status_badge {
+  color: #222;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.successMessage {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+.status_badge.active {
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+.status_badge.blocked {
+  font-size: 15px;
+  text-align: center;
+}
+
+.sessionRow {
+  margin-bottom: 2em;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 24px 22px;
+}

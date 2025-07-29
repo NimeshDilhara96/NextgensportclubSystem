@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import styles from './viewmember.module.css';
+import CoachSlideNav from './CoachSlideNav';
 
 const ViewMemberPortal = () => {
     const [coach, setCoach] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Get coachEmail from sessionStorage
     const coachEmail = sessionStorage.getItem('coachEmail');
@@ -17,12 +20,9 @@ const ViewMemberPortal = () => {
         }
         const fetchCoachDetails = async () => {
             try {
-                console.log('Fetching coach details for email:', coachEmail);
                 const res = await axios.get(`http://localhost:8070/coaches/by-email/${encodeURIComponent(coachEmail)}/details`);
-                console.log('Coach details response:', res.data);
                 setCoach(res.data.coach);
             } catch (err) {
-                console.error('Error fetching coach details:', err);
                 setError(`Failed to fetch coach details: ${err.response?.data?.message || err.message}`);
             } finally {
                 setLoading(false);
@@ -32,99 +32,114 @@ const ViewMemberPortal = () => {
     }, [coachEmail]);
 
     if (loading) return (
-        <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            height: '200px',
-            fontSize: '18px',
-            color: '#666'
-        }}>
-            Loading coach details...
-        </div>
-    );
-    
-    if (error) return (
-        <div style={{ 
-            padding: '20px', 
-            backgroundColor: '#f8d7da', 
-            border: '1px solid #f5c6cb', 
-            borderRadius: '8px',
-            color: '#721c24',
-            margin: '20px',
-            textAlign: 'center'
-        }}>
-            <h3>Error</h3>
-            <p>{error}</p>
-        </div>
-    );
-    
-    if (!coach) return (
-        <div style={{ 
-            padding: '20px', 
-            backgroundColor: '#f8f9fa', 
-            border: '1px solid #dee2e6', 
-            borderRadius: '8px',
-            color: '#666',
-            margin: '20px',
-            textAlign: 'center'
-        }}>
-            <h3>No Coach Data Found</h3>
-            <p>Unable to retrieve coach information. Please try logging in again.</p>
+        <div className={styles.dashboardContainer}>
+            <CoachSlideNav />
+            <div className={styles.container}>
+                <div className={styles.infoMessage}>
+                    Loading coach details...
+                </div>
+            </div>
         </div>
     );
 
-    return (
-        <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            <h2 style={{ color: '#333', borderBottom: '2px solid #007bff', paddingBottom: '10px' }}>
-                {coach.name} ({coach.specialty})
-            </h2>
-            <h3 style={{ color: '#555', marginTop: '30px' }}>Assigned Sports & Members</h3>
-            {!coach.sports || coach.sports.length === 0 ? (
-                <div style={{ 
-                    padding: '20px', 
-                    backgroundColor: '#f8f9fa', 
-                    borderRadius: '8px', 
-                    textAlign: 'center',
-                    color: '#666'
-                }}>
-                    <p>No sports assigned to this coach yet.</p>
+    if (error) return (
+        <div className={styles.dashboardContainer}>
+            <CoachSlideNav />
+            <div className={styles.container}>
+                <div className={styles.errorMessage}>
+                    <h3>Error</h3>
+                    <p>{error}</p>
                 </div>
-            ) : (
-                coach.sports.map(sport => (
-                    <div key={sport.sportId} style={{ 
-                        marginBottom: '2em', 
-                        padding: '20px', 
-                        border: '1px solid #ddd', 
-                        borderRadius: '8px',
-                        backgroundColor: '#fff'
-                    }}>
-                        <h4 style={{ color: '#007bff', marginBottom: '15px' }}>{sport.sportName}</h4>
-                        {!sport.members || sport.members.length === 0 ? (
-                            <p style={{ color: '#666', fontStyle: 'italic' }}>No members in this sport.</p>
-                        ) : (
-                            <div>
-                                <p style={{ fontWeight: 'bold', marginBottom: '10px' }}>
-                                    Members ({sport.members.length}):
-                                </p>
-                                <ul style={{ listStyle: 'none', padding: 0 }}>
-                                    {sport.members.map(member => (
-                                        <li key={member.userId} style={{ 
-                                            padding: '8px 12px', 
-                                            margin: '5px 0', 
-                                            backgroundColor: '#f8f9fa',
-                                            borderRadius: '4px',
-                                            borderLeft: '3px solid #007bff'
-                                        }}>
-                                            <strong>{member.userName}</strong> ({member.userEmail})
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+            </div>
+        </div>
+    );
+
+    if (!coach) return (
+        <div className={styles.dashboardContainer}>
+            <CoachSlideNav />
+            <div className={styles.container}>
+                <div className={styles.infoMessage}>
+                    <h3>No Coach Data Found</h3>
+                    <p>Unable to retrieve coach information. Please try logging in again.</p>
+                </div>
+            </div>
+        </div>
+    );
+
+    // Flatten all members from all sports
+    const allMembers = coach.sports ? coach.sports.flatMap(sport =>
+        (sport.members || []).map(member => ({
+            ...member,
+            sportName: sport.sportName,
+            membershipPackage: member.membershipPackage || 'None',
+            membershipStatus: member.membershipStatus || 'Inactive',
+        }))
+    ) : [];
+
+    // Filter members by search
+    const filteredMembers = allMembers.filter(member =>
+        member.userName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        member.userEmail?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return (
+        <div className={styles.dashboardContainer}>
+            <CoachSlideNav />
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <h1>Member Management</h1>
+                    <div className={styles.coachInfoBox}>
+                        <strong>Coach Name:</strong> {coach.name}<br />
+                        <strong>Specialty:</strong> {coach.specialty}
                     </div>
-                ))
-            )}
+                </div>
+                <div className={styles.members_section}>
+                    <div className={styles.section_header}>
+                        <h2>All Members</h2>
+                        <div className={styles.search_bar}>
+                            <input
+                                type="text"
+                                placeholder="Search members by name or email..."
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                className={styles.search_input}
+                            />
+                        </div>
+                    </div>
+                    {filteredMembers.length === 0 ? (
+                        <div className={styles.noMembers}>No members found matching your search.</div>
+                    ) : (
+                        <div className={styles.members_table_container}>
+                            <table className={styles.members_table}>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Sport</th>
+                                        <th>Membership</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredMembers.map(member => (
+                                        <tr key={member.userId}>
+                                            <td>{member.userName}</td>
+                                            <td>{member.userEmail}</td>
+                                            <td>{member.sportName}</td>
+                                            <td>
+                                                <span className={`${styles.package_badge} ${styles[member.membershipPackage.toLowerCase()]}`}>{member.membershipPackage}</span>
+                                            </td>
+                                            <td>
+                                                <span className={`${styles.status_badge} ${styles[member.membershipStatus.toLowerCase()]}`}>{member.membershipStatus}</span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };
