@@ -10,12 +10,24 @@ const AdminMemberManagement = () => {
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedMember, setSelectedMember] = useState(null);
+    const [allSports, setAllSports] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [actionInProgress, setActionInProgress] = useState(false);
     const [actionMessage, setActionMessage] = useState('');
 
+    // Fetch all sports for joined sports lookup
+    const fetchSports = async () => {
+        try {
+            const response = await axios.get('http://localhost:8070/sports');
+            setAllSports(response.data.sports || []);
+        } catch (err) {
+            // Optionally handle error
+        }
+    };
+
     useEffect(() => {
         fetchMembers();
+        fetchSports();
     }, []);
 
     const fetchMembers = async () => {
@@ -334,6 +346,35 @@ const AdminMemberManagement = () => {
                                                 <span className={`${styles.status_badge} ${styles[selectedMember.membershipStatus || "inactive"]}`}>
                                                     {selectedMember.membershipStatus?.charAt(0).toUpperCase() + selectedMember.membershipStatus?.slice(1) || 'Inactive'}
                                                 </span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Member's joined sports using Sport model */}
+                                <div className={styles.detail_group}>
+                                    <div className={styles.detail_item}>
+                                        <FaCalendarAlt className={styles.detail_icon} />
+                                        <div className={styles.detail_content}>
+                                            <span className={styles.detail_label}>Joined Sports</span>
+                                            <span className={styles.detail_value}>
+                                                {(() => {
+                                                    if (!selectedMember || !selectedMember.email || !allSports.length) return <span style={{ color: '#888' }}>No sports joined</span>;
+                                                    const joinedSports = allSports.filter(sport =>
+                                                        Array.isArray(sport.members) && sport.members.some(m => m.userEmail === selectedMember.email)
+                                                    );
+                                                    return joinedSports.length > 0 ? (
+                                                        <ul style={{ paddingLeft: '18px', margin: 0 }}>
+                                                            {joinedSports.map((sport, idx) => (
+                                                                <li key={sport._id || idx} style={{ marginBottom: '4px' }}>
+                                                                    {sport.name}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : (
+                                                        <span style={{ color: '#888' }}>No sports joined</span>
+                                                    );
+                                                })()}
                                             </span>
                                         </div>
                                     </div>
