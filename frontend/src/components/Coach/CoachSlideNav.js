@@ -85,6 +85,11 @@ const CoachSlideNav = () => {
                                     Messages
                                 </Link>
                             </li>
+                            <li className={window.location.pathname === '/coach/view-member-portal' ? styles.active : ''}>
+                                <Link to="/coach/view-member-portal" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    Sport members
+                                </Link>
+                            </li>
                         </ul>
                     </nav>
                 </div>
