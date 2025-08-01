@@ -1,0 +1,197 @@
+.pageWrapper {
+    display: flex;
+    min-height: 100vh;
+    background: #f0f2f5;
+}
+
+.mainContent {
+    flex: 1;
+    transition: margin-left 0.3s ease;
+    padding: 20px;
+    margin-left: 250px; /* Width of sidebar */
+}
+
+.mainContent.sidebarClosed {
+    margin-left: 0;
+}
+
+.contentHeader {
+    margin-bottom: 24px;
+    padding: 0 12px;
+}
+
+.pageTitle {
+    color: #1e293b;
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+}
+
+.dashboardContainer {
+    display: flex;
+    min-height: 100vh;
+    background: #f4f7fa;
+}
+
+.title {
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+.filterSection {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.searchInput, .statusFilter {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.searchInput {
+    flex: 1;
+}
+
+.sessionsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.sessionCard {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.statusBadge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.approved {
+    background: #d4edda;
+    color: #155724;
+}
+
+.completed {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.sessionInfo {
+    margin-top: 1rem;
+}
+
+.infoRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.icon {
+    color: #6c757d;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.actionButton {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.approveButton {
+    background: #28a745;
+    color: white;
+}
+
+.approveButton:hover {
+    background: #218838;
+}
+
+.cancelButton {
+    background: #dc3545;
+    color: white;
+}
+
+.cancelButton:hover {
+    background: #c82333;
+}
+
+.loading, .error, .noSessions {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.error {
+    color: #721c24;
+    background: #f8d7da;
+}
+
+@media (max-width: 768px) {
+    .mainContent {
+        margin-left: 0;
+        padding: 16px;
+    }
+
+    .contentHeader {
+        margin-bottom: 16px;
+    }
+
+    .pageTitle {
+        font-size: 1.5rem;
+    }
+
+    .sessionsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .filterSection {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
