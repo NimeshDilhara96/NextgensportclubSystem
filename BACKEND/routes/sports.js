@@ -68,19 +68,19 @@ router.post('/create', upload.single('image'), async (req, res) => {
 
 // Get all sports
 router.get('/', async (req, res) => {
-    try {
-        const sports = await Sport.find().populate('coaches');
-        res.status(200).json({
-            status: 'success',
-            sports
-        });
-    } catch (error) {
-        console.error('Error fetching sports:', error);
-        res.status(500).json({ 
-            status: 'error',
-            message: 'Failed to fetch sports'
-        });
-    }
+  try {
+    const sports = await Sport.find().populate('coaches');
+    res.status(200).json({
+      status: 'success',
+      sports
+    });
+  } catch (error) {
+    console.error('Error fetching sports:', error);
+    res.status(500).json({ 
+      status: 'error',
+      message: 'Failed to fetch sports'
+    });
+  }
 });
 
 // Get sport by ID
