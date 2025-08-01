@@ -70,8 +70,8 @@ const CoachSlideNav = () => {
                                     Dashboard
                                 </Link>
                             </li>
-                            <li className={window.location.pathname === '/coach/sessions' ? styles.active : ''}>
-                                <Link to="/coach/sessions" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <li className={window.location.pathname === '/coach/view-sessions' ? styles.active : ''}>
+                                <Link to="/coach/view-sessions" style={{ textDecoration: 'none', color: 'inherit' }}>
                                     My Sessions
                                 </Link>
                             </li>

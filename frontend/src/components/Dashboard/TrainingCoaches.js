@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SlideNav from '../appnavbar/slidenav';
-import { FaStar, FaCalendarAlt, FaEnvelope, FaPhone, FaUser, FaSearch, FaFilter } from 'react-icons/fa';
+import { FaStar, FaCalendarAlt, FaEnvelope, FaPhone, FaUser, FaSearch, FaFilter, FaCheckCircle, FaExclamationCircle, FaClock, FaCommentAlt } from 'react-icons/fa';
 import styles from './TrainingCoaches.module.css';
 
 // Light mode styles
@@ -260,6 +260,64 @@ const TrainingCoaches = () => {
     fetchUserSports();
   }, []);
 
+  // Update the useEffect for fetching coaches and userSports
+  useEffect(() => {
+    const fetchCoachesAndSports = async () => {
+      try {
+        setLoading(true);
+        const userEmail = sessionStorage.getItem('userEmail');
+        
+        // First fetch user's joined sports
+        const sportsResponse = await axios.get('http://localhost:8070/sports');
+        if (sportsResponse.data && sportsResponse.data.sports) {
+          const joinedSports = sportsResponse.data.sports.filter(sport =>
+            sport.members && sport.members.some(member => member.userEmail === userEmail)
+          );
+          setUserSports(joinedSports);
+        }
+
+        // Then fetch all coaches
+        const coachesResponse = await axios.get('http://localhost:8070/coaches');
+        if (coachesResponse.data && coachesResponse.data.coaches) {
+          setCoaches(coachesResponse.data.coaches);
+        }
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Failed to fetch coaches and sports');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCoachesAndSports();
+  }, []);
+
+  // Update the filteredCoaches logic
+  const filteredCoaches = React.useMemo(() => {
+    return coaches.filter(coach => {
+      // Search filter
+      const matchesSearch = coach.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           coach.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           (coach.bio && coach.bio.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      // Specialty filter
+      const matchesSpecialty = selectedSpecialty === 'all' || coach.specialty === selectedSpecialty;
+
+      // Sports filter - only apply if not showing all coaches
+      let matchesUserSports = true;
+      if (!showAllCoaches && userSports.length > 0) {
+        // Check if coach's specialty matches any of user's joined sports names
+        matchesUserSports = userSports.some(sport => 
+          // Check if coach's specialty matches sport name OR if coach is in sport's coaches array
+          sport.name.toLowerCase() === coach.specialty.toLowerCase() ||
+          (sport.coaches && sport.coaches.includes(coach._id))
+        );
+      }
+
+      return matchesSearch && matchesSpecialty && matchesUserSports;
+    });
+  }, [coaches, searchQuery, selectedSpecialty, showAllCoaches, userSports]);
+
   // Handle view coach details
   const handleViewCoach = (coach) => {
     setSelectedCoach(coach);
@@ -285,7 +343,6 @@ const TrainingCoaches = () => {
     e.preventDefault();
     
     try {
-      // Get user email from session storage
       const userEmail = sessionStorage.getItem('userEmail');
       const token = sessionStorage.getItem('token');
       
@@ -297,9 +354,9 @@ const TrainingCoaches = () => {
         return;
       }
       
-      // Send booking request to backend
+      // Use coach email instead of ID for booking
       const response = await axios.post(
-        `http://localhost:8070/coaches/book/${selectedCoach._id}`,
+        `http://localhost:8070/coaches/book/by-email/${selectedCoach.email}`,
         {
           ...bookingData,
           userEmail
@@ -311,37 +368,26 @@ const TrainingCoaches = () => {
         }
       );
       
-      if (response.data.status === 'success') {
+      if (response.data.success) {
         setBookingStatus({
           type: 'success',
           message: 'Session booked successfully!'
         });
         
-        // Close modal after short delay
         setTimeout(() => {
           setShowBookingModal(false);
           setBookingStatus({ type: '', message: '' });
-          // Refresh sessions if we're on that tab
           if (activeTab === 'sessions') {
             fetchUserSessions();
           }
         }, 2000);
       }
     } catch (err) {
-      // If the endpoint doesn't exist yet, show a mock success
       console.error('Booking error:', err);
-      
-      // For development: show success even if endpoint doesn't exist
       setBookingStatus({
-        type: 'success',
-        message: 'Session booked successfully! (Development mode)'
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to book session'
       });
-      
-      // Close modal after short delay
-      setTimeout(() => {
-        setShowBookingModal(false);
-        setBookingStatus({ type: '', message: '' });
-      }, 2000);
     }
   };
 
@@ -380,25 +426,6 @@ const TrainingCoaches = () => {
     }
   };
 
-  // Filter coaches based on search, specialty, and user joined sports
-  const filteredCoaches = coaches.filter(coach => {
-    const matchesSearch = coach.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          coach.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (coach.bio && coach.bio.toLowerCase().includes(searchQuery.toLowerCase()));
-                          
-    // If not showing all, filter by user joined sports
-    let matchesUserSports = true;
-    if (!showAllCoaches && userSports.length > 0) {
-      // Check if coach is assigned to any of the user's joined sports
-      const userSportIds = userSports.map(s => (s.sport?._id || s.sport || s.sportId || s));
-      matchesUserSports = coach.sports && coach.sports.some(sid => userSportIds.includes(sid.toString ? sid.toString() : sid));
-    }
-
-    const matchesSpecialty = selectedSpecialty === 'all' || coach.specialty === selectedSpecialty;
-    
-    return matchesSearch && matchesUserSports && matchesSpecialty;
-  });
-  
   // Show loading indicator
   if (loading) {
     return (
@@ -529,7 +556,19 @@ const TrainingCoaches = () => {
               <div className={styles.coachesGrid}>
                 {filteredCoaches.length === 0 ? (
                   <div className={styles.emptyState}>
-                    <p>No coaches found matching your criteria.</p>
+                    {showAllCoaches ? (
+                      <p>No coaches found matching your search criteria.</p>
+                    ) : userSports.length === 0 ? (
+                      <div>
+                        <p>You haven't joined any sports yet.</p>
+                        <p>Join a sport to see its assigned coaches, or check "Show all coaches" to see all available coaches.</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p>No coaches found for your joined sports.</p>
+                        <p>Try checking "Show all coaches" to see all available coaches.</p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   filteredCoaches.map(coach => (
@@ -725,82 +764,97 @@ const TrainingCoaches = () => {
       {/* Coach Details Modal */}
       {showCoachModal && selectedCoach && (
         <div className={styles.modalOverlay} onClick={() => setShowCoachModal(false)}>
-          <div className={styles.modal} onClick={e => e.stopPropagation()}>
-            <button className={styles.closeButton} onClick={() => setShowCoachModal(false)}>×</button>
-            
-            <div className={styles.modalContent}>
-              <div className={styles.modalHeader}>
-                <div className={styles.coachImageLarge}>
-                  {selectedCoach.image ? (
-                    <img src={`http://localhost:8070${selectedCoach.image}`} alt={selectedCoach.name} />
-                  ) : (
-                    <div className={styles.noImagePlaceholderLarge}>
-                      <FaUser />
+          <div className={styles.detailsModal} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h2>Coach Profile</h2>
+              <button className={styles.closeModal} onClick={() => setShowCoachModal(false)}>×</button>
+            </div>
+
+            <div className={styles.detailsContent}>
+              <div className={styles.profileSection}>
+                <div className={styles.profileHeader}>
+                  <div className={styles.profileImageContainer}>
+                    {selectedCoach.image ? (
+                      <img 
+                        src={`http://localhost:8070${selectedCoach.image}`} 
+                        alt={selectedCoach.name}
+                        className={styles.coachProfileImage} 
+                      />
+                    ) : (
+                      <div className={styles.avatarPlaceholder}>
+                        <FaUser size={32} />
+                      </div>
+                    )}
+                  </div>
+                  <div className={styles.profileInfo}>
+                    <h3>{selectedCoach.name}</h3>
+                    <span className={styles.specialtyBadge}>{selectedCoach.specialty}</span>
+                    {selectedCoach.experience > 0 && (
+                      <div className={styles.experienceBadge}>
+                        <FaStar />
+                        <span>{selectedCoach.experience} {selectedCoach.experience === 1 ? 'year' : 'years'} experience</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.infoGrid}>
+                  <div className={styles.infoSection}>
+                    <h4>About</h4>
+                    <p>{selectedCoach.bio || 'No bio available'}</p>
+                  </div>
+
+                  <div className={styles.infoSection}>
+                    <h4>Contact Information</h4>
+                    <div className={styles.contactList}>
+                      <div className={styles.contactItem}>
+                        <FaEnvelope />
+                        <span>{selectedCoach.email || 'Email not available'}</span>
+                      </div>
+                      <div className={styles.contactItem}>
+                        <FaPhone />
+                        <span>{selectedCoach.contact?.phone || 'Phone not available'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {selectedCoach.availability && selectedCoach.availability.length > 0 && (
+                    <div className={styles.infoSection}>
+                      <h4>Available Days</h4>
+                      <div className={styles.availabilityGrid}>
+                        {selectedCoach.availability.map(day => (
+                          <div key={day} className={styles.availabilityDay}>
+                            <FaCalendarAlt />
+                            <span>{getDayName(day)}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
-                </div>
-                
-                <div className={styles.coachHeaderInfo}>
-                  <h2>{selectedCoach.name}</h2>
-                  <p className={styles.specialtyLarge}>{selectedCoach.specialty}</p>
-                  {selectedCoach.experience > 0 && (
-                    <p className={styles.experienceLarge}>
-                      <FaStar className={styles.experienceIcon} />
-                      {selectedCoach.experience} {selectedCoach.experience === 1 ? 'year' : 'years'} experience
-                    </p>
+
+                  {selectedCoach.specializations && selectedCoach.specializations.length > 0 && (
+                    <div className={styles.infoSection}>
+                      <h4>Specializations</h4>
+                      <div className={styles.specializationsList}>
+                        {selectedCoach.specializations.map((spec, index) => (
+                          <span key={index} className={styles.specializationTag}>{spec}</span>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
-              
-              <div className={styles.coachDetailsSection}>
-                {selectedCoach.bio && (
-                  <div className={styles.bioSection}>
-                    <h3>About</h3>
-                    <p>{selectedCoach.bio}</p>
-                  </div>
-                )}
-                
-                {selectedCoach.availability && selectedCoach.availability.length > 0 && (
-                  <div className={styles.availabilitySection}>
-                    <h3>Availability</h3>
-                    <div className={styles.availabilityDays}>
-                      {selectedCoach.availability.map(day => (
-                        <div key={day} className={styles.availabilityDay}>
-                          <FaCalendarAlt className={styles.availabilityIcon} />
-                          {getDayName(day)}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                <div className={styles.contactSection}>
-                  <h3>Contact</h3>
-                  {selectedCoach.contact?.email && (
-                    <p className={styles.contactInfo}>
-                      <FaEnvelope className={styles.contactIcon} />
-                      {selectedCoach.contact.email}
-                    </p>
-                  )}
-                  {selectedCoach.contact?.phone && (
-                    <p className={styles.contactInfo}>
-                      <FaPhone className={styles.contactIcon} />
-                      {selectedCoach.contact.phone}
-                    </p>
-                  )}
-                </div>
-                
-                <div className={styles.bookingSection}>
-                  <button 
-                    className={styles.bookSessionButton}
-                    onClick={() => {
-                      setShowCoachModal(false);
-                      handleBookCoach(selectedCoach);
-                    }}
-                  >
-                    Book a Session
-                  </button>
-                </div>
+
+              <div className={styles.modalActions}>
+                <button 
+                  className={styles.bookButton}
+                  onClick={() => {
+                    setShowCoachModal(false);
+                    handleBookCoach(selectedCoach);
+                  }}
+                >
+                  Book a Session
+                </button>
               </div>
             </div>
           </div>
@@ -810,67 +864,98 @@ const TrainingCoaches = () => {
       {/* Booking Modal */}
       {showBookingModal && selectedCoach && (
         <div className={styles.modalOverlay}>
-          <div className={styles.modal} style={lightModeStyles.card}>
-            <button className={styles.closeButton} onClick={() => setShowBookingModal(false)}>×</button>
-            
-            <h2>Book Session with {selectedCoach.name}</h2>
-            
-            {bookingStatus.message && (
-              <div className={`${styles.statusMessage} ${bookingStatus.type === 'success' ? styles.successMessage : styles.errorMessage}`}>
-                {bookingStatus.message}
+          <div className={styles.bookingModal}>
+            <div className={styles.modalHeader}>
+              <h2>Book Session with {selectedCoach.name}</h2>
+              <button className={styles.closeModal} onClick={() => setShowBookingModal(false)}>×</button>
+            </div>
+
+            <div className={styles.modalContent}>
+              <div className={styles.coachPreview}>
+                <div className={styles.coachImage}>
+                  {selectedCoach.image ? (
+                    <img src={`http://localhost:8070${selectedCoach.image}`} alt={selectedCoach.name} />
+                  ) : (
+                    <div className={styles.avatarPlaceholder}>
+                      <FaUser />
+                    </div>
+                  )}
+                </div>
+                <div className={styles.coachInfo}>
+                  <h3>{selectedCoach.name}</h3>
+                  <span className={styles.specialty}>{selectedCoach.specialty}</span>
+                </div>
               </div>
-            )}
-            
-            <form onSubmit={handleBookingSubmit} className={styles.bookingForm}>
-              <div className={styles.formGroup}>
-                <label htmlFor="date">Session Date</label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={bookingData.date}
-                  onChange={handleBookingInputChange}
-                  required
-                />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="time">Session Time</label>
-                <input
-                  type="time"
-                  id="time"
-                  name="time"
-                  value={bookingData.time}
-                  onChange={handleBookingInputChange}
-                  required
-                />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label htmlFor="notes">Notes (Optional)</label>
-                <textarea
-                  id="notes"
-                  name="notes"
-                  value={bookingData.notes}
-                  onChange={handleBookingInputChange}
-                  placeholder="Any specific goals or requests for your session..."
-                  rows="3"
-                />
-              </div>
-              
-              <div className={styles.modalButtons}>
-                <button type="submit" className={styles.submitButton}>
-                  Book Session
-                </button>
-                <button 
-                  type="button" 
-                  className={styles.cancelButton}
-                  onClick={() => setShowBookingModal(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+
+              {bookingStatus.message && (
+                <div className={`${styles.statusMessage} ${styles[bookingStatus.type]}`}>
+                  {bookingStatus.type === 'success' ? <FaCheckCircle /> : <FaExclamationCircle />}
+                  {bookingStatus.message}
+                </div>
+              )}
+
+              <form onSubmit={handleBookingSubmit} className={styles.bookingForm}>
+                <div className={styles.formGroup}>
+                  <label>
+                    <FaCalendarAlt />
+                    Select Date
+                  </label>
+                  <input
+                    type="date"
+                    name="date"
+                    value={bookingData.date}
+                    onChange={handleBookingInputChange}
+                    min={new Date().toISOString().split('T')[0]}
+                    required
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>
+                    <FaClock />
+                    Select Time
+                  </label>
+                  <input
+                    type="time"
+                    name="time"
+                    value={bookingData.time}
+                    onChange={handleBookingInputChange}
+                    required
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label>
+                    <FaCommentAlt />
+                    Session Notes
+                  </label>
+                  <textarea
+                    name="notes"
+                    value={bookingData.notes}
+                    onChange={handleBookingInputChange}
+                    placeholder="Describe your training goals or any specific requirements..."
+                    rows="4"
+                  />
+                </div>
+
+                <div className={styles.formActions}>
+                  <button 
+                    type="button" 
+                    onClick={() => setShowBookingModal(false)}
+                    className={styles.cancelBtn}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    className={styles.submitBtn}
+                    disabled={bookingStatus.type === 'success'}
+                  >
+                    {bookingStatus.type === 'success' ? 'Booked!' : 'Confirm Booking'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

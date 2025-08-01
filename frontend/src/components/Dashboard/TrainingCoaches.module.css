@@ -50,8 +50,8 @@
 }
 
 .header p {
+  color: #64748b;
   font-size: 1.1rem;
-  opacity: 0.8;
 }
 
 /* Tabs navigation */
@@ -69,15 +69,16 @@
   border-bottom: 3px solid transparent;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: #94a3b8; /* Default color for inactive tabs */
 }
 
 .tabButton:hover {
-  color: #1877f2;
+  color: #3b82f6; /* Hover color */
 }
 
 .activeTab {
-  border-bottom-color: #1877f2;
-  color: #1877f2;
+  border-bottom-color: #3b82f6;
+  color: #3b82f6; /* Active tab color */
   font-weight: 500;
 }
 
@@ -126,32 +127,41 @@
   background: transparent;
 }
 
+.searchBox input::placeholder {
+  color: #94a3b8;
+}
+
+.filterBox select {
+  color: #1e293b;
+}
+
 .coachesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding: 20px 0;
 }
 
 .coachCard {
-  display: flex;
-  flex-direction: column;
+  background: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
 }
 
 .coachCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
 }
 
 .coachImage {
-  height: 180px;
+  width: 100%;
+  height: 200px;
   position: relative;
-  background: #f3f4f6;
-  overflow: hidden;
+  background: #f0f2f5;
 }
 
 .coachImage img {
@@ -161,106 +171,103 @@
 }
 
 .noImagePlaceholder {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
   height: 100%;
-  color: #ccc;
-  font-size: 3rem;
-}
-
-.noImagePlaceholder svg {
-  font-size: 4rem;
-  opacity: 0.3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9ecef;
+  color: #adb5bd;
+  font-size: 48px;
 }
 
 .coachInfo {
-  padding: 1.2rem;
+  padding: 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.coachName {
-  margin: 0 0 0.5rem;
-  font-size: 1.4rem;
+.coachInfo h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.25rem;
+  color: #2c3e50;
+  font-weight: 600;
 }
 
-.coachSpecialty {
-  font-size: 1rem;
-  color: #666;
-  margin: 0 0 0.8rem;
+.specialty {
+  color: #1976d2;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: #e3f2fd;
+  padding: 4px 12px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-bottom: 12px;
 }
 
-.coachExperience {
+.experience {
   display: flex;
   align-items: center;
-  margin: 0 0 0.8rem;
+  gap: 6px;
+  color: #f59e0b;
   font-size: 0.9rem;
-  color: #777;
+  margin-bottom: 12px;
 }
 
 .experienceIcon {
-  color: #ffc107;
-  margin-right: 0.5rem;
+  font-size: 16px;
 }
 
-.availabilityPreview {
-  margin-bottom: 1rem;
-}
-
-.availabilityPreview p {
-  margin: 0 0 0.5rem;
+.bio {
+  color: #64748b;
   font-size: 0.9rem;
-  color: #666;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.availabilityDaysList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.availabilityDay {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  background-color: #f0f2f5;
-  border-radius: 12px;
-  font-size: 0.8rem;
-}
-
-.coachButtons {
+.coachActions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.8rem;
+  gap: 10px;
   margin-top: auto;
 }
 
-.viewDetailsButton, .bookNowButton {
-  padding: 0.7rem;
+.viewDetailsButton, 
+.bookNowButton {
+  padding: 10px;
   border: none;
   border-radius: 8px;
-  cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.3s;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
 }
 
 .viewDetailsButton {
-  background-color: #f0f2f5;
-  color: #333;
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
 }
 
 .viewDetailsButton:hover {
-  background-color: #e4e6e9;
+  background: #f1f5f9;
+  color: #1e293b;
 }
 
 .bookNowButton {
-  background-color: #1877f2;
+  background: #2563eb;
   color: white;
 }
 
 .bookNowButton:hover {
-  background-color: #166fe5;
+  background: #1d4ed8;
 }
 
 /* Empty state */
@@ -276,6 +283,11 @@
   font-size: 2.5rem;
   color: #ccc;
   margin-bottom: 1rem;
+}
+
+.emptyState p {
+  color: #64748b;
+  margin: 8px 0;
 }
 
 /* Loading and error states */
@@ -297,6 +309,12 @@
   cursor: pointer;
 }
 
+.loadingContainer {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
 /* Modal styles - higher z-index to stay above slidenav */
 .modalOverlay {
   position: fixed;
@@ -304,74 +322,261 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1100; /* Higher than slidenav */
-  padding: 1rem;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(4px);
 }
 
-.modal {
-  background-color: white;
-  border-radius: 12px;
-  max-width: 700px;
-  width: 100%;
-  max-height: 85vh;
+.bookingModal {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 550px;
+  max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: modalSlideIn 0.3s ease-out;
 }
 
-.userSportsBar {
+.modalHeader {
+  padding: 20px 24px;
+  border-bottom: 1px solid #eef2f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #1a2b3c;
+  font-weight: 600;
+}
+
+.closeModal {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.closeModal:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.modalContent {
+  padding: 24px;
+}
+
+.coachPreview {
   display: flex;
   align-items: center;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  padding: 1rem 2rem;
-  margin-bottom: 2rem;
-  gap: 1.5rem;
+  gap: 16px;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #eef2f6;
 }
 
-.userSportsBar h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  color: #1877f2;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+.coachImage {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #f1f5f9;
 }
 
-.userSportsList {
+.coachImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  color: #94a3b8;
 }
 
-.userSportItem {
-  background: #e8f0fe;
-  color: #1877f2;
-  padding: 0.4rem 1.1rem;
-  border-radius: 16px;
-  font-size: 1rem;
+.coachInfo h3 {
+  margin: 0 0 4px 0;
+  color: #1e293b;
+  font-size: 1.2rem;
+}
+
+.specialty {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 20px;
+  font-size: 0.875rem;
+}
+
+.bookingForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
   font-weight: 500;
-  box-shadow: 0 1px 4px rgba(24,119,242,0.07);
-  transition: background 0.2s, color 0.2s;
-  cursor: default;
-  user-select: none;
+  font-size: 0.95rem;
 }
 
-.userSportItem:hover {
-  background: #d2e3fc;
-  color: #0a5ad5;
+.formGroup label svg {
+  color: #64748b;
+}
+
+.formGroup input,
+.formGroup textarea {
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.formGroup textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.statusMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  animation: messageSlideIn 0.3s ease-out;
+}
+
+.success {
+  background: #ecfdf5;
+  color: #059669;
 }
 
 .error {
-  color: #d93025;
-  font-weight: 500;
+  background: #fef2f2;
+  color: #dc2626;
 }
 
-/* Responsive design - matches the slidenav.js breakpoints */
+.formActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cancelBtn,
+.submitBtn {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.cancelBtn {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.cancelBtn:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.submitBtn {
+  background: #3b82f6;
+  color: white;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.submitBtn:disabled {
+  background: #22c55e;
+  cursor: default;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes messageSlideIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .bookingModal {
+    width: 95%;
+    max-height: 95vh;
+  }
+  
+  .formActions {
+    grid-template-columns: 1fr;
+  }
+  
+  .modalHeader h2 {
+    font-size: 1.2rem;
+  }
+}
+
 @media (min-width: 992px) {
   .mainContentWrapper {
     margin-left: 220px; /* Width of open sidebar in slidenav.js */
@@ -399,8 +604,11 @@
     gap: 0.4rem;
   }
   .userSportItem {
-    font-size: 0.95rem;
-    padding: 0.3rem 0.8rem;
+    color: #3dc61e;
+    background: #053c85;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.9rem;
   }
 }
 
@@ -452,12 +660,11 @@
 }
 
 .sportTag, .coachTag {
-  background: #e3f2fd;
-  color: #1976d2;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  color: #1e293b;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.9rem;
 }
 
 .coachTag {
@@ -474,8 +681,7 @@
 }
 
 .planDescription p {
-  margin: 0;
-  color: #555;
+  color: #64748b;
   line-height: 1.5;
 }
 
@@ -516,8 +722,11 @@
 }
 
 .sessionFocus {
-  color: #555;
-  font-size: 0.9rem;
+  color: #475569;
+}
+
+.sessionFocus strong {
+  color: #1e293b;
 }
 
 .planFooter {
@@ -528,7 +737,7 @@
 }
 
 .planFooter small {
-  color: #888;
+  color: #94a3b8;
   font-size: 0.8rem;
 }
 
@@ -543,8 +752,115 @@
   font-size: 1.1rem;
 }
 
-.loadingContainer {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
+/* Joined Sports Bar styles */
+.userSportsBar {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.userSportsBar h3 {
+  color: #1e293b;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.userSportsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex: 1;
+}
+
+.userSportItem {
+  background: #f1f5f9;
+  color: #136ea2;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.userSportItem:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+.userSportsBar .error {
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.userSportsBar span {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+/* Loading state */
+.userSportsBar span:first-child {
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Empty state */
+.userSportsBar span:only-child {
+  color: #64748b;
+  font-style: italic;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .userSportsBar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .userSportsList {
+    margin-top: 12px;
+    gap: 8px;
+  }
+
+  .userSportItem {
+    font-size: 0.85rem;
+    padding: 4px 12px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .userSportsBar {
+    background: #1e293b;
+  }
+
+  .userSportsBar h3 {
+    color: #f1f5f9;
+  }
+
+  .userSportItem {
+    background: #334155;
+    color: #f1f5f9;
+    border-color: #475569;
+  }
+
+  .userSportItem:hover {
+    background: #475569;
+  }
+
+  .userSportsBar span {
+    color: #94a3b8;
+  }
 }
