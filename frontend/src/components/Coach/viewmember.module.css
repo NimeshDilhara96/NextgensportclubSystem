@@ -1,4 +1,3 @@
-
 /* Main container */
 .container {
   max-width: 1100px;
@@ -7,6 +6,23 @@
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.08);
   padding: 40px 36px;
+}
+
+.pageWrapper {
+    display: flex;
+    min-height: 100vh;
+    background: #f0f2f5;
+}
+
+.mainContent {
+    flex: 1;
+    transition: margin-left 0.3s ease;
+    padding: 24px;
+    margin-left: 250px;
+}
+
+.mainContent.sidebarClosed {
+    margin-left: 0;
 }
 
 .coachInfoBox {
@@ -18,6 +34,27 @@
   font-size: 15px;
   color: #31708f;
   border: 1px solid #bce8f1;
+}
+
+.coachInfoBox {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    background: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.coachDetail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #475569;
+}
+
+.icon {
+    color: #3b82f6;
 }
 
 /* Dashboard container for CoachSlideNav compatibility */
@@ -47,6 +84,51 @@
   padding: 18px;
   margin-bottom: 18px;
 }
+
+.searchBox {
+    flex: 1;
+    min-width: 300px;
+    position: relative;
+}
+
+.searchBox input {
+    width: 100%;
+    padding: 12px 16px 12px 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: white;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.filterSection {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.filterBox {
+    display: flex;
+    gap: 12px;
+}
+
+.filterBox select {
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    color: #1e293b;
+    min-width: 150px;
+}
+
 .members_table_container {
   font-size: 15px;
   text-align: center;
@@ -120,11 +202,149 @@
   text-align: center;
 }
 
-.sessionRow {
-  margin-bottom: 2em;
-  background: #fff;
-  border: 1px solid #e3e3e3;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  padding: 24px 22px;
+.statsSection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.statCard {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.statCard h3 {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin: 0 0 8px 0;
+}
+
+.statCard p {
+    color: #1e293b;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.tableContainer {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.membersTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.membersTable th {
+    background: #f8fafc;
+    padding: 16px;
+    text-align: left;
+    color: #475569;
+    font-weight: 500;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.membersTable td {
+    padding: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #1e293b;
+}
+
+.memberInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.memberIcon {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.active {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.inactive {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.pending {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 48px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.emptyIcon {
+    font-size: 2.5rem;
+    color: #94a3b8;
+    margin-bottom: 16px;
+}
+
+.loadingState,
+.errorState {
+    text-align: center;
+    padding: 48px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    color: #475569;
+}
+
+.errorState {
+    color: #dc2626;
+}
+
+@media (max-width: 768px) {
+    .mainContent {
+        margin-left: 0;
+        padding: 16px;
+    }
+
+    .filterSection {
+        flex-direction: column;
+    }
+
+    .searchBox {
+        min-width: 100%;
+    }
+
+    .filterBox {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .filterBox select {
+        flex: 1;
+    }
+
+    .membersTable {
+        display: block;
+        overflow-x: auto;
+    }
 }

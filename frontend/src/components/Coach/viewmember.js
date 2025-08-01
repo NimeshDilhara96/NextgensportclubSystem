@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import styles from './viewmember.module.css';
+import { 
+    FaSearch, 
+    FaFilter, 
+    FaUser, 
+    FaEnvelope, 
+    FaDumbbell, 
+    FaClock,
+    FaExclamationCircle 
+} from 'react-icons/fa';
 import CoachSlideNav from './CoachSlideNav';
+import styles from './viewmember.module.css';
 
 const ViewMemberPortal = () => {
     const [coach, setCoach] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedSport, setSelectedSport] = useState('all');
+    const [selectedStatus, setSelectedStatus] = useState('all');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-    // Get coachEmail from sessionStorage
     const coachEmail = sessionStorage.getItem('coachEmail');
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
 
     useEffect(() => {
         if (!coachEmail) {
@@ -31,114 +46,178 @@ const ViewMemberPortal = () => {
         fetchCoachDetails();
     }, [coachEmail]);
 
-    if (loading) return (
-        <div className={styles.dashboardContainer}>
-            <CoachSlideNav />
-            <div className={styles.container}>
-                <div className={styles.infoMessage}>
-                    Loading coach details...
+    // Get all unique sports from coach's assigned sports
+    const uniqueSports = coach?.sports ? [...new Set(coach.sports.map(sport => sport.name))] : [];
+
+    // Filter members based on search, sport, and status
+    const filteredMembers = React.useMemo(() => {
+        if (!coach?.sports) return [];
+
+        let members = coach.sports.flatMap(sport =>
+            (sport.members || []).map(member => ({
+                ...member,
+                sportName: sport.name
+            }))
+        );
+
+        // Apply filters
+        return members.filter(member => {
+            const matchesSearch = (
+                member.userName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                member.userEmail?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            
+            const matchesSport = selectedSport === 'all' || member.sportName === selectedSport;
+            
+            const matchesStatus = selectedStatus === 'all' || member.status === selectedStatus;
+
+            return matchesSearch && matchesSport && matchesStatus;
+        });
+    }, [coach, searchQuery, selectedSport, selectedStatus]);
+
+    if (loading) {
+        return (
+            <div className={styles.pageWrapper}>
+                <CoachSlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+                <div className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
+                    <div className={styles.loadingState}>Loading member data...</div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    }
 
-    if (error) return (
-        <div className={styles.dashboardContainer}>
-            <CoachSlideNav />
-            <div className={styles.container}>
-                <div className={styles.errorMessage}>
-                    <h3>Error</h3>
-                    <p>{error}</p>
+    if (error) {
+        return (
+            <div className={styles.pageWrapper}>
+                <CoachSlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+                <div className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
+                    <div className={styles.errorState}>
+                        <FaExclamationCircle />
+                        <p>{error}</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    );
-
-    if (!coach) return (
-        <div className={styles.dashboardContainer}>
-            <CoachSlideNav />
-            <div className={styles.container}>
-                <div className={styles.infoMessage}>
-                    <h3>No Coach Data Found</h3>
-                    <p>Unable to retrieve coach information. Please try logging in again.</p>
-                </div>
-            </div>
-        </div>
-    );
-
-    // Flatten all members from all sports
-    const allMembers = coach.sports ? coach.sports.flatMap(sport =>
-        (sport.members || []).map(member => ({
-            ...member,
-            sportName: sport.sportName,
-            membershipPackage: member.membershipPackage || 'None',
-            membershipStatus: member.membershipStatus || 'Inactive',
-        }))
-    ) : [];
-
-    // Filter members by search
-    const filteredMembers = allMembers.filter(member =>
-        member.userName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        member.userEmail?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+        );
+    }
 
     return (
-        <div className={styles.dashboardContainer}>
-            <CoachSlideNav />
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <h1>Member Management</h1>
+        <div className={styles.pageWrapper}>
+            <CoachSlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+            <div className={`${styles.mainContent} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
+                <div className={styles.contentHeader}>
+                    <h1 className={styles.pageTitle}>Member Management</h1>
                     <div className={styles.coachInfoBox}>
-                        <strong>Coach Name:</strong> {coach.name}<br />
-                        <strong>Specialty:</strong> {coach.specialty}
-                    </div>
-                </div>
-                <div className={styles.members_section}>
-                    <div className={styles.section_header}>
-                        <h2>All Members</h2>
-                        <div className={styles.search_bar}>
-                            <input
-                                type="text"
-                                placeholder="Search members by name or email..."
-                                value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
-                                className={styles.search_input}
-                            />
+                        <div className={styles.coachDetail}>
+                            <FaUser className={styles.icon} />
+                            <span>{coach?.name}</span>
+                        </div>
+                        <div className={styles.coachDetail}>
+                            <FaDumbbell className={styles.icon} />
+                            <span>{coach?.specialty}</span>
                         </div>
                     </div>
-                    {filteredMembers.length === 0 ? (
-                        <div className={styles.noMembers}>No members found matching your search.</div>
-                    ) : (
-                        <div className={styles.members_table_container}>
-                            <table className={styles.members_table}>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Sport</th>
-                                        <th>Membership</th>
-                                        <th>Status</th>
+                </div>
+
+                <div className={styles.filterSection}>
+                    <div className={styles.searchBox}>
+                        <FaSearch className={styles.searchIcon} />
+                        <input
+                            type="text"
+                            placeholder="Search members by name or email..."
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+
+                    <div className={styles.filterBox}>
+                        <FaFilter className={styles.filterIcon} />
+                        <select
+                            value={selectedSport}
+                            onChange={e => setSelectedSport(e.target.value)}
+                        >
+                            <option value="all">All Sports</option>
+                            {uniqueSports.map(sport => (
+                                <option key={sport} value={sport}>{sport}</option>
+                            ))}
+                        </select>
+
+                        <select
+                            value={selectedStatus}
+                            onChange={e => setSelectedStatus(e.target.value)}
+                        >
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className={styles.statsSection}>
+                    <div className={styles.statCard}>
+                        <h3>Total Members</h3>
+                        <p>{filteredMembers.length}</p>
+                    </div>
+                    <div className={styles.statCard}>
+                        <h3>Active Members</h3>
+                        <p>{filteredMembers.filter(m => m.status === 'active').length}</p>
+                    </div>
+                    <div className={styles.statCard}>
+                        <h3>Sports Count</h3>
+                        <p>{uniqueSports.length}</p>
+                    </div>
+                </div>
+
+                {filteredMembers.length === 0 ? (
+                    <div className={styles.emptyState}>
+                        <FaUser className={styles.emptyIcon} />
+                        <p>No members found matching your criteria</p>
+                    </div>
+                ) : (
+                    <div className={styles.tableContainer}>
+                        <table className={styles.membersTable}>
+                            <thead>
+                                <tr>
+                                    <th>Member Name</th>
+                                    <th>Email</th>
+                                    <th>Sport</th>
+                                    <th>Joined Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredMembers.map((member, index) => (
+                                    <tr key={`${member.userEmail}-${index}`}>
+                                        <td>
+                                            <div className={styles.memberInfo}>
+                                                <FaUser className={styles.memberIcon} />
+                                                {member.userName}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className={styles.memberInfo}>
+                                                <FaEnvelope className={styles.memberIcon} />
+                                                {member.userEmail}
+                                            </div>
+                                        </td>
+                                        <td>{member.sportName}</td>
+                                        <td>
+                                            <div className={styles.memberInfo}>
+                                                <FaClock className={styles.memberIcon} />
+                                                {new Date(member.joinedAt).toLocaleDateString()}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span className={`${styles.statusBadge} ${styles[member.status]}`}>
+                                                {member.status}
+                                            </span>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredMembers.map(member => (
-                                        <tr key={member.userId}>
-                                            <td>{member.userName}</td>
-                                            <td>{member.userEmail}</td>
-                                            <td>{member.sportName}</td>
-                                            <td>
-                                                <span className={`${styles.package_badge} ${styles[member.membershipPackage.toLowerCase()]}`}>{member.membershipPackage}</span>
-                                            </td>
-                                            <td>
-                                                <span className={`${styles.status_badge} ${styles[member.membershipStatus.toLowerCase()]}`}>{member.membershipStatus}</span>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </div>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </div>
     );
