@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Coach = require('../models/Coach');
 const Sport = require('../models/Sport');
+const User = require('../models/User'); // Import User model
 // Replace bcrypt with crypto
 const crypto = require('crypto');
 const multer = require('multer');
@@ -469,6 +470,118 @@ router.post('/login', async (req, res) => {
         return res.status(500).json({
             success: false,
             message: 'An error occurred during login'
+        });
+    }
+});
+
+// Update booking route to use email
+router.post('/book/by-email/:coachEmail', async (req, res) => {
+    try {
+        const { userEmail, date, time, notes } = req.body;
+        
+        // Find coach by email
+        const coach = await Coach.findOne({ email: req.params.coachEmail });
+        if (!coach) {
+            return res.status(404).json({
+                success: false,
+                message: 'Coach not found'
+            });
+        }
+
+        // Find user by email
+        const user = await User.findOne({ email: userEmail });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Create new session
+        const newSession = {
+            userName: user.name,
+            userEmail: user.email,
+            date,
+            time,
+            notes,
+            status: 'pending'
+        };
+
+        // Add session to coach's sessions array
+        coach.sessions.push(newSession);
+        await coach.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Session booked successfully',
+            session: newSession
+        });
+
+    } catch (error) {
+        console.error('Booking error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to book session',
+            error: error.message
+        });
+    }
+});
+
+// Add route to get sessions
+router.get('/sessions/:coachEmail', async (req, res) => {
+    try {
+        const coach = await Coach.findOne({ email: req.params.coachEmail });
+        if (!coach) {
+            return res.status(404).json({
+                success: false,
+                message: 'Coach not found'
+            });
+        }
+
+        // Sort sessions by date, most recent first
+        const sortedSessions = coach.sessions.sort((a, b) => b.createdAt - a.createdAt);
+
+        res.status(200).json({
+            success: true,
+            sessions: sortedSessions
+        });
+    } catch (error) {
+        console.error('Error fetching sessions:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch sessions',
+            error: error.message
+        });
+    }
+});
+
+// Add this route to update session status
+router.patch('/sessions/:sessionId/status', async (req, res) => {
+    try {
+        const { status } = req.body;
+        const coach = await Coach.findOne({ 'sessions._id': req.params.sessionId });
+        
+        if (!coach) {
+            return res.status(404).json({
+                success: false,
+                message: 'Session not found'
+            });
+        }
+
+        const session = coach.sessions.id(req.params.sessionId);
+        session.status = status;
+        await coach.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Session status updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating session status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update session status',
+            error: error.message
         });
     }
 });

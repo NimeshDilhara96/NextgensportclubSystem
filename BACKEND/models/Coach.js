@@ -1,5 +1,18 @@
 const mongoose = require('mongoose');
 
+const sessionSchema = new mongoose.Schema({
+    userName: { type: String, required: true },
+    userEmail: { type: String, required: true },
+    date: { type: Date, required: true },
+    time: { type: String, required: true },
+    notes: { type: String },
+    status: {
+        type: String,
+        enum: ['pending', 'approved', 'completed', 'cancelled'],
+        default: 'pending'
+    }
+}, { timestamps: true });
+
 const coachSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -51,7 +64,8 @@ const coachSchema = new mongoose.Schema({
     sports: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Sport'
-    }]
+    }],
+    sessions: [sessionSchema]
 }, {
     timestamps: true
 });
