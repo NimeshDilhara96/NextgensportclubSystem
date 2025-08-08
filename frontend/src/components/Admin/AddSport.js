@@ -7,14 +7,17 @@ const AddSport = () => {
     const [sports, setSports] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showMembersModal, setShowMembersModal] = useState(false);
     const [selectedSport, setSelectedSport] = useState(null);
+    const [sportMembers, setSportMembers] = useState([]);
+    const [loadingMembers, setLoadingMembers] = useState(false);
     const [coaches, setCoaches] = useState([]);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
         category: '',
         schedule: '',
-        coaches: [], // new field for coach IDs
+        coaches: [],
         maxCapacity: 20,
         availability: 'Available',
         image: null,
@@ -45,6 +48,38 @@ const AddSport = () => {
             console.error('Error fetching sports:', error);
             setMessage({ type: 'error', text: 'Failed to load sports' });
         }
+    };
+
+    // Fetch members for a specific sport
+    const fetchSportMembers = async (sportId) => {
+        setLoadingMembers(true);
+        try {
+            const token = sessionStorage.getItem('adminToken');
+            const response = await axios.get(`http://localhost:8070/sports/${sportId}/users-table`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
+            
+            if (response.data.status === 'success') {
+                setSportMembers(response.data.users);
+            } else {
+                setSportMembers([]);
+            }
+        } catch (error) {
+            console.error('Error fetching sport members:', error);
+            setMessage({ type: 'error', text: 'Failed to load sport members' });
+            setSportMembers([]);
+        } finally {
+            setLoadingMembers(false);
+        }
+    };
+
+    // Handle viewing members
+    const handleViewMembers = async (sport) => {
+        setSelectedSport(sport);
+        setShowMembersModal(true);
+        await fetchSportMembers(sport._id);
     };
 
     // Handle input changes
@@ -119,7 +154,7 @@ const AddSport = () => {
             });
 
             setMessage({ type: 'success', text: 'Sport added successfully!' });
-            await fetchSports(); // Refresh the list
+            await fetchSports();
             setShowAddModal(false);
             resetForm();
         } catch (error) {
@@ -141,10 +176,8 @@ const AddSport = () => {
         try {
             const sportData = new FormData();
             
-            // Add all form fields
             Object.keys(formData).forEach((key) => {
                 if (key === 'image' && !formData[key]) {
-                    // Don't send image if not changed
                     return;
                 }
                 if (key === 'coaches') {
@@ -167,7 +200,7 @@ const AddSport = () => {
             );
 
             setMessage({ type: 'success', text: 'Sport updated successfully!' });
-            await fetchSports(); // Refresh the list
+            await fetchSports();
             setShowEditModal(false);
             setSelectedSport(null);
             resetForm();
@@ -191,12 +224,22 @@ const AddSport = () => {
                 });
                 
                 setMessage({ type: 'success', text: 'Sport deleted successfully!' });
-                fetchSports(); // Refresh the list
+                fetchSports();
             } catch (error) {
                 console.error('Error deleting sport:', error);
                 setMessage({ type: 'error', text: 'Failed to delete sport' });
             }
         }
+    };
+
+    // Format date for display
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
     };
 
     return (
@@ -235,6 +278,7 @@ const AddSport = () => {
                                     <th>Name</th>
                                     <th>Category</th>
                                     <th>Coaches</th>
+                                    <th>Members</th>
                                     <th>Capacity</th>
                                     <th>Availability</th>
                                     <th>Actions</th>
@@ -255,6 +299,11 @@ const AddSport = () => {
                                         <td>{sport.name}</td>
                                         <td>{sport.category || 'N/A'}</td>
                                         <td>{(sport.coaches && sport.coaches.length > 0) ? sport.coaches.map(c => c.name || c).join(', ') : 'N/A'}</td>
+                                        <td>
+                                            <span className={styles.memberCount}>
+                                                {sport.memberCount || 0}
+                                            </span>
+                                        </td>
                                         <td>{sport.maxCapacity}</td>
                                         <td>
                                             <span className={sport.availability === 'Available' ? styles.available : styles.closed}>
@@ -262,18 +311,29 @@ const AddSport = () => {
                                             </span>
                                         </td>
                                         <td>
-                                            <button 
-                                                className={styles.editBtn}
-                                                onClick={() => handleEditClick(sport)}
-                                            >
-                                                Edit
-                                            </button>
-                                            <button 
-                                                className={styles.deleteBtn}
-                                                onClick={() => handleDeleteSport(sport._id)}
-                                            >
-                                                Delete
-                                            </button>
+                                            <div className={styles.actionButtons}>
+                                                <button 
+                                                    className={styles.viewBtn}
+                                                    onClick={() => handleViewMembers(sport)}
+                                                    title="View Members"
+                                                >
+                                                    <i className="fas fa-users"></i>
+                                                </button>
+                                                <button 
+                                                    className={styles.editBtn}
+                                                    onClick={() => handleEditClick(sport)}
+                                                    title="Edit Sport"
+                                                >
+                                                    <i className="fas fa-edit"></i>
+                                                </button>
+                                                <button 
+                                                    className={styles.deleteBtn}
+                                                    onClick={() => handleDeleteSport(sport._id)}
+                                                    title="Delete Sport"
+                                                >
+                                                    <i className="fas fa-trash"></i>
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -281,6 +341,121 @@ const AddSport = () => {
                         </table>
                     )}
                 </div>
+
+                {/* View Members Modal */}
+                {showMembersModal && selectedSport && (
+                    <div className={styles.modal}>
+                        <div className={`${styles.modalContent} ${styles.largeMemberModal}`}>
+                            <div className={styles.memberModalHeader}>
+                                <h2>
+                                    <i className="fas fa-users"></i>
+                                    Members of {selectedSport.name}
+                                </h2>
+                                <button 
+                                    className={styles.closeBtn}
+                                    onClick={() => {
+                                        setShowMembersModal(false);
+                                        setSelectedSport(null);
+                                        setSportMembers([]);
+                                    }}
+                                >
+                                    <i className="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <div className={styles.memberStats}>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statNumber}>{sportMembers.length}</span>
+                                    <span className={styles.statLabel}>Total Members</span>
+                                </div>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statNumber}>{selectedSport.maxCapacity}</span>
+                                    <span className={styles.statLabel}>Max Capacity</span>
+                                </div>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statNumber}>
+                                        {Math.round((sportMembers.length / selectedSport.maxCapacity) * 100)}%
+                                    </span>
+                                    <span className={styles.statLabel}>Filled</span>
+                                </div>
+                            </div>
+
+                            <div className={styles.memberTableContainer}>
+                                {loadingMembers ? (
+                                    <div className={styles.loadingState}>
+                                        <i className="fas fa-spinner fa-spin"></i>
+                                        <p>Loading members...</p>
+                                    </div>
+                                ) : sportMembers.length === 0 ? (
+                                    <div className={styles.emptyState}>
+                                        <i className="fas fa-user-slash"></i>
+                                        <p>No members have joined this sport yet.</p>
+                                    </div>
+                                ) : (
+                                    <table className={styles.membersTable}>
+                                        <thead>
+                                            <tr>
+                                                <th>Profile</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Contact</th>
+                                                <th>Gender</th>
+                                                <th>Age</th>
+                                                <th>Joined Date</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {sportMembers.map(member => (
+                                                <tr key={member.userId}>
+                                                    <td>
+                                                        <img 
+                                                            src={
+                                                                member.profilePicture 
+                                                                    ? `http://localhost:8070/${member.profilePicture}`
+                                                                    : '/default-avatar.png'
+                                                            }
+                                                            alt={member.name}
+                                                            className={styles.memberAvatar}
+                                                        />
+                                                    </td>
+                                                    <td className={styles.memberName}>{member.name}</td>
+                                                    <td className={styles.memberEmail}>{member.email}</td>
+                                                    <td>{member.contact || 'N/A'}</td>
+                                                    <td>
+                                                        <span className={styles.genderBadge}>
+                                                            {member.gender || 'N/A'}
+                                                        </span>
+                                                    </td>
+                                                    <td>{member.age || 'N/A'}</td>
+                                                    <td>{formatDate(member.sportSpecific?.joinedAt)}</td>
+                                                    <td>
+                                                        <span className={`${styles.statusBadge} ${styles[member.sportSpecific?.status || 'active']}`}>
+                                                            {member.sportSpecific?.status || 'Active'}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+
+                            <div className={styles.memberModalFooter}>
+                                <button 
+                                    className={styles.cancelBtn}
+                                    onClick={() => {
+                                        setShowMembersModal(false);
+                                        setSelectedSport(null);
+                                        setSportMembers([]);
+                                    }}
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Add Sport Modal */}
                 {showAddModal && (
