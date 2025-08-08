@@ -224,7 +224,7 @@ const SlideNav = ({ isSidebarOpen, toggleSidebar }) => {
             {showProfileMenu && (
               <div className="profile-menu">
                 <Link to="/profile">My Profile</Link>
-                <Link to="/account">Account Settings</Link>
+                <Link to="/settings">Account Settings</Link>
                 <Link to="/billing">Billing & Payments</Link>
                 <Link to="/help">Help Center</Link>
                 <div className="divider"></div>
