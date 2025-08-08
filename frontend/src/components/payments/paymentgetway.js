@@ -35,7 +35,7 @@ const PaymentGateway = ({
       setLoading(false);
       onSuccess &&
         onSuccess({
-          paymentId: "FAKE_PAYMENT_ID_" + Math.floor(Math.random() * 100000),
+          paymentId: "_PAYMENT_ID_" + Math.floor(Math.random() * 100000),
         });
     }, 1500);
   };
@@ -61,7 +61,7 @@ const PaymentGateway = ({
         >
           ×
         </button>
-        <div className={styles.title}>Fake Payment Gateway</div>
+        <div className={styles.title}>Payment Gateway</div>
         <div className={styles.amount}>
           Amount: <b>{amount ? `LKR ${amount}` : "LKR 500"}</b>
         </div>
