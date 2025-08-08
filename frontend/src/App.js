@@ -32,6 +32,7 @@ import Settings from './components/Dashboard/settingpage'; // Add this import
 import ViewMemberPortal from './components/Coach/viewmember';
 import ViewSession from './components/Coach/viewsession'; // Add this import
 import Nutrition from './components/Dashboard/nutrition'; // Add this import
+import Billing from './components/Dashboard/billing';
 
 // Import the new MembershipProtectedRoute component
 import MembershipProtectedRoute from './components/Auth/MembershipProtectedRoute';
@@ -290,6 +291,12 @@ function App() {
               <MembershipProtectedRoute>
                 <Nutrition />
               </MembershipProtectedRoute>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/billing" element={
+            <ProtectedRoute>
+              <Billing />
             </ProtectedRoute>
           } />
 
