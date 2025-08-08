@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import styles from './Dashboard.module.css'; // Changed to import styles
+import styles from './Dashboard.module.css';
 import SlideNav from '../appnavbar/slidenav';
 import Container from '../common/Container';
-import logo from '../../assets/logo.png'; // Use your transparent logo
-import FeedbackForm from './FeedbackForm'; // Add this import
+import logo from '../../assets/logo.png';
+import FeedbackForm from './FeedbackForm';
 
 const Dashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -15,7 +15,7 @@ const Dashboard = () => {
     membershipType: '',
     memberSince: '',
     nextPayment: '',
-    role: 'member', // Default role
+    role: 'member',
   });
   const [stats, setStats] = useState([]);
   const [trainingSchedule, setTrainingSchedule] = useState([]);
@@ -40,31 +40,26 @@ const Dashboard = () => {
         const userResponse = await axios.get(`http://localhost:8070/user/get/${userEmail}`);
         const user = userResponse.data.user;
 
-        // Add role to userData to handle admin-specific navigation
         setUserData({
           name: user.name || 'User',
           membershipType: user.membershipPackage || 'Standard',
           memberSince: new Date(user.joinedDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
           nextPayment: user.membershipEnd ? new Date(user.membershipEnd).toISOString().split('T')[0] : 'N/A',
-          role: user.role || 'member', // Store user role
+          role: user.role || 'member',
         });
 
-        // Only fetch other dashboard data if user is not admin
         if (user.role !== 'admin') {
           try {
-            // Fetch stats data - Updated endpoints
             const [facilitiesRes, eventsCountRes] = await Promise.all([
               axios.get('http://localhost:8070/facilities').catch(() => ({ data: [] })),
               axios.get('http://localhost:8070/events').catch(() => ({ data: [] })),
             ]);
 
-            // Count facilities and events
             const facilitiesCount = Array.isArray(facilitiesRes.data) ? facilitiesRes.data.length : 
                                    facilitiesRes.data.facilities ? facilitiesRes.data.facilities.length : 0;
             const eventsCount = Array.isArray(eventsCountRes.data) ? eventsCountRes.data.length :
                                eventsCountRes.data.events ? eventsCountRes.data.events.length : 0;
 
-            // Fetch user's facility bookings using the correct endpoint from SportsFacilities.js
             const token = sessionStorage.getItem('token');
             let userBookingsCount = 0;
             let userBookingsData = [];
@@ -86,7 +81,6 @@ const Dashboard = () => {
                 }
               } catch (bookingError) {
                 console.error('Error fetching user bookings:', bookingError);
-                // Don't fail the entire dashboard if bookings fail
               }
             }
 
@@ -94,7 +88,7 @@ const Dashboard = () => {
               {
                 icon: "👥",
                 title: "Active Members",
-                value: Math.floor(Math.random() * 500) + 100, // Placeholder since we don't have members count endpoint
+                value: Math.floor(Math.random() * 500) + 100,
                 trend: Math.floor(Math.random() * 10) + 1,
                 isPositive: true,
               },
@@ -121,19 +115,15 @@ const Dashboard = () => {
               },
             ]);
 
-            // Set user bookings for the facility bookings section
             setUserBookings(userBookingsData);
 
-            // Fetch training plans for the user - Updated to match TrainingCoaches.js
             let formattedTrainingSchedule = [];
             try {
-              // Get user ID by email first (same as TrainingCoaches.js)
               const userRes = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
               
               if (userRes.data.status === "success" && userRes.data.user?._id) {
                 const userId = userRes.data.user._id;
                 
-                // Fetch training plans using the same endpoint as TrainingCoaches.js
                 let plansRes;
                 try {
                   plansRes = await axios.get(
@@ -141,7 +131,6 @@ const Dashboard = () => {
                     token ? { headers: { 'Authorization': `Bearer ${token}` } } : {}
                   );
                 } catch (err) {
-                  // Try again without token if error is 401/403
                   if (err.response && (err.response.status === 401 || err.response.status === 403)) {
                     plansRes = await axios.get(`http://localhost:8070/training-plans/user/${userId}`);
                   } else {
@@ -158,7 +147,7 @@ const Dashboard = () => {
                     startTime: plan.createdAt || new Date(),
                     endTime: plan.sessions && plan.sessions.length > 0 ? 
                       plan.sessions[plan.sessions.length - 1].date : 
-                      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+                      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
                     description: plan.description || '',
                     difficulty: plan.difficulty || 'Intermediate',
                     sessions: plan.sessions || [],
@@ -168,12 +157,10 @@ const Dashboard = () => {
               }
             } catch (planError) {
               console.error('Error fetching training plans:', planError);
-              // Don't fail the entire dashboard if training plans fail
             }
             
             setTrainingSchedule(formattedTrainingSchedule);
 
-            // Fetch upcoming events
             const eventsRes = await axios.get('http://localhost:8070/events').catch(() => ({ data: [] }));
             const eventsData = Array.isArray(eventsRes.data) ? eventsRes.data : eventsRes.data.events || [];
             const upcomingEventsData = eventsData
@@ -190,7 +177,6 @@ const Dashboard = () => {
               }));
             setUpcomingEvents(upcomingEventsData);
 
-            // Create workout goals based on user's training plans and bookings
             const goalTypes = ['Cardio Sessions', 'Strength Training', 'Flexibility', 'Sports Activities'];
             const workoutGoalsData = goalTypes.map((type, index) => ({
               _id: `goal_${index}`,
@@ -203,7 +189,6 @@ const Dashboard = () => {
 
           } catch (error) {
             console.error('Error fetching dashboard data:', error);
-            // Set default empty data if API calls fail
             setStats([
               { icon: "👥", title: "Active Members", value: 0, trend: 0, isPositive: true },
               { icon: "🏢", title: "Facilities Available", value: 0, trend: 0, isPositive: true },
@@ -217,12 +202,9 @@ const Dashboard = () => {
           }
         }
       } catch (error) {
-        // Only set server error for network/server issues
         if (!error.response) {
-          // Network error or server is down
           setServerError(true);
         } else {
-          // Handle other errors (e.g., user not found) as needed
           setServerError(false);
         }
       } finally {
@@ -237,7 +219,6 @@ const Dashboard = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
-  // Get the current time to display appropriate greeting
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
@@ -245,7 +226,6 @@ const Dashboard = () => {
     return "Good evening";
   };
 
-  // Check if a booking is active, completed, or canceled
   const getBookingStatus = (booking) => {
     if (!booking || !booking.status) return 'unknown';
     if (booking.status === 'cancelled') return 'cancelled';
@@ -262,22 +242,22 @@ const Dashboard = () => {
 
   if (serverError) {
     return (
-      <div className={styles.loadingContainer} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', textAlign: 'center' }}>
-      <img
-        src={logo}
-        alt="FTC Club Logo"
-        style={{ width: 140, marginBottom: 24 }}
-      />
-      <h2 style={{ color: '#e74c3c', marginBottom: 12, fontWeight: 700, letterSpacing: 1 }}>Server Down</h2>
-      <p style={{ color: '#888', fontSize: 18, marginBottom: 10, lineHeight: 1.5 }}>
-        Sorry, we are unable to connect to the server.<br />
-        Please try again later.
-      </p>
-      <div style={{ marginTop: 18, fontSize: 16, color: '#888', opacity: 0.85 }}>
-        <span style={{ fontWeight: 500 }}>Powered by <span style={{ color: '#3498db' }}>Mommentx</span></span>
-        <br />
-        <span style={{ fontWeight: 500 }}>Design by <span style={{ color: '#27ae60' }}>Nimeshdilhara96</span></span>
-      </div>
+      <div className={styles.loadingContainer}>
+        <img
+          src={logo}
+          alt="NextGen Sport Club Logo"
+          style={{ width: 140, marginBottom: 24 }}
+        />
+        <h2 style={{ color: '#e74c3c', marginBottom: 12, fontWeight: 700, letterSpacing: 1 }}>Server Down</h2>
+        <p style={{ color: '#888', fontSize: 18, marginBottom: 10, lineHeight: 1.5 }}>
+          Sorry, we are unable to connect to the server.<br />
+          Please try again later.
+        </p>
+        <div style={{ marginTop: 18, fontSize: 16, color: '#888', opacity: 0.85 }}>
+          <span style={{ fontWeight: 500 }}>Powered by <span style={{ color: '#3498db' }}>MommentX</span></span>
+          <br />
+          <span style={{ fontWeight: 500 }}>Design by <span style={{ color: '#27ae60' }}>Nimeshdilhara96</span></span>
+        </div>
       </div>
     );
   }
@@ -286,7 +266,7 @@ const Dashboard = () => {
     return (
       <div className={styles.loadingContainer}>
         <img
-          src={require('../../assets/logo.png')}
+          src={logo}
           alt="NextGen Sport Club Logo"
           style={{ width: 120, marginBottom: 20 }}
         />
@@ -296,9 +276,7 @@ const Dashboard = () => {
     );
   }
 
-  // Render different content based on user role
   const renderDashboardContent = () => {
-    // If user is admin, render admin dashboard
     if (userData.role === 'admin') {
       return (
         <div className={styles.adminDashboard}>
@@ -375,10 +353,8 @@ const Dashboard = () => {
       );
     }
     
-    // Regular user dashboard
     return (
       <>
-        {/* Dashboard Header */}
         <div className={styles.dashboardHeader}>
           <div className={styles.dashboardTitle}>
             <h1>Dashboard</h1>
@@ -387,7 +363,7 @@ const Dashboard = () => {
           <div className={styles.dashboardActions}>
             <button 
               className={styles.actionButton}
-              onClick={() => navigate('/sports-facilities')}
+              onClick={() => navigate('/facilities')}
             >
               <i className="fas fa-calendar-plus"></i> Book Facility
             </button>
@@ -400,55 +376,55 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Enhanced Welcome Section */}
         <div className={styles.welcomeSection}>
-            <div className={styles.welcomeGreeting}>
-              <div className={styles.greetingMessage}>
-                <h2 className={styles.greetingText}>{getGreeting()}, <span className={styles.userName}>{userData.name}!</span></h2>
-                <p className={styles.greetingSubtitle}>Welcome to your fitness dashboard. Here's your progress at a glance.</p>
-              </div>
-              <div className={styles.userInfo}>
-                <div className={styles.infoItem}>
-            <span className={styles.label}>Membership</span>
-            <span className={`${styles.badge} ${styles[userData.membershipType.toLowerCase()]}`}>{userData.membershipType}</span>
-                </div>
-                <div className={styles.infoItem}>
-            <span className={styles.label}>Member since</span>
-            <span className={styles.value}>{userData.memberSince}</span>
-                </div>
-                <div className={styles.infoItem}>
-            <span className={styles.label}>Next payment</span>
-            <span className={`${styles.value} ${styles.dateValue}`}>{userData.nextPayment}</span>
-                </div>
-              </div>
+          <div className={styles.welcomeGreeting}>
+            <div className={styles.greetingMessage}>
+              <h2 className={styles.greetingText}>{getGreeting()}, <span className={styles.userName}>{userData.name}!</span></h2>
+              <p className={styles.greetingSubtitle}>Welcome to your fitness dashboard. Here's your progress at a glance.</p>
             </div>
-            <div className={styles.membershipBenefits}>
-              <h3>Membership Benefits</h3>
-              <ul className={styles.benefitsList}>
-                <li><i className="fas fa-check"></i> Unlimited access to all facilities</li>
-                <li><i className="fas fa-check"></i> Free fitness assessment</li>
-                <li><i className="fas fa-check"></i> Access to group classes</li>
-              </ul>
-              <button 
-                className={styles.upgradeButton}
-                onClick={() => navigate('/membership')}
-              >
-                Upgrade Membership
-              </button>
+            <div className={styles.userInfo}>
+              <div className={styles.infoItem}>
+                <span className={styles.label}>Membership</span>
+                <span className={`${styles.badge} ${styles[userData.membershipType.toLowerCase()]}`}>{userData.membershipType}</span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.label}>Member since</span>
+                <span className={styles.value}>{userData.memberSince}</span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.label}>Next payment</span>
+                <span className={`${styles.value} ${styles.dateValue}`}>{userData.nextPayment}</span>
+              </div>
             </div>
           </div>
+          <div className={styles.membershipBenefits}>
+            <h3>Membership Benefits</h3>
+            <ul className={styles.benefitsList}>
+              <li><i className="fas fa-check"></i> Unlimited access to all facilities</li>
+              <li><i className="fas fa-check"></i> Free fitness assessment</li>
+              <li><i className="fas fa-check"></i> Access to group classes</li>
+            </ul>
+            <button 
+              className={styles.upgradeButton}
+              onClick={() => navigate('/membership')}
+            >
+              Upgrade Membership
+            </button>
+          </div>
+        </div>
 
-          {/* Stats Section */}
         <div className={styles.statsGrid}>
           {stats.map((stat, index) => (
-            <div key={index} className={styles.statCard}>
-              <div className={`${styles[`icon${index + 1}`]}`}>{stat.icon}</div>
+            <div key={index} className={`${styles.statCard} ${styles[`statCard${index + 1}`]}`}>
+              <div className={`${styles.statIconContainer} ${styles[`icon${index + 1}`]}`}>
+                {stat.icon}
+              </div>
               <div className={styles.statDetails}>
                 <h3 className={styles.statTitle}>{stat.title}</h3>
                 <p className={styles.statValue}>{stat.value}</p>
                 <span className={`${styles.statTrend} ${stat.isPositive ? styles.positive : styles.negative}`}>
-                  <i className={`fas fa-arrow-${stat.isPositive ? 'up' : 'down'}`}></i>
-                  {Math.abs(stat.trend)}% from last month
+                  <i className={`fas fa-arrow-${stat.isPositive ? 'up' : 'down'} ${styles.trendArrow}`}></i>
+                  {Math.abs(stat.trend)}%<span className={styles.trendPeriod}> from last month</span>
                 </span>
               </div>
             </div>
@@ -456,7 +432,6 @@ const Dashboard = () => {
         </div>
 
         <div className={styles.dashboardGrid}>
-          {/* Training Schedule */}
           <div className={styles.dashboardCard}>
             <div className={styles.cardHeader}>
               <h2>My Training Plans</h2>
@@ -524,7 +499,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Upcoming Events */}
           <div className={styles.dashboardCard}>
             <div className={styles.cardHeader}>
               <h2>Upcoming Events</h2>
@@ -576,7 +550,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Workout Goals */}
           <div className={styles.dashboardCard}>
             <div className={styles.cardHeader}>
               <h2>Workout Goals</h2>
@@ -627,7 +600,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Facility Bookings */}
           <div className={styles.dashboardCard}>
             <div className={styles.cardHeader}>
               <h2>My Facility Bookings</h2>
@@ -696,7 +668,6 @@ const Dashboard = () => {
 
   return (
     <>
-      {/* Pass userRole to SlideNav to fix admin sidebar issues */}
       <SlideNav 
         isSidebarOpen={isSidebarOpen} 
         toggleSidebar={toggleSidebar}
@@ -709,7 +680,6 @@ const Dashboard = () => {
           <br />
           <FeedbackForm userName={userData.name} />
 
-          {/* Footer with branding and version - same for all users */}
           <div className={styles.dashboardFooter}>
             <div className={styles.footerBranding}>
               <div className={styles.footerLogo}>
