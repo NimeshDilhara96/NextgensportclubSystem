@@ -128,6 +128,32 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Booking Modal Header */
+.bookingModalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.todayDate {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #109ad6;
+    font-weight: 600;
+    font-size: 14px;
+    background-color: rgba(16, 154, 214, 0.1);
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+
+.todayDate i {
+    font-size: 16px;
+}
+
 /* Adjust the wide modal for bookings view */
 .wideModal {
   width: 90%;
@@ -493,618 +519,243 @@
 }
 
 .wideModal {
-  width: 90%;
-  max-width: 900px;
+  max-width: 95vw !important;
+  width: 1200px !important;
 }
 
-.tableContainer {
-  max-height: 400px;
-  overflow-y: auto;
-  margin: 15px 0;
-}
-
-.bookingsTable {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.bookingsTable th,
-.bookingsTable td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.bookingsTable th {
-  background-color: #f2f2f2;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.status-confirmed {
-  background-color: rgba(212, 237, 218, 0.2);
-}
-
-.status-completed {
-  background-color: rgba(209, 236, 241, 0.2);
-}
-
-.status-cancelled {
-  background-color: rgba(248, 215, 218, 0.2);
-}
-
-.confirmed {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 0.85em;
-}
-
-.completed {
-  background-color: #d1ecf1;
-  color: #0c5460;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 0.85em;
-}
-
-.pending {
-  background-color: #fff3cd;
-  color: #856404;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 0.85em;
-}
-
-.cancelled {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 0.85em;
-}
-
+/* Enhanced Filter Buttons */
 .filterButtons {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.filterButtons button {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  background-color: white;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.activeFilter {
-  background-color: #e9ecef !important;
-  border-color: #adb5bd !important;
-  font-weight: bold;
-}
-
-.loadingIndicator {
-  text-align: center;
-  padding: 20px;
-  color: #6c757d;
-}
-
-.noData {
-  text-align: center;
-  padding: 20px;
-  color: #6c757d;
-  font-style: italic;
-}
-
-.closeBtn {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-/* Member Modal Styles */
-.largeMemberModal {
-    max-width: 90vw !important;
-    width: 1200px !important;
-    max-height: 90vh;
-}
-
-.memberModalHeader {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #dee2e6;
-    margin-bottom: 20px;
-}
-
-.memberModalHeader h2 {
-    margin: 0;
-    color: #333;
-    display: flex;
-    align-items: center;
     gap: 12px;
-}
-
-.closeBtn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #6c757d;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 4px;
-    transition: all 0.2s;
-}
-
-.closeBtn:hover {
-    background-color: #f8f9fa;
-    color: #dc3545;
-}
-
-.memberStats {
-    display: flex;
-    gap: 24px;
     margin-bottom: 24px;
-    justify-content: center;
+    flex-wrap: wrap;
 }
 
-.statItem {
-    text-align: center;
-    padding: 16px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    min-width: 120px;
-}
-
-.statNumber {
-    display: block;
-    font-size: 28px;
-    font-weight: 700;
-    color: #109ad6;
-    margin-bottom: 4px;
-}
-
-.statLabel {
-    font-size: 14px;
-    color: #6c757d;
-    font-weight: 500;
-}
-
-.memberTableContainer {
-    max-height: 400px;
-    overflow-y: auto;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-}
-
-.membersTable {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-.membersTable th {
-    background-color: #f8f9fa;
-    padding: 12px 8px;
-    text-align: left;
-    font-weight: 600;
-    color: #495057;
-    border-bottom: 2px solid #dee2e6;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-.membersTable td {
-    padding: 12px 8px;
-    border-bottom: 1px solid #dee2e6;
-    vertical-align: middle;
-}
-
-.membersTable tr:hover {
-    background-color: #f8f9fa;
-}
-
-.memberAvatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
+.filterBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
     border: 2px solid #dee2e6;
-}
-
-.memberName {
-    font-weight: 600;
-    color: #333;
-}
-
-.memberEmail {
-    color: #6c757d;
-    font-size: 13px;
-}
-
-.genderBadge {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-    background-color: #e9ecef;
+    background-color: white;
     color: #495057;
-}
-
-.statusBadge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 12px;
+    border-radius: 8px;
+    cursor: pointer;
     font-weight: 500;
-    text-transform: capitalize;
+    transition: all 0.3s ease;
+    font-size: 14px;
 }
 
-.statusBadge.active {
-    background-color: rgba(40, 167, 69, 0.15);
-    color: #28a745;
+.filterBtn:hover {
+    border-color: #109ad6;
+    color: #109ad6;
+    background-color: rgba(16, 154, 214, 0.05);
 }
 
-.statusBadge.inactive {
-    background-color: rgba(220, 53, 69, 0.15);
-    color: #dc3545;
+.filterBtn.activeFilter {
+    background-color: #109ad6;
+    color: white;
+    border-color: #109ad6;
+    box-shadow: 0 2px 8px rgba(16, 154, 214, 0.3);
 }
 
-.statusBadge.pending {
-    background-color: rgba(255, 193, 7, 0.15);
-    color: #d39e00;
+.filterBtn i {
+    font-size: 14px;
 }
 
-.memberModalFooter {
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid #dee2e6;
-    text-align: right;
-}
-
-.loadingState, .emptyState {
+/* Enhanced No Data State */
+.noData {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 60px 20px;
     color: #6c757d;
+    text-align: center;
 }
 
-.loadingState i, .emptyState i {
+.noData i {
     font-size: 48px;
     margin-bottom: 16px;
     opacity: 0.5;
+    color: #109ad6;
 }
 
-.emptyState p {
+.noData p {
     font-size: 16px;
     margin: 0;
+    font-weight: 500;
 }
 
-.attendeeCount {
-    font-weight: 600;
-    color: #109ad6;
-    background-color: rgba(16, 154, 214, 0.1);
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-}
-
-/* Action buttons container */
-.actionButtons {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-}
-
-.viewBtn, .editBtn, .deleteBtn {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s;
+/* Enhanced Loading State */
+.loadingIndicator {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 36px;
-    height: 36px;
+    gap: 12px;
+    padding: 40px;
+    color: #109ad6;
+    font-size: 16px;
+    font-weight: 500;
 }
 
-.viewBtn {
-    background-color: #17a2b8;
+.loadingIndicator i {
+    font-size: 20px;
+}
+
+/* Enhanced Table Styling */
+.bookingsTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.bookingsTable th {
+    background: linear-gradient(135deg, #109ad6, #0d86bc);
     color: white;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-.viewBtn:hover {
-    background-color: #138496;
+.bookingsTable td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
 }
 
-.editBtn {
-    background-color: #ffc107;
-    color: #212529;
+.bookingsTable tr:hover {
+    background-color: #f8f9fa;
 }
 
-.editBtn:hover {
-    background-color: #e0a800;
+.bookingsTable tr:last-child td {
+    border-bottom: none;
 }
 
-.deleteBtn {
-    background-color: #dc3545;
-    color: white;
+/* User Information Styling */
+.userName {
+    font-weight: 600;
+    color: #333;
 }
 
-.deleteBtn:hover {
-    background-color: #c82333;
+.userEmail {
+    color: #6c757d;
+    font-size: 13px;
 }
 
-/* Responsive Design */
+.duration {
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Enhanced Status Badges */
+.statusBadge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+}
+
+.statusBadge.confirmed {
+    background-color: rgba(40, 167, 69, 0.15);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.statusBadge.pending {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #d39e00;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.statusBadge.cancelled {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.statusBadge.completed {
+    background-color: rgba(23, 162, 184, 0.15);
+    color: #17a2b8;
+    border: 1px solid rgba(23, 162, 184, 0.3);
+}
+
+/* Modal Footer Enhancement */
+.modalFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #dee2e6;
+}
+
+.bookingSummary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.todayIndicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #109ad6;
+    font-weight: 600;
+    background-color: rgba(16, 154, 214, 0.1);
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.todayIndicator i {
+    font-size: 12px;
+}
+
+/* Table Container */
+.tableContainer {
+    max-height: 500px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+/* Responsive Design for Bookings */
 @media (max-width: 768px) {
-    .formContainer {
-        margin-left: 0; /* Remove sidebar margin for smaller screens */
-        margin-top: 0; /* Remove top bar margin for smaller screens */
-        width: 100%; /* Use full width for smaller screens */
-        height: auto; /* Allow height to adjust based on content */
-        padding: 1rem; /* Add padding for spacing */
-        position: relative; /* Reset position for smaller screens */
-        top: 0; /* Reset top for smaller screens */
-        left: 0; /* Reset left for smaller screens */
-    }
-
-    .formCard {
-        max-width: 90%; /* Use 90% of the screen width for smaller screens */
-        max-height: 80%; /* Adjust height for smaller screens */
-    }
-
-    .modalContent {
-        max-width: 90%; /* Use 90% of the screen width for smaller screens */
-        max-height: 70%; /* Adjust height for smaller screens */
-        padding: 0.75rem; /* Reduce padding for smaller screens */
-    }
-
-    .largeMemberModal {
-        max-width: 90vw !important;
-        width: 1200px !important;
-        max-height: 90vh;
-    }
-
-    .memberModalHeader {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 16px;
-        border-bottom: 1px solid #dee2e6;
-        margin-bottom: 20px;
-    }
-
-    .memberModalHeader h2 {
-        margin: 0;
-        color: #333;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .closeBtn {
-        background: none;
-        border: none;
-        font-size: 20px;
-        color: #6c757d;
-        cursor: pointer;
-        padding: 8px;
-        border-radius: 4px;
-        transition: all 0.2s;
-    }
-
-    .closeBtn:hover {
-        background-color: #f8f9fa;
-        color: #dc3545;
-    }
-
-    .memberStats {
-        display: flex;
-        gap: 24px;
-        margin-bottom: 24px;
+    .filterButtons {
         justify-content: center;
     }
-
-    .statItem {
-        text-align: center;
-        padding: 16px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
+    
+    .filterBtn {
+        flex: 1;
         min-width: 120px;
+        justify-content: center;
     }
-
-    .statNumber {
-        display: block;
-        font-size: 28px;
-        font-weight: 700;
-        color: #109ad6;
-        margin-bottom: 4px;
-    }
-
-    .statLabel {
-        font-size: 14px;
-        color: #6c757d;
-        font-weight: 500;
-    }
-
-    .memberTableContainer {
-        max-height: 400px;
-        overflow-y: auto;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-    }
-
-    .membersTable {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
-    }
-
-    .membersTable th {
-        background-color: #f8f9fa;
-        padding: 12px 8px;
-        text-align: left;
-        font-weight: 600;
-        color: #495057;
-        border-bottom: 2px solid #dee2e6;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-
-    .membersTable td {
-        padding: 12px 8px;
-        border-bottom: 1px solid #dee2e6;
-        vertical-align: middle;
-    }
-
-    .membersTable tr:hover {
-        background-color: #f8f9fa;
-    }
-
-    .memberAvatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #dee2e6;
-    }
-
-    .memberName {
-        font-weight: 600;
-        color: #333;
-    }
-
-    .memberEmail {
-        color: #6c757d;
-        font-size: 13px;
-    }
-
-    .genderBadge {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 500;
-        background-color: #e9ecef;
-        color: #495057;
-    }
-
-    .statusBadge {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 16px;
-        font-size: 12px;
-        font-weight: 500;
-        text-transform: capitalize;
-    }
-
-    .statusBadge.active {
-        background-color: rgba(40, 167, 69, 0.15);
-        color: #28a745;
-    }
-
-    .statusBadge.inactive {
-        background-color: rgba(220, 53, 69, 0.15);
-        color: #dc3545;
-    }
-
-    .statusBadge.pending {
-        background-color: rgba(255, 193, 7, 0.15);
-        color: #d39e00;
-    }
-
-    .memberModalFooter {
-        margin-top: 20px;
-        padding-top: 16px;
-        border-top: 1px solid #dee2e6;
-        text-align: right;
-    }
-
-    .loadingState, .emptyState {
-        display: flex;
+    
+    .bookingModalHeader {
         flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    
+    .todayDate {
+        align-self: center;
+    }
+    
+    .modalFooter {
+        flex-direction: column;
+        gap: 12px;
         align-items: center;
-        justify-content: center;
-        padding: 60px 20px;
-        color: #6c757d;
-    }
-
-    .loadingState i, .emptyState i {
-        font-size: 48px;
-        margin-bottom: 16px;
-        opacity: 0.5;
-    }
-
-    .emptyState p {
-        font-size: 16px;
-        margin: 0;
-    }
-
-    .actionButtons {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-    }
-
-    .viewBtn, .editBtn, .deleteBtn {
-        padding: 8px 12px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 36px;
-        height: 36px;
-    }
-
-    .viewBtn {
-        background-color: #17a2b8;
-        color: white;
-    }
-
-    .viewBtn:hover {
-        background-color: #138496;
-    }
-
-    .editBtn {
-        background-color: #ffc107;
-        color: #212529;
-    }
-
-    .editBtn:hover {
-        background-color: #e0a800;
-    }
-
-    .deleteBtn {
-        background-color: #dc3545;
-        color: white;
-    }
-
-    .deleteBtn:hover {
-        background-color: #c82333;
-    }
-
-    .memberCount {
-        font-weight: 600;
-        color: #109ad6;
     }
 }
 

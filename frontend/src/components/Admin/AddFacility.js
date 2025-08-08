@@ -24,11 +24,11 @@ const AddFacility = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
     
-    // New state variables for bookings
+    // Updated state variables for bookings with 'today' as default
     const [showBookingsModal, setShowBookingsModal] = useState(false);
     const [selectedFacilityBookings, setSelectedFacilityBookings] = useState({ facility: null, bookings: [] });
     const [bookingsLoading, setBookingsLoading] = useState(false);
-    const [bookingFilter, setBookingFilter] = useState('all'); // 'all', 'active', 'past'
+    const [bookingFilter, setBookingFilter] = useState('today'); // Changed default to 'today'
 
     // Fetch facilities on component mount
     useEffect(() => {
@@ -227,10 +227,11 @@ const AddFacility = () => {
         }
     };
 
-    // New function to handle viewing bookings for a facility
+    // Updated function to handle viewing bookings with 'today' as default filter
     const handleViewBookings = async (facility) => {
         setSelectedFacilityBookings({ facility, bookings: [] });
         setBookingsLoading(true);
+        setBookingFilter('today'); // Reset to today when opening modal
         setShowBookingsModal(true);
         
         try {
@@ -252,24 +253,70 @@ const AddFacility = () => {
         }
     };
     
-    // Function to filter bookings based on selected filter
+    // Helper function to check if a date is today
+    const isToday = (dateString) => {
+        const today = new Date();
+        const date = new Date(dateString);
+        return date.toDateString() === today.toDateString();
+    };
+
+    // Helper function to check if a date is in the future
+    const isFuture = (dateString) => {
+        const now = new Date();
+        const date = new Date(dateString);
+        return date > now;
+    };
+
+    // Helper function to check if a date is in the past
+    const isPast = (dateString) => {
+        const now = new Date();
+        const date = new Date(dateString);
+        return date < now;
+    };
+    
+    // Updated function to filter bookings with new 'today' filter
     const getFilteredBookings = () => {
         if (!selectedFacilityBookings.bookings.length) return [];
         
-        const now = new Date();
-        
         switch(bookingFilter) {
+            case 'today':
+                return selectedFacilityBookings.bookings.filter(booking => 
+                    isToday(booking.startTime) && booking.status !== 'cancelled'
+                );
             case 'active':
                 return selectedFacilityBookings.bookings.filter(booking => 
-                    new Date(booking.endTime) > now && booking.status !== 'cancelled'
+                    isFuture(booking.endTime) && booking.status !== 'cancelled'
                 );
             case 'past':
                 return selectedFacilityBookings.bookings.filter(booking => 
-                    new Date(booking.endTime) < now || booking.status === 'cancelled'
+                    isPast(booking.endTime) || booking.status === 'cancelled'
                 );
             default:
                 return selectedFacilityBookings.bookings;
         }
+    };
+
+    // Get count for each filter type
+    const getFilterCounts = () => {
+        if (!selectedFacilityBookings.bookings.length) {
+            return { today: 0, active: 0, past: 0, all: 0 };
+        }
+
+        const today = selectedFacilityBookings.bookings.filter(booking => 
+            isToday(booking.startTime) && booking.status !== 'cancelled'
+        ).length;
+
+        const active = selectedFacilityBookings.bookings.filter(booking => 
+            isFuture(booking.endTime) && booking.status !== 'cancelled'
+        ).length;
+
+        const past = selectedFacilityBookings.bookings.filter(booking => 
+            isPast(booking.endTime) || booking.status === 'cancelled'
+        ).length;
+
+        const all = selectedFacilityBookings.bookings.length;
+
+        return { today, active, past, all };
     };
     
     // Function to format date and time for display
@@ -282,6 +329,17 @@ const AddFacility = () => {
             minute: '2-digit'
         };
         return new Date(dateTimeString).toLocaleDateString(undefined, options);
+    };
+
+    // Function to get current date for display
+    const getCurrentDate = () => {
+        const today = new Date();
+        return today.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
     };
 
     return (
@@ -675,37 +733,70 @@ const AddFacility = () => {
                     </div>
                 )}
 
-                {/* New Bookings Modal */}
+                {/* Updated Bookings Modal with Today filter as default */}
                 {showBookingsModal && selectedFacilityBookings.facility && (
                     <div className={styles.modal}>
                         <div className={`${styles.modalContent} ${styles.wideModal}`}>
-                            <h2>Bookings for {selectedFacilityBookings.facility.name}</h2>
+                            <div className={styles.bookingModalHeader}>
+                                <h2>Bookings for {selectedFacilityBookings.facility.name}</h2>
+                                {bookingFilter === 'today' && (
+                                    <div className={styles.todayDate}>
+                                        <i className="fas fa-calendar-day"></i>
+                                        <span>{getCurrentDate()}</span>
+                                    </div>
+                                )}
+                            </div>
                             
                             <div className={styles.filterButtons}>
                                 <button 
-                                    className={bookingFilter === 'all' ? styles.activeFilter : ''}
-                                    onClick={() => setBookingFilter('all')}
+                                    className={`${styles.filterBtn} ${bookingFilter === 'today' ? styles.activeFilter : ''}`}
+                                    onClick={() => setBookingFilter('today')}
                                 >
-                                    All Bookings
+                                    <i className="fas fa-calendar-day"></i>
+                                    Today ({getFilterCounts().today})
                                 </button>
                                 <button 
-                                    className={bookingFilter === 'active' ? styles.activeFilter : ''}
+                                    className={`${styles.filterBtn} ${bookingFilter === 'active' ? styles.activeFilter : ''}`}
                                     onClick={() => setBookingFilter('active')}
                                 >
-                                    Active Bookings
+                                    <i className="fas fa-clock"></i>
+                                    Active ({getFilterCounts().active})
                                 </button>
                                 <button 
-                                    className={bookingFilter === 'past' ? styles.activeFilter : ''}
+                                    className={`${styles.filterBtn} ${bookingFilter === 'past' ? styles.activeFilter : ''}`}
                                     onClick={() => setBookingFilter('past')}
                                 >
-                                    Past/Cancelled Bookings
+                                    <i className="fas fa-history"></i>
+                                    Past/Cancelled ({getFilterCounts().past})
+                                </button>
+                                <button 
+                                    className={`${styles.filterBtn} ${bookingFilter === 'all' ? styles.activeFilter : ''}`}
+                                    onClick={() => setBookingFilter('all')}
+                                >
+                                    <i className="fas fa-list"></i>
+                                    All ({getFilterCounts().all})
                                 </button>
                             </div>
                             
                             {bookingsLoading ? (
-                                <div className={styles.loadingIndicator}>Loading bookings...</div>
+                                <div className={styles.loadingIndicator}>
+                                    <i className="fas fa-spinner fa-spin"></i>
+                                    Loading bookings...
+                                </div>
                             ) : getFilteredBookings().length === 0 ? (
-                                <p className={styles.noData}>No bookings found for this filter.</p>
+                                <div className={styles.noData}>
+                                    {bookingFilter === 'today' ? (
+                                        <>
+                                            <i className="fas fa-calendar-day"></i>
+                                            <p>No bookings found for today.</p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fas fa-inbox"></i>
+                                            <p>No bookings found for this filter.</p>
+                                        </>
+                                    )}
+                                </div>
                             ) : (
                                 <div className={styles.tableContainer}>
                                     <table className={styles.bookingsTable}>
@@ -715,6 +806,7 @@ const AddFacility = () => {
                                                 <th>Email</th>
                                                 <th>Start Time</th>
                                                 <th>End Time</th>
+                                                <th>Duration</th>
                                                 <th>Status</th>
                                                 <th>Booked On</th>
                                             </tr>
@@ -722,12 +814,15 @@ const AddFacility = () => {
                                         <tbody>
                                             {getFilteredBookings().map((booking, index) => (
                                                 <tr key={index} className={styles[`status-${booking.status.toLowerCase()}`]}>
-                                                    <td>{booking.userName || 'N/A'}</td>
-                                                    <td>{booking.userEmail || 'N/A'}</td>
+                                                    <td className={styles.userName}>{booking.userName || 'N/A'}</td>
+                                                    <td className={styles.userEmail}>{booking.userEmail || 'N/A'}</td>
                                                     <td>{formatDateTime(booking.startTime)}</td>
                                                     <td>{formatDateTime(booking.endTime)}</td>
+                                                    <td className={styles.duration}>
+                                                        {Math.ceil((new Date(booking.endTime) - new Date(booking.startTime)) / (1000 * 60 * 60))} hours
+                                                    </td>
                                                     <td>
-                                                        <span className={styles[booking.status.toLowerCase()]}>
+                                                        <span className={`${styles.statusBadge} ${styles[booking.status.toLowerCase()]}`}>
                                                             {booking.status}
                                                         </span>
                                                     </td>
@@ -740,6 +835,15 @@ const AddFacility = () => {
                             )}
                             
                             <div className={styles.modalFooter}>
+                                <div className={styles.bookingSummary}>
+                                    <span>Showing {getFilteredBookings().length} booking(s)</span>
+                                    {bookingFilter === 'today' && (
+                                        <span className={styles.todayIndicator}>
+                                            <i className="fas fa-calendar-check"></i>
+                                            Today's Schedule
+                                        </span>
+                                    )}
+                                </div>
                                 <button 
                                     className={styles.closeBtn}
                                     onClick={() => setShowBookingsModal(false)}
