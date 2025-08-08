@@ -33,6 +33,9 @@ import ViewMemberPortal from './components/Coach/viewmember';
 import ViewSession from './components/Coach/viewsession'; // Add this import
 import Nutrition from './components/Dashboard/nutrition'; // Add this import
 
+// Import the new MembershipProtectedRoute component
+import MembershipProtectedRoute from './components/Auth/MembershipProtectedRoute';
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 // Updated ProtectedRoute component
@@ -213,39 +216,52 @@ function App() {
             </ProtectedRoute>
           } />
           
+          {/* Membership Protected Routes */}
           <Route path="/community" element={
             <ProtectedRoute>
-              <Community />
+              <MembershipProtectedRoute>
+                <Community />
+              </MembershipProtectedRoute>
             </ProtectedRoute>
           } />
           
           <Route path="/facilities" element={
             <ProtectedRoute>
-              <SportsFacilities/>
+              <MembershipProtectedRoute>
+                <SportsFacilities/>
+              </MembershipProtectedRoute>
             </ProtectedRoute>
           } />
           
           <Route path="/training" element={
             <ProtectedRoute>
-              <TrainingCoaches/>
+              <MembershipProtectedRoute>
+                <TrainingCoaches/>
+              </MembershipProtectedRoute>
             </ProtectedRoute>
           } />
           
           <Route path="/events" element={
             <ProtectedRoute>
-              <Event />
+              <MembershipProtectedRoute>
+                <Event />
+              </MembershipProtectedRoute>
             </ProtectedRoute>
           } />
           
           <Route path="/store" element={
             <ProtectedRoute>
-              <ClubStore />
+              <MembershipProtectedRoute>
+                <ClubStore />
+              </MembershipProtectedRoute>
             </ProtectedRoute>
           } />
           
           <Route path="/health" element={
             <ProtectedRoute>
-              <Health />
+              <MembershipProtectedRoute>
+                <Health />
+              </MembershipProtectedRoute>
             </ProtectedRoute>
           } />
           
@@ -257,7 +273,9 @@ function App() {
 
           <Route path="/messenger" element={
             <ProtectedRoute>
-              <Messenger />
+              <MembershipProtectedRoute>
+                <Messenger />
+              </MembershipProtectedRoute>
             </ProtectedRoute>
           } />
 
@@ -269,7 +287,9 @@ function App() {
 
           <Route path="/nutrition" element={
             <ProtectedRoute>
-              <Nutrition />
+              <MembershipProtectedRoute>
+                <Nutrition />
+              </MembershipProtectedRoute>
             </ProtectedRoute>
           } />
 
