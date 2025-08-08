@@ -4,7 +4,7 @@ import axios from 'axios';
 import styles from './AdminForms.module.css';
 import { 
     FaCalendarPlus, FaHandshake, FaTags, FaTrash, FaEdit, 
-    FaImage, FaMapMarkerAlt, FaClock, FaGlobe, FaPhone, FaEnvelope 
+    FaImage, FaMapMarkerAlt, FaClock, FaGlobe, FaPhone, FaEnvelope, FaUsers 
 } from 'react-icons/fa';
 
 const AddEventSponser = () => {
@@ -15,7 +15,10 @@ const AddEventSponser = () => {
     const [events, setEvents] = useState([]);
     const [showAddEventModal, setShowAddEventModal] = useState(false);
     const [showEditEventModal, setShowEditEventModal] = useState(false);
+    const [showAttendeesModal, setShowAttendeesModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [eventAttendees, setEventAttendees] = useState([]);
+    const [loadingAttendees, setLoadingAttendees] = useState(false);
     const [eventFormData, setEventFormData] = useState({
         title: '',
         description: '',
@@ -67,6 +70,33 @@ const AddEventSponser = () => {
             console.error('Error fetching events:', error);
             setMessage({ type: 'error', text: 'Failed to load events' });
         }
+    };
+
+    // Fetch attendees for a specific event
+    const fetchEventAttendees = async (eventId) => {
+        setLoadingAttendees(true);
+        try {
+            const response = await axios.get(`http://localhost:8070/events/${eventId}`);
+            
+            if (response.data && response.data.attendees) {
+                setEventAttendees(response.data.attendees);
+            } else {
+                setEventAttendees([]);
+            }
+        } catch (error) {
+            console.error('Error fetching event attendees:', error);
+            setMessage({ type: 'error', text: 'Failed to load event attendees' });
+            setEventAttendees([]);
+        } finally {
+            setLoadingAttendees(false);
+        }
+    };
+
+    // Handle viewing attendees
+    const handleViewAttendees = async (event) => {
+        setSelectedEvent(event);
+        setShowAttendeesModal(true);
+        await fetchEventAttendees(event._id);
     };
 
     // Sponsors API calls
@@ -451,6 +481,12 @@ const AddEventSponser = () => {
         return new Date(dateString).toLocaleDateString();
     };
 
+    // Format time function
+    const formatDateTime = (dateString) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleString();
+    };
+
     return (
         <>
             <AdminSlideNav />
@@ -528,26 +564,128 @@ const AddEventSponser = () => {
                                                 <td>{formatDate(event.date)}</td>
                                                 <td>{`${event.startTime || 'N/A'} - ${event.endTime || 'N/A'}`}</td>
                                                 <td>{event.location || 'N/A'}</td>
-                                                <td>{event.attendees?.length || 0}</td>
                                                 <td>
-                                                    <button 
-                                                        className={styles.editBtn}
-                                                        onClick={() => handleEditEventClick(event)}
-                                                    >
-                                                        <FaEdit /> Edit
-                                                    </button>
-                                                    <button 
-                                                        className={styles.deleteBtn}
-                                                        onClick={() => handleDeleteEvent(event._id)}
-                                                    >
-                                                        <FaTrash /> Delete
-                                                    </button>
+                                                    <span className={styles.attendeeCount}>
+                                                        {event.attendees?.length || 0}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div className={styles.actionButtons}>
+                                                        <button 
+                                                            className={styles.viewBtn}
+                                                            onClick={() => handleViewAttendees(event)}
+                                                            title="View Attendees"
+                                                        >
+                                                            <FaUsers />
+                                                        </button>
+                                                        <button 
+                                                            className={styles.editBtn}
+                                                            onClick={() => handleEditEventClick(event)}
+                                                            title="Edit Event"
+                                                        >
+                                                            <FaEdit />
+                                                        </button>
+                                                        <button 
+                                                            className={styles.deleteBtn}
+                                                            onClick={() => handleDeleteEvent(event._id)}
+                                                            title="Delete Event"
+                                                        >
+                                                            <FaTrash />
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             )}
+                        </div>
+                    </div>
+                )}
+
+                {/* View Attendees Modal */}
+                {showAttendeesModal && selectedEvent && (
+                    <div className={styles.modal}>
+                        <div className={`${styles.modalContent} ${styles.largeMemberModal}`}>
+                            <div className={styles.memberModalHeader}>
+                                <h2>
+                                    <FaUsers />
+                                    Attendees for {selectedEvent.title}
+                                </h2>
+                                <button 
+                                    className={styles.closeBtn}
+                                    onClick={() => {
+                                        setShowAttendeesModal(false);
+                                        setSelectedEvent(null);
+                                        setEventAttendees([]);
+                                    }}
+                                >
+                                    <i className="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <div className={styles.memberStats}>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statNumber}>{eventAttendees.length}</span>
+                                    <span className={styles.statLabel}>Total Attendees</span>
+                                </div>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statNumber}>{formatDate(selectedEvent.date)}</span>
+                                    <span className={styles.statLabel}>Event Date</span>
+                                </div>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statNumber}>{selectedEvent.startTime}</span>
+                                    <span className={styles.statLabel}>Start Time</span>
+                                </div>
+                            </div>
+
+                            <div className={styles.memberTableContainer}>
+                                {loadingAttendees ? (
+                                    <div className={styles.loadingState}>
+                                        <i className="fas fa-spinner fa-spin"></i>
+                                        <p>Loading attendees...</p>
+                                    </div>
+                                ) : eventAttendees.length === 0 ? (
+                                    <div className={styles.emptyState}>
+                                        <i className="fas fa-user-slash"></i>
+                                        <p>No one has registered for this event yet.</p>
+                                    </div>
+                                ) : (
+                                    <table className={styles.membersTable}>
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>User ID</th>
+                                                <th>Registered At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {eventAttendees.map((attendee, index) => (
+                                                <tr key={index}>
+                                                    <td className={styles.memberName}>{attendee.userName}</td>
+                                                    <td className={styles.memberEmail}>{attendee.userEmail}</td>
+                                                    <td>{attendee.userId}</td>
+                                                    <td>{formatDateTime(attendee.registeredAt)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+
+                            <div className={styles.memberModalFooter}>
+                                <button 
+                                    className={styles.cancelBtn}
+                                    onClick={() => {
+                                        setShowAttendeesModal(false);
+                                        setSelectedEvent(null);
+                                        setEventAttendees([]);
+                                    }}
+                                >
+                                    Close
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
