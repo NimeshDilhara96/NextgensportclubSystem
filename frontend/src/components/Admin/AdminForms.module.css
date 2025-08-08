@@ -1,772 +1,1441 @@
 /* General Container */
 .container {
-    padding: 20px;
-    margin-left: 260px; /* Adjusted for AdminSlideNav width */
-    margin-top: 70px; /* Adjusted for the top bar height */
-    max-width: calc(100% - 260px); /* Ensure the container doesn't exceed the available space */
-    box-sizing: border-box; /* Include padding and border in width calculation */
+    padding: 20px !important;
+    margin-left: 260px !important; /* Adjusted for AdminSlideNav width */
+    margin-top: 70px !important; /* Adjusted for the top bar height */
+    max-width: calc(100% - 260px) !important; /* Ensure the container doesn't exceed the available space */
+    box-sizing: border-box !important; /* Include padding and border in width calculation */
 }
 
 /* Toggle Buttons */
 .toggleButtons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    justify-content: center; /* Center the buttons */
+    display: flex !important;
+    gap: 10px !important;
+    margin-bottom: 20px !important;
+    justify-content: center !important; /* Center the buttons */
 }
 
 .toggleButtons button {
-    padding: 10px 20px;
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+    padding: 10px 20px !important;
+    cursor: pointer !important;
+    border: none !important;
+    border-radius: 4px !important;
+    transition: background-color 0.3s ease !important;
 }
 
 .activeButton {
-    background-color: #007bff;
-    color: white;
+    background-color: #007bff !important;
+    color: white !important;
 }
 
 .toggleButtons button:hover {
-    background-color: #0056b3;
-    color: white;
+    background-color: #0056b3 !important;
+    color: white !important;
 }
 
 /* Sports Container */
 .sportsContainer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center; /* Center the sports cards */
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+    justify-content: center !important; /* Center the sports cards */
 }
 
 .sportCard {
-    border: 1px solid #ccc;
-    padding: 10px;
-    width: 200px; /* Set a consistent width for all cards */
-    text-align: center;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-    background-color: #fff; /* Ensure a consistent background color */
+    border: 1px solid #ccc !important;
+    padding: 10px !important;
+    width: 200px !important; /* Set a consistent width for all cards */
+    text-align: center !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+    transition: transform 0.2s ease !important;
+    background-color: #fff !important; /* Ensure a consistent background color */
 }
 
 .sportCard:hover {
-    transform: scale(1.05);
+    transform: scale(1.05) !important;
 }
 
 /* Image Styling */
 .sportCard img {
-    width: 100%; /* Make the image take up the full width of the card */
-    height: 150px; /* Set a consistent height for all images */
-    object-fit: cover; /* Ensure the image scales properly without distortion */
-    border-radius: 4px; /* Add slight rounding to match the card's style */
-    margin-bottom: 10px; /* Add spacing below the image */
+    width: 100% !important; /* Make the image take up the full width of the card */
+    height: 150px !important; /* Set a consistent height for all images */
+    object-fit: cover !important; /* Ensure the image scales properly without distortion */
+    border-radius: 4px !important; /* Add slight rounding to match the card's style */
+    margin-bottom: 10px !important; /* Add spacing below the image */
 }
 
 /* Title and Description */
 .sportCard h3 {
-    font-size: 1.2rem;
-    margin: 10px 0;
-    color: #333;
+    font-size: 1.2rem !important;
+    margin: 10px 0 !important;
+    color: #333 !important;
 }
 
 .sportCard p {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 10px;
+    font-size: 0.9rem !important;
+    color: #666 !important;
+    margin-bottom: 10px !important;
 }
 
 /* Edit Button */
 .sportCard button {
-    padding: 8px 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    padding: 8px 12px !important;
+    background-color: #007bff !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s ease !important;
 }
 
 .sportCard button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3 !important;
 }
 
 /* Modal */
 .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding-left: 250px; /* Add left padding equal to your AdminSlideNav width */
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 1000 !important;
+    padding-left: 250px !important; /* Add left padding equal to your AdminSlideNav width */
 }
 
 /* For smaller screens, adjust the padding */
 @media (max-width: 768px) {
   .modal {
-    padding-left: 0; /* Remove padding on mobile where sidebar is likely collapsed */
+    padding-left: 0 !important; /* Remove padding on mobile where sidebar is likely collapsed */
   }
 }
 
 /* Modal Content */
 .modalContent {
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    width: 90%;
-    max-width: 500px;
-    max-height: 85vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: white !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+    width: 90% !important;
+    max-width: 500px !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    position: relative !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Booking Modal Header */
 .bookingModalHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #e9ecef;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 15px !important;
+    border-bottom: 2px solid #e9ecef !important;
 }
 
 .todayDate {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #109ad6;
-    font-weight: 600;
-    font-size: 14px;
-    background-color: rgba(16, 154, 214, 0.1);
-    padding: 8px 12px;
-    border-radius: 20px;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #109ad6 !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    background-color: rgba(16, 154, 214, 0.1) !important;
+    padding: 8px 12px !important;
+    border-radius: 20px !important;
 }
 
 .todayDate i {
-    font-size: 16px;
+    font-size: 16px !important;
 }
 
 /* Adjust the wide modal for bookings view */
 .wideModal {
-  width: 90%;
-  max-width: 900px;
+  width: 90% !important;
+  max-width: 900px !important;
 }
 
 /* Form Container */
 .formContainer {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Align the form to the top */
-    padding: 1rem; /* Padding for spacing */
-    margin-left: var(--sidebar-width); /* Adjust based on the sidebar width */
-    margin-top: var(--top-bar-height); /* Adjust based on the top bar height */
-    width: calc(100% - var(--sidebar-width)); /* Ensure the container doesn't exceed the available space */
-    height: calc(100vh - var(--top-bar-height)); /* Ensure the container fits within the viewport */
-    box-sizing: border-box; /* Include padding and border in width calculation */
-    overflow-y: auto; /* Add vertical scrolling if the content overflows */
-    overflow-x: hidden; /* Prevent horizontal overflow */
-    background-color: #f9f9f9; /* Optional: Add a background color for better visibility */
-    position: absolute; /* Position the form container below the sidebar */
-    top: var(--top-bar-height); /* Start below the top bar */
-    left: var(--sidebar-width); /* Start after the sidebar */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: flex-start !important; /* Align the form to the top */
+    padding: 1rem !important; /* Padding for spacing */
+    margin-left: var(--sidebar-width) !important; /* Adjust based on the sidebar width */
+    margin-top: var(--top-bar-height) !important; /* Adjust based on the top bar height */
+    width: calc(100% - var(--sidebar-width)) !important; /* Ensure the container doesn't exceed the available space */
+    height: calc(100vh - var(--top-bar-height)) !important; /* Ensure the container fits within the viewport */
+    box-sizing: border-box !important; /* Include padding and border in width calculation */
+    overflow-y: auto !important; /* Add vertical scrolling if the content overflows */
+    overflow-x: hidden !important; /* Prevent horizontal overflow */
+    background-color: #f9f9f9 !important; /* Optional: Add a background color for better visibility */
+    position: absolute !important; /* Position the form container below the sidebar */
+    top: var(--top-bar-height) !important; /* Start below the top bar */
+    left: var(--sidebar-width) !important; /* Start after the sidebar */
 }
 
 /* Form Card */
 .formCard {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 1rem; /* Reduced padding for a smaller form */
-    width: 100%;
-    max-width: 350px; /* Limit the width for a smaller form container */
-    max-height: 70%; /* Limit the height of the form card */
-    overflow-y: auto; /* Add vertical scrolling inside the form card */
-    margin: auto; /* Center the form card */
-    scrollbar-width: thin; /* For modern browsers, make the scrollbar thin */
-    scrollbar-color: #ccc #f9f9f9; /* Customize scrollbar colors */
+    background-color: white !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    padding: 1rem !important; /* Reduced padding for a smaller form */
+    width: 100% !important;
+    max-width: 350px !important; /* Limit the width for a smaller form container */
+    max-height: 70% !important; /* Limit the height of the form card */
+    overflow-y: auto !important; /* Add vertical scrolling inside the form card */
+    margin: auto !important; /* Center the form card */
+    scrollbar-width: thin !important; /* For modern browsers, make the scrollbar thin */
+    scrollbar-color: #ccc #f9f9f9 !important; /* Customize scrollbar colors */
 }
 
 /* Scrollbar Styling for Webkit Browsers */
 .formContainer::-webkit-scrollbar,
 .formCard::-webkit-scrollbar {
-    width: 8px; /* Set the width of the scrollbar */
+    width: 8px !important; /* Set the width of the scrollbar */
 }
 
 .formContainer::-webkit-scrollbar-thumb,
 .formCard::-webkit-scrollbar-thumb {
-    background-color: #ccc; /* Color of the scrollbar thumb */
-    border-radius: 4px; /* Rounded corners for the scrollbar thumb */
+    background-color: #ccc !important; /* Color of the scrollbar thumb */
+    border-radius: 4px !important; /* Rounded corners for the scrollbar thumb */
 }
 
 .formContainer::-webkit-scrollbar-track,
 .formCard::-webkit-scrollbar-track {
-    background-color: #f9f9f9; /* Background color of the scrollbar track */
+    background-color: #f9f9f9 !important; /* Background color of the scrollbar track */
 }
 
 /* Form Card Heading */
 .formCard h2 {
-    color: #333;
-    margin-bottom: 0.75rem; /* Reduced margin for a more compact layout */
-    text-align: center;
+    color: #333 !important;
+    margin-bottom: 0.75rem !important; /* Reduced margin for a more compact layout */
+    text-align: center !important;
 }
 
 /* Form Groups */
 .formGroup {
-    margin-bottom: 1rem; /* Reduced spacing between form groups */
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 1rem !important; /* Reduced spacing between form groups */
+    display: flex !important;
+    flex-direction: column !important;
 }
 
 .formGroup label {
-    margin-bottom: 0.25rem; /* Reduced spacing below labels */
-    font-weight: 500;
-    color: #444;
+    margin-bottom: 0.25rem !important; /* Reduced spacing below labels */
+    font-weight: 500 !important;
+    color: #444 !important;
 }
 
 .formGroup input,
 .formGroup textarea,
 .formGroup select {
-    width: 100%;
-    padding: 0.5rem; /* Reduced padding for smaller input fields */
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 0.9rem; /* Slightly smaller font size */
-    box-sizing: border-box; /* Ensure padding doesn't affect width */
+    width: 100% !important;
+    padding: 0.5rem !important; /* Reduced padding for smaller input fields */
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    font-size: 0.9rem !important; /* Slightly smaller font size */
+    box-sizing: border-box !important; /* Ensure padding doesn't affect width */
 }
 
 .formGroup textarea {
-    resize: vertical;
-    min-height: 80px; /* Reduced height for textareas */
+    resize: vertical !important;
+    min-height: 80px !important; /* Reduced height for textareas */
 }
 
 /* Image Uploader */
 .imageUploader {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
 }
 
 .uploadButton {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    background-color: #f0f0f0 !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    padding: 0.75rem 1rem !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s !important;
 }
 
 .uploadButton:hover {
-    background-color: #e0e0e0;
+    background-color: #e0e0e0 !important;
 }
 
 .imagePreview {
-    max-width: 300px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    overflow: hidden;
+    max-width: 300px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
 }
 
 .imagePreview img {
-    width: 100%;
-    height: auto;
-    display: block;
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
 }
 
 /* Submit Button */
 .submitButton {
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 0.5rem 1rem; /* Reduced padding for smaller buttons */
-    font-size: 0.9rem; /* Slightly smaller font size */
-    cursor: pointer;
-    transition: background-color 0.2s;
-    display: block;
-    margin: 1rem auto 0;
-    width: 100%; /* Make the button full-width for better alignment */
-    max-width: 150px; /* Limit the width for smaller buttons */
-    text-align: center;
+    background-color: #4caf50 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    padding: 0.5rem 1rem !important; /* Reduced padding for smaller buttons */
+    font-size: 0.9rem !important; /* Slightly smaller font size */
+    cursor: pointer !important;
+    transition: background-color 0.2s !important;
+    display: block !important;
+    margin: 1rem auto 0 !important;
+    width: 100% !important; /* Make the button full-width for better alignment */
+    max-width: 150px !important; /* Limit the width for smaller buttons */
+    text-align: center !important;
 }
 
 .submitButton:hover {
-    background-color: #45a049;
+    background-color: #45a049 !important;
 }
 
 .submitButton:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
+    background-color: #cccccc !important;
+    cursor: not-allowed !important;
 }
 
 /* Messages */
 .message {
-    padding: 0.75rem;
-    margin-bottom: 1.5rem;
-    border-radius: 4px;
-    text-align: center;
+    padding: 0.75rem !important;
+    margin-bottom: 1.5rem !important;
+    border-radius: 4px !important;
+    text-align: center !important;
 }
 
 .success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    border: 1px solid #c3e6cb !important;
 }
 
 .error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+    border: 1px solid #f5c6cb !important;
 }
 
 /* Facilities Table */
 .facilitiesTable {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin-top: 20px !important;
 }
 
 .facilitiesTable th, 
 .facilitiesTable td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+  padding: 10px !important;
+  text-align: left !important;
+  border-bottom: 1px solid #ddd !important;
 }
 
 .facilitiesTable th {
-  background-color: #f2f2f2;
+  background-color: #f2f2f2 !important;
 }
 
 .facilitiesTable tr:hover {
-  background-color: #f5f5f5;
+  background-color: #f5f5f5 !important;
 }
 
 .facilityImage {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 4px;
+  width: 50px !important;
+  height: 50px !important;
+  object-fit: cover !important;
+  border-radius: 4px !important;
 }
 
 .previewImage {
-  max-width: 200px;
-  max-height: 150px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-top: 10px;
+  max-width: 200px !important;
+  max-height: 150px !important;
+  object-fit: cover !important;
+  border-radius: 4px !important;
+  margin-top: 10px !important;
 }
 
 /* Status indicators */
 .available {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 0.85em;
+  background-color: #d4edda !important;
+  color: #155724 !important;
+  padding: 3px 8px !important;
+  border-radius: 10px !important;
+  font-size: 0.85em !important;
 }
 
 .maintenance {
-  background-color: #fff3cd;
-  color: #856404;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 0.85em;
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+  padding: 3px 8px !important;
+  border-radius: 10px !important;
+  font-size: 0.85em !important;
 }
 
 .reserved {
-  background-color: #cce5ff;
-  color: #004085;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 0.85em;
+  background-color: #cce5ff !important;
+  color: #004085 !important;
+  padding: 3px 8px !important;
+  border-radius: 10px !important;
+  font-size: 0.85em !important;
 }
 
 .closed {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 0.85em;
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+  padding: 3px 8px !important;
+  border-radius: 10px !important;
+  font-size: 0.85em !important;
 }
 
 /* Button styles */
 .editBtn {
-  background-color: #17a2b8;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 3px;
-  cursor: pointer;
-  margin-right: 5px;
+  background-color: #17a2b8 !important;
+  color: white !important;
+  border: none !important;
+  padding: 5px 10px !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
+  margin-right: 5px !important;
 }
 
 .deleteBtn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 3px;
-  cursor: pointer;
+  background-color: #dc3545 !important;
+  color: white !important;
+  border: none !important;
+  padding: 5px 10px !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
 }
 
 .submitBtn {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 3px;
-  cursor: pointer;
-  margin-right: 10px;
+  background-color: #28a745 !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 15px !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
+  margin-right: 10px !important;
 }
 
 .cancelBtn {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 3px;
-  cursor: pointer;
+  background-color: #6c757d !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 15px !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
 }
 
 .buttonGroup {
-  margin-top: 20px;
-  display: flex;
+  margin-top: 20px !important;
+  display: flex !important;
 }
 
 .addButton {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 3px;
-  cursor: pointer;
-  margin-bottom: 20px;
+  background-color: #28a745 !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 15px !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
+  margin-bottom: 20px !important;
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 20px !important;
 }
 
 .header h1 {
-  color: #007bff;
-  font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-  margin: 0;
+  color: #007bff !important;
+  font-weight: bold !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1) !important;
+  margin: 0 !important;
 }
 
 .timeInputContainer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .timeInputGroup {
-  display: flex;
+  display: flex !important;
 }
 
 .timeSeparator {
-  padding: 0 10px;
+  padding: 0 10px !important;
 }
 
 .helpText {
-  font-size: 0.8em;
-  color: #6c757d;
-  margin-top: 5px;
+  font-size: 0.8em !important;
+  color: #6c757d !important;
+  margin-top: 5px !important;
 }
 
 .currentImage {
-  margin: 10px 0;
+  margin: 10px 0 !important;
 }
 
 .successMessage {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 4px;
+  background-color: #d4edda !important;
+  color: #155724 !important;
+  padding: 10px !important;
+  margin-bottom: 15px !important;
+  border-radius: 4px !important;
 }
 
 .errorMessage {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 4px;
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+  padding: 10px !important;
+  margin-bottom: 15px !important;
+  border-radius: 4px !important;
 }
 
 /* New Styles */
 .viewBtn {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 3px;
-  cursor: pointer;
-  margin-right: 5px;
+  background-color: #28a745 !important;
+  color: white !important;
+  border: none !important;
+  padding: 5px 10px !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
+  margin-right: 5px !important;
 }
 
-.wideModal {
-  max-width: 95vw !important;
-  width: 1200px !important;
+/* Large Member Modal Styles */
+.largeMemberModal {
+    max-width: 95vw !important;
+    width: 1200px !important;
+    max-height: 90vh !important;
+    overflow: hidden !important;
 }
 
-/* Enhanced Filter Buttons */
-.filterButtons {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
+.memberModalHeader {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 20px 24px !important;
+    background: linear-gradient(135deg, #109ad6, #0d86bc) !important;
+    color: white !important;
+    border-radius: 8px 8px 0 0 !important;
+    margin: -20px -20px 20px -20px !important;
 }
 
-.filterBtn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border: 2px solid #dee2e6;
-    background-color: white;
-    color: #495057;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    font-size: 14px;
+.memberModalHeader h2 {
+    margin: 0 !important;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    color: white !important;
 }
 
-.filterBtn:hover {
-    border-color: #109ad6;
-    color: #109ad6;
-    background-color: rgba(16, 154, 214, 0.05);
+.memberModalHeader h2 i {
+    font-size: 18px !important;
 }
 
-.filterBtn.activeFilter {
-    background-color: #109ad6;
-    color: white;
-    border-color: #109ad6;
-    box-shadow: 0 2px 8px rgba(16, 154, 214, 0.3);
+.closeBtn {
+    background: rgba(12, 93, 214, 0.2) !important;
+    border: none !important;
+    color: white !important;
+    padding: 8px 12px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    transition: background 0.3s ease !important;
 }
 
-.filterBtn i {
-    font-size: 14px;
+.closeBtn:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
 }
 
-/* Enhanced No Data State */
-.noData {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    color: #6c757d;
-    text-align: center;
+/* Member Stats Section */
+.memberStats {
+    display: flex !important;
+    gap: 24px !important;
+    margin-bottom: 24px !important;
+    padding: 20px !important;
+    background: #f8f9fa !important;
+    border-radius: 8px !important;
+    border: 1px solid #dee2e6 !important;
 }
 
-.noData i {
-    font-size: 48px;
-    margin-bottom: 16px;
-    opacity: 0.5;
-    color: #109ad6;
+.statItem {
+    text-align: center !important;
+    flex: 1 !important;
 }
 
-.noData p {
-    font-size: 16px;
-    margin: 0;
-    font-weight: 500;
+.statNumber {
+    display: block !important;
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    color: #109ad6 !important;
+    margin-bottom: 4px !important;
 }
 
-/* Enhanced Loading State */
-.loadingIndicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 40px;
-    color: #109ad6;
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.loadingIndicator i {
-    font-size: 20px;
-}
-
-/* Enhanced Table Styling */
-.bookingsTable {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.bookingsTable th {
-    background: linear-gradient(135deg, #109ad6, #0d86bc);
-    color: white;
-    padding: 15px 12px;
-    text-align: left;
-    font-weight: 600;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-.bookingsTable td {
-    padding: 12px;
-    border-bottom: 1px solid #dee2e6;
-    vertical-align: middle;
-}
-
-.bookingsTable tr:hover {
-    background-color: #f8f9fa;
-}
-
-.bookingsTable tr:last-child td {
-    border-bottom: none;
-}
-
-/* User Information Styling */
-.userName {
-    font-weight: 600;
-    color: #333;
-}
-
-.userEmail {
-    color: #6c757d;
-    font-size: 13px;
-}
-
-.duration {
-    font-weight: 500;
-    color: #495057;
-}
-
-/* Enhanced Status Badges */
-.statusBadge {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: capitalize;
-    letter-spacing: 0.5px;
-}
-
-.statusBadge.confirmed {
-    background-color: rgba(40, 167, 69, 0.15);
-    color: #28a745;
-    border: 1px solid rgba(40, 167, 69, 0.3);
-}
-
-.statusBadge.pending {
-    background-color: rgba(255, 193, 7, 0.15);
-    color: #d39e00;
-    border: 1px solid rgba(255, 193, 7, 0.3);
-}
-
-.statusBadge.cancelled {
-    background-color: rgba(220, 53, 69, 0.15);
-    color: #dc3545;
-    border: 1px solid rgba(220, 53, 69, 0.3);
-}
-
-.statusBadge.completed {
-    background-color: rgba(23, 162, 184, 0.15);
-    color: #17a2b8;
-    border: 1px solid rgba(23, 162, 184, 0.3);
-}
-
-/* Modal Footer Enhancement */
-.modalFooter {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid #dee2e6;
-}
-
-.bookingSummary {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-size: 14px;
-    color: #6c757d;
-}
-
-.todayIndicator {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #109ad6;
-    font-weight: 600;
-    background-color: rgba(16, 154, 214, 0.1);
-    padding: 4px 8px;
-    border-radius: 12px;
-}
-
-.todayIndicator i {
-    font-size: 12px;
+.statLabel {
+    font-size: 14px !important;
+    color: #6c757d !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
 }
 
 /* Table Container */
-.tableContainer {
-    max-height: 500px;
-    overflow-y: auto;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
+.memberTableContainer {
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 8px !important;
+    margin-bottom: 20px !important;
 }
 
-/* Responsive Design for Bookings */
+/* Members Table */
+.membersTable {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 14px !important;
+    background: white !important;
+}
+
+.membersTable th {
+    background: linear-gradient(135deg, #109ad6, #0d86bc) !important;
+    color: white !important;
+    padding: 12px !important;
+    text-align: left !important;
+    font-weight: 600 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    border-bottom: 2px solid #0d86bc !important;
+}
+
+.membersTable td {
+    padding: 12px !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    vertical-align: middle !important;
+}
+
+.membersTable tr:hover {
+    background-color: #f8f9fa !important;
+}
+
+.membersTable tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Member Avatar */
+.memberAvatar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid #dee2e6 !important;
+}
+
+/* Member Information */
+.memberName {
+    font-weight: 600 !important;
+    color: #333 !important;
+}
+
+.memberEmail {
+    color: #6c757d !important;
+    font-size: 13px !important;
+}
+
+.memberCount {
+    background: #e6f3ff !important;
+    color: #1d4ed8 !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+}
+
+.attendeeCount {
+    background: #f0f8ff !important;
+    color: #2563eb !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+}
+
+/* Gender Badge */
+.genderBadge {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: capitalize !important;
+}
+
+/* Status Badges for Members */
+.statusBadge.active {
+    background-color: rgba(40, 167, 69, 0.15) !important;
+    color: #28a745 !important;
+    border: 1px solid rgba(40, 167, 69, 0.3) !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: capitalize !important;
+}
+
+.statusBadge.inactive {
+    background-color: rgba(220, 53, 69, 0.15) !important;
+    color: #dc3545 !important;
+    border: 1px solid rgba(220, 53, 69, 0.3) !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: capitalize !important;
+}
+
+/* Loading and Empty States */
+.loadingState {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 60px 20px !important;
+    color: #109ad6 !important;
+}
+
+.loadingState i {
+    font-size: 36px !important;
+    margin-bottom: 16px !important;
+}
+
+.loadingState p {
+    font-size: 16px !important;
+    margin: 0 !important;
+    font-weight: 500 !important;
+}
+
+.emptyState {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 60px 20px !important;
+    color: #6c757d !important;
+    text-align: center !important;
+}
+
+.emptyState i {
+    font-size: 48px !important;
+    margin-bottom: 16px !important;
+    opacity: 0.5 !important;
+    color: #109ad6 !important;
+}
+
+.emptyState p {
+    font-size: 16px !important;
+    margin: 0 !important;
+    font-weight: 500 !important;
+}
+
+/* Modal Footer */
+.memberModalFooter {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    padding-top: 20px !important;
+    border-top: 1px solid #dee2e6 !important;
+    margin-top: 20px !important;
+}
+
+/* Action Buttons Container */
+.actionButtons {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+}
+
+.actionButtons button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 8px !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    transition: all 0.3s ease !important;
+    min-width: 32px !important;
+    height: 32px !important;
+}
+
+.actionButtons .viewBtn {
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+.actionButtons .viewBtn:hover {
+    background-color: #218838 !important;
+    transform: translateY(-1px) !important;
+}
+
+.actionButtons .editBtn {
+    background-color: #17a2b8 !important;
+    color: white !important;
+}
+
+.actionButtons .editBtn:hover {
+    background-color: #138496 !important;
+    transform: translateY(-1px) !important;
+}
+
+.actionButtons .deleteBtn {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+
+.actionButtons .deleteBtn:hover {
+    background-color: #c82333 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Tab Container and Buttons */
+.tabContainer {
+    display: flex !important;
+    gap: 12px !important;
+    align-items: center !important;
+}
+
+.tabButton {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 20px !important;
+    border: 2px solid #dee2e6 !important;
+    background-color: white !important;
+    color: #495057 !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+}
+
+.tabButton:hover {
+    border-color: #109ad6 !important;
+    color: #109ad6 !important;
+    background-color: rgba(16, 154, 214, 0.05) !important;
+}
+
+.tabButton.activeTab {
+    background-color: #109ad6 !important;
+    color: white !important;
+    border-color: #109ad6 !important;
+    box-shadow: 0 2px 8px rgba(16, 154, 214, 0.3) !important;
+}
+
+/* Tab Content */
+.tabContent {
+    margin-top: 20px !important;
+}
+
+.actionBar {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+    padding: 16px 0 !important;
+}
+
+.facilitiesList {
+    background: white !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Form Row for Side-by-Side Fields */
+.formRow {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 16px !important;
+    margin-bottom: 16px !important;
+}
+
+/* Responsive Design for Member Modal */
+@media (max-width: 1200px) {
+    .largeMemberModal {
+        width: 95vw !important;
+        max-width: 95vw !important;
+    }
+}
+
 @media (max-width: 768px) {
-    .filterButtons {
-        justify-content: center;
+    .memberStats {
+        flex-direction: column !important;
+        gap: 16px !important;
     }
     
-    .filterBtn {
-        flex: 1;
-        min-width: 120px;
-        justify-content: center;
+    .statItem {
+        padding: 16px !important;
+        background: white !important;
+        border-radius: 6px !important;
     }
     
-    .bookingModalHeader {
-        flex-direction: column;
-        gap: 12px;
-        align-items: flex-start;
+    .memberModalHeader {
+        flex-direction: column !important;
+        gap: 12px !important;
+        text-align: center !important;
     }
     
-    .todayDate {
-        align-self: center;
+    .memberTableContainer {
+        max-height: 300px !important;
     }
     
-    .modalFooter {
-        flex-direction: column;
-        gap: 12px;
-        align-items: center;
+    .membersTable {
+        font-size: 12px !important;
+    }
+    
+    .membersTable th,
+    .membersTable td {
+        padding: 8px !important;
+    }
+    
+    .tabContainer {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    
+    .tabButton {
+        justify-content: center !important;
+    }
+    
+    .actionBar {
+        flex-direction: column !important;
+        gap: 16px !important;
+        align-items: stretch !important;
+    }
+    
+    .formRow {
+        grid-template-columns: 1fr !important;
     }
 }
 
 @media (max-width: 480px) {
-    .formCard {
-        max-width: 95%; /* Use 95% of the screen width for very small screens */
-        padding: 0.75rem; /* Reduce padding for smaller screens */
+    .largeMemberModal {
+        margin: 10px !important;
+        width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 20px) !important;
+        max-height: calc(100vh - 20px) !important;
     }
+    
+    .memberModalHeader {
+        padding: 16px !important;
+        margin: -20px -20px 16px -20px !important;
+    }
+    
+    .memberModalHeader h2 {
+        font-size: 18px !important;
+    }
+    
+    .memberStats {
+        padding: 16px !important;
+    }
+    
+    .statNumber {
+        font-size: 24px !important;
+    }
+    
+    .memberTableContainer {
+        max-height: 250px !important;
+    }
+    
+    .actionButtons {
+        flex-direction: column !important;
+        gap: 4px !important;
+    }
+    
+    .actionButtons button {
+        width: 100% !important;
+        min-width: auto !important;
+    }
+}
 
-    .modalContent {
-        max-width: 95%; /* Use 95% of the screen width for very small screens */
-        padding: 0.5rem; /* Further reduce padding for very small screens */
+/* Booking Modal Specific Styles - Fixed Conflicts */
+.bookingModalContent {
+    background-color: white !important;
+    border-radius: 12px !important;
+    padding: 24px !important;
+    width: 95% !important;
+    max-width: 1200px !important;
+    max-height: 90vh !important;
+    overflow: hidden !important;
+    position: relative !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.wideModal .modalContent {
+    width: 95% !important;
+    max-width: 1200px !important;
+    max-height: 90vh !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Enhanced Filter Buttons */
+.filterButtons {
+    display: flex !important;
+    gap: 12px !important;
+    margin-bottom: 24px !important;
+    flex-wrap: wrap !important;
+    padding: 16px 0 !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+.filterBtn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 16px !important;
+    border: 2px solid #dee2e6 !important;
+    background-color: white !important;
+    color: #495057 !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+    min-width: 120px !important;
+    justify-content: center !important;
+}
+
+.filterBtn:hover {
+    border-color: #109ad6 !important;
+    color: #109ad6 !important;
+    background-color: rgba(16, 154, 214, 0.05) !important;
+    transform: translateY(-1px) !important;
+}
+
+.filterBtn.activeFilter {
+    background-color: #109ad6 !important;
+    color: white !important;
+    border-color: #109ad6 !important;
+    box-shadow: 0 2px 8px rgba(16, 154, 214, 0.3) !important;
+}
+
+.filterBtn i {
+    font-size: 14px !important;
+}
+
+/* Enhanced No Data State */
+.noData {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 80px 20px !important;
+    color: #6c757d !important;
+    text-align: center !important;
+    background: #f8f9fa !important;
+    border-radius: 8px !important;
+    margin: 20px 0 !important;
+}
+
+.noData i {
+    font-size: 48px !important;
+    margin-bottom: 16px !important;
+    opacity: 0.5 !important;
+    color: #109ad6 !important;
+}
+
+.noData p {
+    font-size: 16px !important;
+    margin: 0 !important;
+    font-weight: 500 !important;
+}
+
+/* Enhanced Loading State */
+.loadingIndicator {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    padding: 60px !important;
+    color: #109ad6 !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    background: #f8f9fa !important;
+    border-radius: 8px !important;
+    margin: 20px 0 !important;
+}
+
+.loadingIndicator i {
+    font-size: 20px !important;
+    animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg) !important; }
+    100% { transform: rotate(360deg) !important; }
+}
+
+/* Enhanced Table Styling for Bookings */
+.tableContainer {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 8px !important;
+    margin: 10px 0 !important;
+    max-height: 500px !important;
+}
+
+.bookingsTable {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 14px !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    background: white !important;
+}
+
+.bookingsTable th {
+    background: linear-gradient(135deg, #109ad6, #0d86bc) !important;
+    color: white !important;
+    padding: 15px 12px !important;
+    text-align: left !important;
+    font-weight: 600 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    border-bottom: 2px solid #0d86bc !important;
+    font-size: 13px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.bookingsTable td {
+    padding: 12px !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    vertical-align: middle !important;
+    font-size: 13px !important;
+}
+
+.bookingsTable tr:hover {
+    background-color: #f8f9fa !important;
+}
+
+.bookingsTable tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* User Information Styling */
+.userName {
+    font-weight: 600 !important;
+    color: #333 !important;
+}
+
+.userEmail {
+    color: #6c757d !important;
+    font-size: 12px !important;
+}
+
+.duration {
+    font-weight: 500 !important;
+    color: #495057 !important;
+    background: #e9ecef !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    text-align: center !important;
+    font-size: 11px !important;
+}
+
+/* Enhanced Status Badges for Bookings */
+.statusBadge {
+    display: inline-block !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: capitalize !important;
+    letter-spacing: 0.5px !important;
+    border: 1px solid transparent !important;
+}
+
+.statusBadge.confirmed {
+    background-color: rgba(40, 167, 69, 0.15) !important;
+    color: #28a745 !important;
+    border-color: rgba(40, 167, 69, 0.3) !important;
+}
+
+.statusBadge.pending {
+    background-color: rgba(255, 193, 7, 0.15) !important;
+    color: #d39e00 !important;
+    border-color: rgba(255, 193, 7, 0.3) !important;
+}
+
+.statusBadge.cancelled {
+    background-color: rgba(220, 53, 69, 0.15) !important;
+    color: #dc3545 !important;
+    border-color: rgba(220, 53, 69, 0.3) !important;
+}
+
+.statusBadge.completed {
+    background-color: rgba(23, 162, 184, 0.15) !important;
+    color: #17a2b8 !important;
+    border-color: rgba(23, 162, 184, 0.3) !important;
+}
+
+/* Row Status Styling */
+.bookingsTable tr.status-confirmed {
+    border-left: 4px solid #28a745 !important;
+}
+
+.bookingsTable tr.status-pending {
+    border-left: 4px solid #ffc107 !important;
+}
+
+.bookingsTable tr.status-cancelled {
+    border-left: 4px solid #dc3545 !important;
+    opacity: 0.7 !important;
+}
+
+.bookingsTable tr.status-completed {
+    border-left: 4px solid #17a2b8 !important;
+}
+
+/* Modal Footer Enhancement */
+.modalFooter {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: 20px !important;
+    padding-top: 16px !important;
+    border-top: 1px solid #dee2e6 !important;
+    background: #f8f9fa !important;
+    margin: 20px -24px -24px -24px !important;
+    padding: 16px 24px !important;
+    border-radius: 0 0 12px 12px !important;
+}
+
+.bookingSummary {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    font-size: 14px !important;
+    color: #6c757d !important;
+    font-weight: 500 !important;
+}
+
+.todayIndicator {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    color: #109ad6 !important;
+    font-weight: 600 !important;
+    background-color: rgba(16, 154, 214, 0.1) !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+}
+
+.todayIndicator i {
+    font-size: 12px !important;
+}
+
+/* Enhanced Close Button */
+.closeBtn {
+    background: #1178d2 !important;
+    border: none !important;
+    color: white !important;
+    padding: 10px 20px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    min-width: 80px !important;
+}
+
+.closeBtn:hover {
+    background: #5a6268 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Today Date Badge in Header */
+.todayDate {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #109ad6 !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    background-color: rgba(16, 154, 214, 0.1) !important;
+    padding: 8px 12px !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(16, 154, 214, 0.2) !important;
+}
+
+.todayDate i {
+    font-size: 16px !important;
+}
+
+/* Responsive Design for Booking Modal */
+@media (max-width: 1200px) {
+    .wideModal .modalContent {
+        width: 98% !important;
+        max-width: 98% !important;
+        margin: 10px !important;
     }
+}
+
+@media (max-width: 768px) {
+    .filterButtons {
+        justify-content: center !important;
+        gap: 8px !important;
+    }
+    
+    .filterBtn {
+        flex: 1 !important;
+        min-width: 100px !important;
+        font-size: 12px !important;
+        padding: 8px 12px !important;
+    }
+    
+    .bookingModalHeader {
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    .todayDate {
+        align-self: center !important;
+    }
+    
+    .modalFooter {
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    .bookingSummary {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .tableContainer {
+        max-height: 400px !important;
+    }
+    
+    .bookingsTable {
+        font-size: 12px !important;
+    }
+    
+    .bookingsTable th,
+    .bookingsTable td {
+        padding: 8px 6px !important;
+        font-size: 11px !important;
+    }
+    
+    .userName,
+    .userEmail {
+        font-size: 11px !important;
+    }
+    
+    .duration {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+    }
+    
+    .statusBadge {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .wideModal .modalContent {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 10px !important;
+        padding: 16px !important;
+    }
+    
+    .bookingModalHeader h2 {
+        font-size: 18px !important;
+    }
+    
+    .filterButtons {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .filterBtn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    .tableContainer {
+        max-height: 300px !important;
+        margin: 10px -16px !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+    }
+    
+    .modalFooter {
+        margin: 16px -16px -16px -16px !important;
+        padding: 12px 16px !important;
+    }
+    
+    .closeBtn {
+        width: 100% !important;
+        padding: 12px !important;
+    }
+}
+
+/* Scrollbar Styling for Table Container */
+.tableContainer::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+
+.tableContainer::-webkit-scrollbar-thumb {
+    background-color: #cbd5e0 !important;
+    border-radius: 4px !important;
+}
+
+.tableContainer::-webkit-scrollbar-track {
+    background-color: #f7fafc !important;
+}
+
+.tableContainer::-webkit-scrollbar-thumb:hover {
+    background-color: #a0aec0 !important;
 }

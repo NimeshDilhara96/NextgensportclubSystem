@@ -17,8 +17,14 @@ const AccountSettings = () => {
   const [deleteMsg, setDeleteMsg] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deleteConfirmError, setDeleteConfirmError] = useState('');
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deletePasswordError, setDeletePasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setLoadingError] = useState('');
+
+  const REQUIRED_DELETE_TEXT = "delete my account";
 
   // Fetch user data on component mount
   useEffect(() => {
@@ -26,30 +32,30 @@ const AccountSettings = () => {
       try {
         setLoadingError('');
         const userEmail = sessionStorage.getItem('userEmail');
-        console.log('User email from session:', userEmail); // Debug log
+        console.log('User email from session:', userEmail);
         
         if (!userEmail) {
           setLoadingError('No user session found. Please login again.');
-          setUser({}); // Set empty object to stop loading
+          setUser({});
           return;
         }
 
-        console.log('Fetching user data for:', userEmail); // Debug log
+        console.log('Fetching user data for:', userEmail);
         const response = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
-        console.log('API response:', response.data); // Debug log
+        console.log('API response:', response.data);
         
         if (response.data.status === "success" && response.data.user) {
           setUser(response.data.user);
           setEmail(response.data.user.email);
-          console.log('User data loaded successfully'); // Debug log
+          console.log('User data loaded successfully');
         } else {
-          console.log('Unexpected response format:', response.data); // Debug log
+          console.log('Unexpected response format:', response.data);
           setLoadingError('Invalid response format from server');
-          setUser({}); // Set empty object to stop loading
+          setUser({});
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
-        console.log('Error details:', error.response); // Debug log
+        console.log('Error details:', error.response);
         
         if (error.response?.status === 404) {
           setLoadingError('User not found. Please login again.');
@@ -60,7 +66,7 @@ const AccountSettings = () => {
         } else {
           setLoadingError(error.response?.data?.message || 'Failed to load user data');
         }
-        setUser({}); // Set empty object to stop loading
+        setUser({});
       }
     };
 
@@ -85,14 +91,12 @@ const AccountSettings = () => {
         return;
       }
 
-      // Check if email is different from current
       if (email === user.email) {
         setEmailMsg('New email must be different from current email');
         setIsLoading(false);
         return;
       }
 
-      // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         setEmailMsg('Please enter a valid email address');
@@ -106,7 +110,6 @@ const AccountSettings = () => {
 
       if (response.data.status === "User updated") {
         setUser(response.data.user);
-        // Update session storage with new email
         sessionStorage.setItem('userEmail', email);
         setEmailMsg('Email updated successfully!');
         setTimeout(() => setEmailMsg(''), 3000);
@@ -138,7 +141,6 @@ const AccountSettings = () => {
         return;
       }
 
-      // Validation
       if (!currentPassword) {
         setPwMsg('Current password is required');
         setIsLoading(false);
@@ -163,7 +165,6 @@ const AccountSettings = () => {
         return;
       }
 
-      // First verify current password
       const verifyResponse = await axios.post('http://localhost:8070/user/verifyPassword', {
         email: userEmail,
         password: currentPassword
@@ -175,14 +176,12 @@ const AccountSettings = () => {
         return;
       }
 
-      // Update password
       const updateResponse = await axios.put(`http://localhost:8070/user/updatePassword/${userEmail}`, {
         newPassword: newPassword
       });
 
       if (updateResponse.data.status === "Password updated") {
         setPwMsg('Password updated successfully!');
-        // Clear form
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
@@ -198,9 +197,68 @@ const AccountSettings = () => {
     }
   };
 
+  // Handle delete confirmation input change
+  const handleDeleteConfirmChange = (e) => {
+    const value = e.target.value;
+    setDeleteConfirmText(value);
+    
+    if (value.toLowerCase() === REQUIRED_DELETE_TEXT.toLowerCase()) {
+      setDeleteConfirmError('');
+    } else if (value.length > 0) {
+      setDeleteConfirmError('Text does not match. Please type exactly: "delete my account"');
+    } else {
+      setDeleteConfirmError('');
+    }
+  };
+
+  // Handle delete password input change
+  const handleDeletePasswordChange = (e) => {
+    const value = e.target.value;
+    setDeletePassword(value);
+    
+    // Clear password error when user starts typing
+    if (deletePasswordError && value.length > 0) {
+      setDeletePasswordError('');
+    }
+  };
+
+  // Handle showing delete confirmation modal
+  const handleShowDeleteConfirm = () => {
+    setShowDeleteConfirm(true);
+    setDeleteConfirmText('');
+    setDeleteConfirmError('');
+    setDeletePassword('');
+    setDeletePasswordError('');
+    setDeleteMsg('');
+  };
+
+  // Handle canceling delete confirmation
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setDeleteConfirmText('');
+    setDeleteConfirmError('');
+    setDeletePassword('');
+    setDeletePasswordError('');
+    setDeleteMsg('');
+  };
+
   const handleDeleteAccount = async () => {
+    // Validate confirmation text
+    if (deleteConfirmText.toLowerCase() !== REQUIRED_DELETE_TEXT.toLowerCase()) {
+      setDeleteConfirmError('You must type "delete my account" exactly to confirm deletion.');
+      return;
+    }
+
+    // Validate password
+    if (!deletePassword) {
+      setDeletePasswordError('Password is required to confirm account deletion.');
+      return;
+    }
+
     setIsDeleting(true);
     setDeleteMsg('');
+    setDeleteConfirmError('');
+    setDeletePasswordError('');
 
     try {
       const userEmail = sessionStorage.getItem('userEmail');
@@ -210,14 +268,27 @@ const AccountSettings = () => {
         return;
       }
 
-      console.log('Attempting to delete user:', userEmail); // Debug log
+      // First verify the password
+      console.log('Verifying password for account deletion...');
+      const verifyResponse = await axios.post('http://localhost:8070/user/verifyPassword', {
+        email: userEmail,
+        password: deletePassword
+      });
+
+      if (!verifyResponse.data.success) {
+        setDeletePasswordError('Incorrect password. Please enter your current password.');
+        setIsDeleting(false);
+        return;
+      }
+
+      console.log('Password verified, proceeding with account deletion...');
       
+      // If password is correct, proceed with deletion
       const response = await axios.delete(`http://localhost:8070/user/delete/${userEmail}`);
       
-      console.log('Delete response:', response.data); // Debug log
-      console.log('Response status:', response.status); // Debug log
+      console.log('Delete response:', response.data);
+      console.log('Response status:', response.status);
       
-      // Check for various success indicators
       const isSuccess = 
         response.data.status === "User deleted" ||
         response.data.status === "success" ||
@@ -241,9 +312,15 @@ const AccountSettings = () => {
       }
     } catch (error) {
       console.error('Error deleting account:', error);
-      console.log('Error response:', error.response); // Debug log
+      console.log('Error response:', error.response);
       
-      // If the error is actually a successful deletion (some backends return 200 but axios treats as error)
+      // Check if it's a password verification error
+      if (error.response?.status === 401 || error.response?.data?.message?.includes('password')) {
+        setDeletePasswordError('Incorrect password. Please enter your current password.');
+        setIsDeleting(false);
+        return;
+      }
+      
       if (error.response && error.response.status === 200) {
         setDeleteMsg('Account deleted successfully. Redirecting to login...');
         sessionStorage.clear();
@@ -262,9 +339,13 @@ const AccountSettings = () => {
       }
     } finally {
       setIsDeleting(false);
-      setShowDeleteConfirm(false);
     }
   };
+
+  // Check if delete button should be enabled
+  const isDeleteButtonEnabled = 
+    deleteConfirmText.toLowerCase() === REQUIRED_DELETE_TEXT.toLowerCase() && 
+    deletePassword.length > 0;
 
   // Show loading state
   if (user === null) {
@@ -462,9 +543,29 @@ const AccountSettings = () => {
             Permanently delete your account and all associated data
           </p>
           <div className={styles.dangerZone}>
+            <div className={styles.dangerWarning}>
+              <div className={styles.warningIcon}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15h-2v-2h2v2zm0-4h-2V6h2v5z"/>
+                </svg>
+              </div>
+              <div>
+                <p>
+                  <strong style={{ color: '#dc2626', fontWeight: '800', textTransform: 'uppercase' }}>
+                    Warning:
+                  </strong>
+                  <span style={{ color: '#b91c1c', fontWeight: '700', textDecoration: 'underline' }}>
+                    {' '}This action cannot be undone.
+                  </span>
+                  <span style={{ color: '#991b1b', fontWeight: '600' }}>
+                    {' '}This will permanently delete your account and remove all your data from our servers.
+                  </span>
+                </p>
+              </div>
+            </div>
             <button
               className={styles.dangerButton}
-              onClick={() => setShowDeleteConfirm(true)}
+              onClick={handleShowDeleteConfirm}
               type="button"
               disabled={isDeleting}
             >
@@ -472,25 +573,107 @@ const AccountSettings = () => {
             </button>
             {showDeleteConfirm && (
               <div className={styles.confirmationModal}>
+                <div className={styles.modalOverlay} onClick={handleCancelDelete}></div>
                 <div className={styles.modalContent}>
                   <div className={styles.modalHeader}>
                     <h4>Delete Account</h4>
+                    <button 
+                      className={styles.modalCloseButton}
+                      onClick={handleCancelDelete}
+                      type="button"
+                      disabled={isDeleting}
+                    >
+                      ×
+                    </button>
                   </div>
                   <div className={styles.modalBody}>
-                    <p>Are you sure you want to delete your account? This action is <strong>permanent</strong> and cannot be undone.</p>
-                    <p><strong>Email:</strong> {user.email}</p>
+                    <div className={styles.deleteConfirmWarning}>
+                      <div className={styles.warningIcon}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p>
+                          <strong className={styles.criticalText}>Warning:</strong>
+                          <span className={styles.criticalWarning}> This action cannot be undone.</span>
+                          <span className={styles.dangerText}> This will permanently delete your account and remove all your data from our servers.</span>
+                        </p>
+                        <p className={styles.warningText}>
+                          This will permanently delete your account <strong className={styles.dangerText}>{user.email}</strong> and all associated data.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className={styles.deleteConfirmSection}>
+                      <label className={styles.inputLabel}>
+                        Please type <code>delete my account</code> to confirm:
+                      </label>
+                      <input
+                        className={`${styles.inputField} ${deleteConfirmError ? styles.inputError : ''} ${deleteConfirmText.toLowerCase() === REQUIRED_DELETE_TEXT.toLowerCase() ? styles.inputSuccess : ''}`}
+                        type="text"
+                        placeholder="Type: delete my account"
+                        value={deleteConfirmText}
+                        onChange={handleDeleteConfirmChange}
+                        disabled={isDeleting}
+                        autoComplete="off"
+                        spellCheck="false"
+                      />
+                      {deleteConfirmError && (
+                        <div className={styles.errorMessage}>
+                          {deleteConfirmError}
+                        </div>
+                      )}
+                      {deleteConfirmText.toLowerCase() === REQUIRED_DELETE_TEXT.toLowerCase() && (
+                        <div className={styles.successMessage}>
+                          ✓ Confirmation text matches
+                        </div>
+                      )}
+                    </div>
+
+                    <div className={styles.deleteConfirmSection}>
+                      <label className={styles.inputLabel}>
+                        Enter your current password to confirm:
+                      </label>
+                      <input
+                        className={`${styles.inputField} ${deletePasswordError ? styles.inputError : ''} ${deletePassword.length > 0 && !deletePasswordError ? styles.inputSuccess : ''}`}
+                        type="password"
+                        placeholder="Enter your current password"
+                        value={deletePassword}
+                        onChange={handleDeletePasswordChange}
+                        disabled={isDeleting}
+                        autoComplete="current-password"
+                      />
+                      {deletePasswordError && (
+                        <div className={styles.errorMessage}>
+                          {deletePasswordError}
+                        </div>
+                      )}
+                      {deletePassword.length > 0 && !deletePasswordError && (
+                        <div className={styles.successMessage}>
+                          ✓ Password entered
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className={styles.modalActions}>
                     <button
-                      className={styles.dangerButton}
+                      className={`${styles.dangerButton} ${!isDeleteButtonEnabled ? styles.disabled : ''}`}
                       onClick={handleDeleteAccount}
-                      disabled={isDeleting}
+                      disabled={isDeleting || !isDeleteButtonEnabled}
                     >
-                      {isDeleting ? 'Deleting...' : 'Yes, Delete Account'}
+                      {isDeleting ? (
+                        <>
+                          <div className={styles.spinner}></div>
+                          Deleting Account...
+                        </>
+                      ) : (
+                        'Delete This Account'
+                      )}
                     </button>
                     <button
                       className={styles.secondaryButton}
-                      onClick={() => setShowDeleteConfirm(false)}
+                      onClick={handleCancelDelete}
                       type="button"
                       disabled={isDeleting}
                     >
@@ -629,6 +812,7 @@ const Settings = () => {
               <div className={styles.footerInfo}>
                 <p>© {new Date().getFullYear()} Club FTC. All rights reserved.</p>
                 <p>Design & Developed by <strong>MommentX</strong> - nimeshdilhara96</p>
+                <p>Version: v5.0.6</p>
               </div>
             </div>
           </footer>
