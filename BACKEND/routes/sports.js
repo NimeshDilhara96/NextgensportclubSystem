@@ -364,7 +364,7 @@ router.get('/:sportId/users-table', async (req, res) => {
     try {
         const sportId = req.params.sportId;
         
-        // First get the sport to verify it exists
+        // First get the sport to verify it exists and get its members
         const sport = await Sport.findById(sportId);
         if (!sport) {
             return res.status(404).json({
@@ -373,15 +373,28 @@ router.get('/:sportId/users-table', async (req, res) => {
             });
         }
         
-        // Get all users who are members of this sport with detailed profile information
-        const User = require('../models/User');
-        const users = await User.find({
-            "sports.sport": sportId
-        }).select('name email contact gender age profilePicture sports');
+        // If no members in the sport, return empty array
+        if (!sport.members || sport.members.length === 0) {
+            return res.status(200).json({
+                status: 'success',
+                sportName: sport.name,
+                sportCategory: sport.category,
+                totalMembers: 0,
+                users: []
+            });
+        }
         
-        // Extract the sport-specific information for each user
+        // Get detailed user information for each member
+        const User = require('../models/User');
+        const userEmails = sport.members.map(member => member.userEmail);
+        
+        const users = await User.find({
+            email: { $in: userEmails }
+        }).select('name email contact gender age profilePicture dob');
+        
+        // Combine user details with sport-specific information
         const usersWithSportDetails = users.map(user => {
-            const sportEntry = user.sports.find(s => s.sport.toString() === sportId);
+            const memberInfo = sport.members.find(member => member.userEmail === user.email);
             return {
                 userId: user._id,
                 name: user.name,
@@ -391,9 +404,8 @@ router.get('/:sportId/users-table', async (req, res) => {
                 age: user.age,
                 profilePicture: user.profilePicture,
                 sportSpecific: {
-                    joinedAt: sportEntry?.joinedAt,
-                    role: sportEntry?.role,
-                    status: sportEntry?.status
+                    joinedAt: memberInfo?.joinedAt,
+                    status: memberInfo?.status || 'active'
                 }
             };
         });
