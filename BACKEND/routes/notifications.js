@@ -1,6 +1,8 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const router = express.Router();
+const path = require('path');
+const fs = require('fs');
 
 // Secure Email Transporter (uses environment variables only)
 const transporter = nodemailer.createTransport({
@@ -276,6 +278,205 @@ router.post('/booking', async (req, res) => {
   }
 });
 
+// POST /notify/facility-booking - New endpoint for facility booking with QR code
+router.post('/facility-booking', async (req, res) => {
+  try {
+    const { 
+      email, 
+      name, 
+      facilityName, 
+      facilityLocation,
+      startTime, 
+      endTime, 
+      bookingId,
+      qrCodePath,
+      bookingDetails 
+    } = req.body;
+    
+    if (!email || !name || !facilityName || !startTime || !endTime || !bookingId) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Prepare attachments array
+    const attachments = [];
+    
+    // Add QR code as attachment if it exists
+    if (qrCodePath && fs.existsSync(qrCodePath)) {
+      attachments.push({
+        filename: `booking-qr-${bookingId}.png`,
+        path: qrCodePath,
+        cid: 'qrcode' // Content ID for inline embedding
+      });
+    }
+
+    const mailOptions = {
+      from: `"NextGen Sports Club" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `🎉 Facility Booking Confirmed - ${facilityName} - NextGen Sports Club`,
+      attachments: attachments,
+      html: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facility Booking Confirmation</title>
+</head>
+<body style="font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f8fafc; color:#1a1a1a; margin:0; padding:0;">
+  <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.08);border:1px solid #e2e8f0;overflow:hidden;">
+    
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%);padding:32px 24px;text-align:center;">
+      <div style="font-size:28px;font-weight:700;color:#fff;letter-spacing:-0.5px;">NEXTGEN SPORTS CLUB</div>
+      <div style="color:#94a3b8;font-size:14px;font-weight:400;text-transform:uppercase;letter-spacing:1px;">Facility Booking Confirmed</div>
+    </div>
+    
+    <!-- Success Banner -->
+    <div style="background:linear-gradient(135deg,#10b981,#059669);padding:20px 24px;text-align:center;">
+      <div style="font-size:24px;color:#fff;margin-bottom:8px;">🎉 Booking Confirmed!</div>
+      <div style="color:#d1fae5;font-size:14px;">Your facility has been successfully reserved</div>
+    </div>
+    
+    <!-- Main Content -->
+    <div style="padding:32px 24px;">
+      <div style="font-size:18px;font-weight:500;margin-bottom:12px;">Hello ${name},</div>
+      <div style="font-size:15px;color:#64748b;margin-bottom:24px;">
+        Great news! Your booking for <strong style="color:#0f172a;">${facilityName}</strong> has been confirmed. 
+        Please save this email and present the QR code when you arrive.
+      </div>
+      
+      <!-- Booking Details Card -->
+      <div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:24px;">
+        <h3 style="margin:0 0 16px 0;color:#0f172a;font-size:18px;">📋 Booking Details</h3>
+        
+        <div style="display:grid;gap:12px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:600;color:#374151;">Booking ID:</span>
+            <span style="color:#6b7280;font-family:monospace;">${bookingId}</span>
+          </div>
+          
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:600;color:#374151;">Facility:</span>
+            <span style="color:#6b7280;">${facilityName}</span>
+          </div>
+          
+          ${facilityLocation ? `
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:600;color:#374151;">Location:</span>
+            <span style="color:#6b7280;">${facilityLocation}</span>
+          </div>
+          ` : ''}
+          
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:600;color:#374151;">Date:</span>
+            <span style="color:#6b7280;">${new Date(startTime).toLocaleDateString('en-US', { 
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}</span>
+          </div>
+          
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:600;color:#374151;">Start Time:</span>
+            <span style="color:#6b7280;">${new Date(startTime).toLocaleTimeString('en-US', { 
+              hour: '2-digit',
+              minute: '2-digit'
+            })}</span>
+          </div>
+          
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;">
+            <span style="font-weight:600;color:#374151;">End Time:</span>
+            <span style="color:#6b7280;">${new Date(endTime).toLocaleTimeString('en-US', { 
+              hour: '2-digit',
+              minute: '2-digit'
+            })}</span>
+          </div>
+          
+          <div style="display:flex;justify-content:space-between;padding:8px 0;">
+            <span style="font-weight:600;color:#374151;">Duration:</span>
+            <span style="color:#6b7280;">${Math.round((new Date(endTime) - new Date(startTime)) / (1000 * 60 * 60))} hours</span>
+          </div>
+        </div>
+      </div>
+      
+      ${qrCodePath && fs.existsSync(qrCodePath) ? `
+      <!-- QR Code Section -->
+      <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #3b82f6;border-radius:12px;padding:24px;margin-bottom:24px;text-align:center;">
+        <h3 style="margin:0 0 16px 0;color:#1e40af;font-size:18px;">📱 Your Booking QR Code</h3>
+        <div style="margin-bottom:16px;">
+          <img src="cid:qrcode" alt="Booking QR Code" style="max-width:200px;height:auto;border:4px solid #fff;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);" />
+        </div>
+        <p style="color:#1e40af;font-size:14px;margin:0;">
+          <strong>📌 Present this QR code when you arrive at the facility</strong><br>
+          <span style="font-size:12px;color:#6b7280;">Screenshot this email or download the attachment for easy access</span>
+        </p>
+      </div>
+      ` : `
+      <!-- No QR Code Message -->
+      <div style="background:#fef3cd;border:2px solid #f59e0b;border-radius:12px;padding:16px;margin-bottom:24px;text-align:center;">
+        <p style="color:#92400e;font-size:14px;margin:0;">
+          ⚠️ QR code generation failed, but your booking is confirmed. Please show your booking ID: <strong>${bookingId}</strong>
+        </p>
+      </div>
+      `}
+      
+      <!-- Important Information -->
+      <div style="background:#fef2f2;border:2px solid #ef4444;border-radius:12px;padding:20px;margin-bottom:24px;">
+        <h4 style="margin:0 0 12px 0;color:#dc2626;font-size:16px;">⚠️ Important Information</h4>
+        <ul style="margin:0;padding-left:20px;color:#7f1d1d;">
+          <li style="margin-bottom:8px;">Please arrive on time for your booking</li>
+          <li style="margin-bottom:8px;">Bring this QR code or your booking ID</li>
+          <li style="margin-bottom:8px;">Cancellations must be made at least 2 hours in advance</li>
+          <li>Contact support if you need to modify your booking</li>
+        </ul>
+      </div>
+      
+      <!-- Contact Information -->
+      <div style="text-align:center;padding:20px;background:#f8fafc;border-radius:8px;">
+        <p style="color:#64748b;font-size:14px;margin:0 0 8px 0;">
+          Need help? Contact us at 
+          <a href="mailto:support@nextgensportsclub.com" style="color:#0f172a;text-decoration:none;font-weight:600;">support@nextgensportsclub.com</a>
+        </p>
+        <p style="color:#64748b;font-size:12px;margin:0;">
+          Or call us at <strong>+1 (555) 123-4567</strong>
+        </p>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div style="background:#f8fafc;padding:20px 24px;text-align:center;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;">
+      © ${new Date().getFullYear()} NextGen Sports Club. Powered by <b>Momment X</b> Technology.<br>
+      <span style="font-size:11px;">This is an automated message. Please do not reply to this email.</span>
+    </div>
+  </div>
+</body>
+</html>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    
+    // Clean up QR code file after sending email (optional)
+    // if (qrCodePath && fs.existsSync(qrCodePath)) {
+    //   setTimeout(() => {
+    //     fs.unlinkSync(qrCodePath);
+    //   }, 60000); // Delete after 1 minute
+    // }
+    
+    res.json({ 
+      message: 'Facility booking confirmation with QR code sent successfully!',
+      qrCodeAttached: !!(qrCodePath && fs.existsSync(qrCodePath))
+    });
+  } catch (error) {
+    console.error('❌ Error sending facility booking notification:', error);
+    res.status(500).json({ 
+      message: 'Failed to send facility booking notification', 
+      error: error.message 
+    });
+  }
+});
+
 // POST /notify/ai-meal-plan
 router.post('/ai-meal-plan', async (req, res) => {
   try {
@@ -341,18 +542,5 @@ router.post('/ai-meal-plan', async (req, res) => {
     res.status(500).json({ message: 'Failed to send meal plan email', error: error.message });
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 module.exports = router;

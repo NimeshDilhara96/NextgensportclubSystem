@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const QRCode = require('qrcode'); // Add this import
 
 // Configure multer for image upload
 const storage = multer.diskStorage({
@@ -241,8 +242,7 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// Book a facility
-// Add notification email when booking a facility
+// Book a facility with QR code generation and email notification
 const axios = require('axios');
 router.post('/book/:id', async (req, res) => {
     try {
@@ -357,26 +357,74 @@ router.post('/book/:id', async (req, res) => {
         }
 
         // Add booking to facility
-        facility.bookings.push({
+        const newBooking = {
             user: user._id,
             userName: user.name,
             startTime: bookingStartTime,
             endTime: bookingEndTime,
             status: 'confirmed'
-        });
+        };
 
+        facility.bookings.push(newBooking);
         await facility.save();
 
-        // Send booking notification email to user
+        // Get the booking ID from the saved booking
+        const savedBooking = facility.bookings[facility.bookings.length - 1];
+        const bookingId = savedBooking._id;
+
+        // Generate QR code data
+        const qrData = {
+            bookingId: bookingId.toString(),
+            facilityId: facility._id.toString(),
+            facilityName: facility.name,
+            userName: user.name,
+            userEmail: user.email,
+            startTime: bookingStartTime.toISOString(),
+            endTime: bookingEndTime.toISOString(),
+            bookingDate: new Date().toISOString(),
+            status: 'confirmed'
+        };
+
+        // Create directory for QR codes if it doesn't exist
+        const qrCodeDir = path.join(__dirname, '..', 'uploads', 'qrcodes');
+        if (!fs.existsSync(qrCodeDir)) {
+            fs.mkdirSync(qrCodeDir, { recursive: true });
+        }
+
+        // Generate QR code
+        const qrCodeFileName = `booking-${bookingId}-${Date.now()}.png`;
+        const qrCodePath = path.join(qrCodeDir, qrCodeFileName);
+        
+        try {
+            await QRCode.toFile(qrCodePath, JSON.stringify(qrData), {
+                width: 300,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            });
+
+            console.log('QR code generated successfully:', qrCodePath);
+        } catch (qrError) {
+            console.error('Error generating QR code:', qrError);
+            // Continue with booking even if QR generation fails
+        }
+
+        // Send booking notification email with QR code
         try {
             await axios.post(
-                `${process.env.NOTIFICATION_URL || 'http://localhost:8070'}/notify/booking`,
+                `${process.env.NOTIFICATION_URL || 'http://localhost:8070'}/notify/facility-booking`,
                 {
                     email: user.email,
                     name: user.name,
                     facilityName: facility.name,
+                    facilityLocation: facility.location,
                     startTime: bookingStartTime,
-                    endTime: bookingEndTime
+                    endTime: bookingEndTime,
+                    bookingId: bookingId.toString(),
+                    qrCodePath: fs.existsSync(qrCodePath) ? qrCodePath : null,
+                    bookingDetails: qrData
                 }
             );
         } catch (notifyErr) {
@@ -385,7 +433,9 @@ router.post('/book/:id', async (req, res) => {
 
         return res.status(200).json({
             status: "success",
-            message: "Facility booked successfully"
+            message: "Facility booked successfully! QR code sent to your email.",
+            bookingId: bookingId.toString(),
+            qrCodeGenerated: fs.existsSync(qrCodePath)
         });
     } catch (error) {
         console.error('Error booking facility:', error);
