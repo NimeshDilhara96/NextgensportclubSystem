@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import SlideNav from '../appnavbar/slidenav';
 import Container from '../common/Container';
 import styles from './settings.module.css';
@@ -6,8 +7,9 @@ import logo from '../../assets/logo.png';
 import mommentxLogo from '../../assets/MommentX-removebg-preview.png';
 
 const AccountSettings = () => {
+  const [user, setUser] = useState(null);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [emailMsg, setEmailMsg] = useState('');
@@ -15,35 +17,340 @@ const AccountSettings = () => {
   const [deleteMsg, setDeleteMsg] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingError, setLoadingError] = useState('');
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setLoadingError('');
+        const userEmail = sessionStorage.getItem('userEmail');
+        console.log('User email from session:', userEmail); // Debug log
+        
+        if (!userEmail) {
+          setLoadingError('No user session found. Please login again.');
+          setUser({}); // Set empty object to stop loading
+          return;
+        }
+
+        console.log('Fetching user data for:', userEmail); // Debug log
+        const response = await axios.get(`http://localhost:8070/user/getByEmail/${userEmail}`);
+        console.log('API response:', response.data); // Debug log
+        
+        if (response.data.status === "success" && response.data.user) {
+          setUser(response.data.user);
+          setEmail(response.data.user.email);
+          console.log('User data loaded successfully'); // Debug log
+        } else {
+          console.log('Unexpected response format:', response.data); // Debug log
+          setLoadingError('Invalid response format from server');
+          setUser({}); // Set empty object to stop loading
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        console.log('Error details:', error.response); // Debug log
+        
+        if (error.response?.status === 404) {
+          setLoadingError('User not found. Please login again.');
+        } else if (error.response?.status === 500) {
+          setLoadingError('Server error. Please try again later.');
+        } else if (error.code === 'ECONNREFUSED') {
+          setLoadingError('Cannot connect to server. Please check if the backend is running.');
+        } else {
+          setLoadingError(error.response?.data?.message || 'Failed to load user data');
+        }
+        setUser({}); // Set empty object to stop loading
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleEmailChange = (e) => setEmail(e.target.value);
-  const handlePasswordChange = (e) => setPassword(e.target.value);
+  const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
   const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
   const handleConfirmPasswordChange = (e) => setConfirmPassword(e.target.value);
 
-  const handleEmailSubmit = (e) => {
+  const handleEmailSubmit = async (e) => {
     e.preventDefault();
-    setEmailMsg('Email updated successfully!');
-    setTimeout(() => setEmailMsg(''), 2000);
-  };
+    setIsLoading(true);
+    setEmailMsg('');
 
-  const handlePasswordSubmit = (e) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      setPwMsg('Passwords do not match.');
-      return;
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) {
+        setEmailMsg('No user session found. Please login again.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Check if email is different from current
+      if (email === user.email) {
+        setEmailMsg('New email must be different from current email');
+        setIsLoading(false);
+        return;
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setEmailMsg('Please enter a valid email address');
+        setIsLoading(false);
+        return;
+      }
+
+      const response = await axios.put(`http://localhost:8070/user/updateByEmail/${userEmail}`, {
+        email: email
+      });
+
+      if (response.data.status === "User updated") {
+        setUser(response.data.user);
+        // Update session storage with new email
+        sessionStorage.setItem('userEmail', email);
+        setEmailMsg('Email updated successfully!');
+        setTimeout(() => setEmailMsg(''), 3000);
+      } else {
+        setEmailMsg(response.data.message || 'Failed to update email');
+      }
+    } catch (error) {
+      console.error('Error updating email:', error);
+      if (error.response?.status === 400 && error.response?.data?.message?.includes('duplicate')) {
+        setEmailMsg('This email is already registered with another account');
+      } else {
+        setEmailMsg(error.response?.data?.message || 'Failed to update email. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
     }
-    setPwMsg('Password updated successfully!');
-    setTimeout(() => setPwMsg(''), 2000);
   };
 
-  const handleDeleteAccount = () => {
-    setIsDeleting(true);
-    setTimeout(() => {
-      setDeleteMsg('Account deleted (demo only).');
-      setIsDeleting(false);
-    }, 1800);
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setPwMsg('');
+
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) {
+        setPwMsg('No user session found. Please login again.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Validation
+      if (!currentPassword) {
+        setPwMsg('Current password is required');
+        setIsLoading(false);
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        setPwMsg('New password must be at least 6 characters long');
+        setIsLoading(false);
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        setPwMsg('New passwords do not match');
+        setIsLoading(false);
+        return;
+      }
+
+      if (currentPassword === newPassword) {
+        setPwMsg('New password must be different from current password');
+        setIsLoading(false);
+        return;
+      }
+
+      // First verify current password
+      const verifyResponse = await axios.post('http://localhost:8070/user/verifyPassword', {
+        email: userEmail,
+        password: currentPassword
+      });
+
+      if (!verifyResponse.data.success) {
+        setPwMsg('Current password is incorrect');
+        setIsLoading(false);
+        return;
+      }
+
+      // Update password
+      const updateResponse = await axios.put(`http://localhost:8070/user/updatePassword/${userEmail}`, {
+        newPassword: newPassword
+      });
+
+      if (updateResponse.data.status === "Password updated") {
+        setPwMsg('Password updated successfully!');
+        // Clear form
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setTimeout(() => setPwMsg(''), 3000);
+      } else {
+        setPwMsg(updateResponse.data.message || 'Failed to update password');
+      }
+    } catch (error) {
+      console.error('Error updating password:', error);
+      setPwMsg(error.response?.data?.message || 'Failed to update password. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    setDeleteMsg('');
+
+    try {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (!userEmail) {
+        setDeleteMsg('No user session found. Please login again.');
+        setIsDeleting(false);
+        return;
+      }
+
+      console.log('Attempting to delete user:', userEmail); // Debug log
+      
+      const response = await axios.delete(`http://localhost:8070/user/delete/${userEmail}`);
+      
+      console.log('Delete response:', response.data); // Debug log
+      console.log('Response status:', response.status); // Debug log
+      
+      // Check for various success indicators
+      const isSuccess = 
+        response.data.status === "User deleted" ||
+        response.data.status === "success" ||
+        response.data.message === "User deleted successfully" ||
+        response.data.message === "Account deleted successfully" ||
+        response.status === 200;
+
+      if (isSuccess) {
+        setDeleteMsg('Account deleted successfully. Redirecting to login...');
+        
+        // Clear session storage
+        sessionStorage.clear();
+        
+        // Redirect to login after 2 seconds
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      } else {
+        console.log('Unexpected success response format:', response.data);
+        setDeleteMsg(response.data.message || response.data.status || 'Unexpected response format');
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      console.log('Error response:', error.response); // Debug log
+      
+      // If the error is actually a successful deletion (some backends return 200 but axios treats as error)
+      if (error.response && error.response.status === 200) {
+        setDeleteMsg('Account deleted successfully. Redirecting to login...');
+        sessionStorage.clear();
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+        return;
+      }
+      
+      if (error.response) {
+        setDeleteMsg(error.response.data?.message || `Server error: ${error.response.status}`);
+      } else if (error.request) {
+        setDeleteMsg('No response from server. Please check your connection.');
+      } else {
+        setDeleteMsg('Failed to delete account. Please try again.');
+      }
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  // Show loading state
+  if (user === null) {
+    return (
+      <div className={styles.settingsCard}>
+        <div className={styles.cardContent}>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <div className="spinner" style={{ 
+                width: '40px', 
+                height: '40px', 
+                border: '4px solid #f3f3f3',
+                borderTop: '4px solid #3498db',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto'
+              }}></div>
+            </div>
+            <p>Loading user data...</p>
+            <p style={{ fontSize: '12px', color: '#666', marginTop: '10px' }}>
+              If this takes too long, please check your internet connection or try refreshing the page.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (loadingError) {
+    return (
+      <div className={styles.settingsCard}>
+        <div className={styles.cardContent}>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <div style={{ color: '#e74c3c', marginBottom: '20px' }}>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </div>
+            <h3>Error Loading Data</h3>
+            <p style={{ color: '#666', marginBottom: '20px' }}>{loadingError}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#3498db',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer'
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state if user object is empty
+  if (user && Object.keys(user).length === 0) {
+    return (
+      <div className={styles.settingsCard}>
+        <div className={styles.cardContent}>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <h3>No User Data</h3>
+            <p>Please login again to access your settings.</p>
+            <button 
+              onClick={() => window.location.href = '/login'} 
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#3498db',
+                color: 'white',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer'
+              }}
+            >
+              Go to Login
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.settingsCard}>
@@ -62,7 +369,9 @@ const AccountSettings = () => {
       <div className={styles.cardContent}>
         <div className={styles.settingsSection}>
           <h3>Email Address</h3>
-          <p className={styles.sectionDescription}>Update your email address for account notifications</p>
+          <p className={styles.sectionDescription}>
+            Current email: <strong>{user.email}</strong>
+          </p>
           <form onSubmit={handleEmailSubmit} className={styles.settingsForm}>
             <div className={styles.inputGroup}>
               <label className={styles.inputLabel}>New Email Address</label>
@@ -73,12 +382,21 @@ const AccountSettings = () => {
                 value={email}
                 onChange={handleEmailChange}
                 required
+                disabled={isLoading}
               />
             </div>
-            <button className={styles.primaryButton} type="submit">
-              Update Email
+            <button 
+              className={styles.primaryButton} 
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Updating...' : 'Update Email'}
             </button>
-            {emailMsg && <div className={styles.successMessage}>{emailMsg}</div>}
+            {emailMsg && (
+              <div className={emailMsg.includes('success') ? styles.successMessage : styles.errorMessage}>
+                {emailMsg}
+              </div>
+            )}
           </form>
         </div>
 
@@ -92,9 +410,10 @@ const AccountSettings = () => {
                 className={styles.inputField}
                 type="password"
                 placeholder="Enter current password"
-                value={password}
-                onChange={handlePasswordChange}
+                value={currentPassword}
+                onChange={handleCurrentPasswordChange}
                 required
+                disabled={isLoading}
               />
             </div>
             <div className={styles.inputGroup}>
@@ -102,10 +421,12 @@ const AccountSettings = () => {
               <input
                 className={styles.inputField}
                 type="password"
-                placeholder="Enter new password"
+                placeholder="Enter new password (min 6 characters)"
                 value={newPassword}
                 onChange={handleNewPasswordChange}
                 required
+                minLength="6"
+                disabled={isLoading}
               />
             </div>
             <div className={styles.inputGroup}>
@@ -117,10 +438,15 @@ const AccountSettings = () => {
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
                 required
+                disabled={isLoading}
               />
             </div>
-            <button className={styles.primaryButton} type="submit">
-              Update Password
+            <button 
+              className={styles.primaryButton} 
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Updating...' : 'Update Password'}
             </button>
             {pwMsg && (
               <div className={pwMsg.includes('success') ? styles.successMessage : styles.errorMessage}>
@@ -140,6 +466,7 @@ const AccountSettings = () => {
               className={styles.dangerButton}
               onClick={() => setShowDeleteConfirm(true)}
               type="button"
+              disabled={isDeleting}
             >
               Delete My Account
             </button>
@@ -151,6 +478,7 @@ const AccountSettings = () => {
                   </div>
                   <div className={styles.modalBody}>
                     <p>Are you sure you want to delete your account? This action is <strong>permanent</strong> and cannot be undone.</p>
+                    <p><strong>Email:</strong> {user.email}</p>
                   </div>
                   <div className={styles.modalActions}>
                     <button
@@ -164,6 +492,7 @@ const AccountSettings = () => {
                       className={styles.secondaryButton}
                       onClick={() => setShowDeleteConfirm(false)}
                       type="button"
+                      disabled={isDeleting}
                     >
                       Cancel
                     </button>
@@ -171,7 +500,11 @@ const AccountSettings = () => {
                 </div>
               </div>
             )}
-            {deleteMsg && <div className={styles.successMessage}>{deleteMsg}</div>}
+            {deleteMsg && (
+              <div className={deleteMsg.includes('success') ? styles.successMessage : styles.errorMessage}>
+                {deleteMsg}
+              </div>
+            )}
           </div>
         </div>
       </div>

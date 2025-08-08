@@ -276,6 +276,72 @@ router.post('/booking', async (req, res) => {
   }
 });
 
+// POST /notify/ai-meal-plan
+router.post('/ai-meal-plan', async (req, res) => {
+  try {
+    const { email, name, mealPlan } = req.body;
+    
+    if (!email || !name || !mealPlan) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    console.log(`Sending meal plan to ${email} for user ${name}`);
+
+    // Generate HTML for meal plan
+    const mealPlanHtml = mealPlan.map((day, index) => {
+      const dayMeals = Object.entries(day.meals).map(([type, meal]) => `
+        <div style="margin:16px 0;padding:16px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
+          <h4 style="margin:0 0 8px 0;color:#334155;">${type.charAt(0).toUpperCase() + type.slice(1)}</h4>
+          <p style="font-weight:600;color:#0f172a;margin:4px 0;">${meal.recipe.label}</p>
+          <div style="margin-top:8px;color:#475569;">
+            <div><b>Calories:</b> ${Math.round(meal.recipe.calories)}</div>
+            <div><b>Protein:</b> ${Math.round(meal.recipe.totalNutrients.PROCNT.quantity)}g</div>
+            <div><b>Fat:</b> ${Math.round(meal.recipe.totalNutrients.FAT.quantity)}g</div>
+            <div><b>Carbs:</b> ${Math.round(meal.recipe.totalNutrients.CHOCDF.quantity)}g</div>
+          </div>
+        </div>
+      `).join('');
+
+      return `
+        <div style="margin-bottom:24px;">
+          <h3 style="color:#0f172a;margin-bottom:16px;border-bottom:1px solid #e2e8f0;padding-bottom:8px;">Day ${day.day + 1}</h3>
+          ${dayMeals}
+        </div>
+      `;
+    }).join('');
+
+    const mailOptions = {
+      from: `"NextGen Sports Club" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Your Personalized Meal Plan - NextGen Sports Club',
+      html: `
+        <div style="font-family:'Inter','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;">
+          <h2 style="color:#0f172a;margin-bottom:24px;">Your Personalized Meal Plan</h2>
+          <p style="font-size:16px;margin-bottom:24px;">Hello <b>${name}</b>,</p>
+          <p style="font-size:15px;margin-bottom:32px;">Here's your AI-generated 7-day Sri Lankan meal plan, designed to meet your nutritional needs.</p>
+          
+          ${mealPlanHtml}
+          
+          <div style="margin-top:40px;padding-top:24px;border-top:1px solid #e2e8f0;color:#64748b;font-size:14px;">
+            <p>If you have any questions about your meal plan, please contact our nutrition experts.</p>
+            <p>Stay healthy!</p>
+            <p style="margin-top:24px;font-size:12px;">© ${new Date().getFullYear()} NextGen Sports Club</p>
+          </div>
+        </div>
+      `
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+    console.log(`Meal plan sent successfully to ${email}`);
+    
+    res.status(200).json({ message: 'Meal plan sent successfully' });
+  } catch (error) {
+    console.error('Error sending meal plan email:', error);
+    res.status(500).json({ message: 'Failed to send meal plan email', error: error.message });
+  }
+});
+
 
 
 

@@ -1060,4 +1060,105 @@ router.route("/health/workout-plan/history/:userEmail").get(async (req, res) => 
     }
 });
 
+// Verify password route
+router.post('/verifyPassword', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, message: 'Invalid password' });
+    }
+    
+    res.json({ success: true, message: 'Password verified' });
+  } catch (error) {
+    console.error('Error verifying password:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Update password route
+router.put('/updatePassword/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    const { newPassword } = req.body;
+    
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ status: 'error', message: 'User not found' });
+    }
+    
+    user.password = newPassword;
+    await user.save();
+    
+    res.json({ status: 'Password updated', message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('Error updating password:', error);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// Delete user route
+router.delete('/delete/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    
+    console.log('Attempting to delete user with email:', email); // Debug log
+    
+    // Find the user first to check if they exist
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log('User not found:', email); // Debug log
+      return res.status(404).json({ 
+        status: 'error', 
+        message: 'User not found' 
+      });
+    }
+
+    console.log('User found, proceeding with deletion'); // Debug log
+
+    // Also remove user from any sports they've joined
+    try {
+      const Sport = require('../models/Sport'); // Adjust path as needed
+      await Sport.updateMany(
+        { 'members.userEmail': email },
+        { $pull: { members: { userEmail: email } } }
+      );
+      console.log('Removed user from sports'); // Debug log
+    } catch (sportError) {
+      console.log('Note: Could not update sports records:', sportError.message);
+    }
+
+    // Delete the user
+    const deletedUser = await User.findOneAndDelete({ email });
+    
+    if (deletedUser) {
+      console.log('User successfully deleted:', email); // Debug log
+      return res.status(200).json({ 
+        status: 'User deleted', 
+        message: 'Account deleted successfully',
+        success: true
+      });
+    } else {
+      console.log('Failed to delete user:', email); // Debug log
+      return res.status(500).json({ 
+        status: 'error', 
+        message: 'Failed to delete user' 
+      });
+    }
+    
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ 
+      status: 'error', 
+      message: error.message 
+    });
+  }
+});
+
 module.exports = router;

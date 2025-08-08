@@ -31,6 +31,7 @@ import PaymentGateway from './components/payments/paymentgetway'; // Add this im
 import Settings from './components/Dashboard/settingpage'; // Add this import
 import ViewMemberPortal from './components/Coach/viewmember';
 import ViewSession from './components/Coach/viewsession'; // Add this import
+import Nutrition from './components/Dashboard/nutrition'; // Add this import
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -248,7 +249,7 @@ function App() {
             </ProtectedRoute>
           } />
           
-        <Route path="/settings" element={
+          <Route path="/settings" element={
             <ProtectedRoute>
               <Settings/>
             </ProtectedRoute>
@@ -263,6 +264,12 @@ function App() {
           <Route path="/payment-gateway" element={
             <ProtectedRoute>
               <PaymentGateway />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/nutrition" element={
+            <ProtectedRoute>
+              <Nutrition />
             </ProtectedRoute>
           } />
 

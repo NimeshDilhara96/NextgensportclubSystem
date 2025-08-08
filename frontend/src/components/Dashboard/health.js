@@ -22,6 +22,7 @@ import {
 import styles from './Health.module.css';
 import axios from 'axios';
 import { GoogleGenAI } from "@google/genai";
+import Nutrition from './nutrition';
 
 const Health = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -29,6 +30,7 @@ const Health = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [nutritionPlan, setNutritionPlan] = useState([]);
 
   // Sidebar toggle handler
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
@@ -54,7 +56,6 @@ const Health = () => {
   });
 
   const [recentWorkouts, setRecentWorkouts] = useState([]);
-  const [nutritionPlan, setNutritionPlan] = useState([]);
   const [waterGlasses, setWaterGlasses] = useState([]);
 
   // AI Workouts States
@@ -1053,9 +1054,6 @@ const Health = () => {
     );
   }
 
-  // if (error) {
-  //   return (
-  // Error handling UI removed because 'error' state is no longer used.
   return (
     <>
       <SlideNav isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
@@ -1525,32 +1523,12 @@ const Health = () => {
           )}
 
           {/* Nutrition Tab */}
+          {/* Nutrition Tab */}
           {activeTab === 'nutrition' && (
-            <>
-              <h1 className={styles.pageTitle}>Personalized Nutrition Plan</h1>
-              <p className={styles.subtitle}>Customized for {userData?.gender}, targeting {todayStats.calories} calories daily</p>
-              
-              <div className={styles.meals}>
-                {nutritionPlan.map((meal) => (
-                  <div key={meal.id} className={styles.mealCard}>
-                    <div className={styles.mealInfo}>
-                      <h3>{meal.meal}</h3>
-                      <p>{meal.time}</p>
-                      <ul>
-                        {meal.items && meal.items.map((item, idx) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className={styles.mealCalories}>
-                      <span>{meal.calories} cal</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
+            <div className={styles.tabContent}>
+              <Nutrition userData={userData} nutritionPlan={nutritionPlan} />
+            </div>
           )}
-
           {/* Progress Tab */}
           {activeTab === 'progress' && (
             <>
