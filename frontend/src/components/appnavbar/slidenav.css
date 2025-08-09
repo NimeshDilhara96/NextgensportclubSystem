@@ -55,6 +55,8 @@
   align-items: center !important;
   gap: 15px !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  text-decoration: none !important;
+  color: inherit !important;
 }
 
 .logo-section img {
@@ -68,6 +70,16 @@
   margin: 0 !important;
   font-size: 20px !important;
   font-weight: 600 !important;
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+.logo-section:hover,
+.logo-section:visited,
+.logo-section:focus,
+.logo-section:active {
+  text-decoration: none !important;
+  color: inherit !important;
 }
 
 .sidebar-nav {
