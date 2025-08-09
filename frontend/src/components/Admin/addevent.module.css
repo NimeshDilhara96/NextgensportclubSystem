@@ -1,0 +1,1019 @@
+/* General Container */
+.container {
+    padding: 20px !important;
+    margin-left: 260px !important; /* Adjusted for AdminSlideNav width */
+    margin-top: 70px !important; /* Adjusted for the top bar height */
+    max-width: calc(100% - 260px) !important; /* Ensure the container doesn't exceed the available space */
+    box-sizing: border-box !important; /* Include padding and border in width calculation */
+}
+
+/* Header */
+.header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+}
+
+.header h1 {
+    color: #007bff !important;
+    font-weight: bold !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1) !important;
+    margin: 0 !important;
+}
+
+/* Tab Container and Buttons */
+.tabContainer {
+    display: flex !important;
+    gap: 12px !important;
+    align-items: center !important;
+}
+
+.tabButton {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 20px !important;
+    border: 2px solid #dee2e6 !important;
+    background-color: white !important;
+    color: #495057 !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+}
+
+.tabButton:hover {
+    border-color: #109ad6 !important;
+    color: #109ad6 !important;
+    background-color: rgba(16, 154, 214, 0.05) !important;
+}
+
+.tabButton.activeTab {
+    background-color: #109ad6 !important;
+    color: white !important;
+    border-color: #109ad6 !important;
+    box-shadow: 0 2px 8px rgba(16, 154, 214, 0.3) !important;
+}
+
+/* Tab Content */
+.tabContent {
+    margin-top: 20px !important;
+}
+
+.actionBar {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+    padding: 16px 0 !important;
+}
+
+/* Add Button */
+.addButton {
+    background-color: #28a745 !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 15px !important;
+    border-radius: 3px !important;
+    cursor: pointer !important;
+    margin-bottom: 20px !important;
+}
+
+/* Facilities List */
+.facilitiesList {
+    background: white !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Facilities Table */
+.facilitiesTable {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 20px !important;
+}
+
+.facilitiesTable th, 
+.facilitiesTable td {
+    padding: 10px !important;
+    text-align: left !important;
+    border-bottom: 1px solid #ddd !important;
+}
+
+.facilitiesTable th {
+    background-color: #f2f2f2 !important;
+}
+
+.facilitiesTable tr:hover {
+    background-color: #f5f5f5 !important;
+}
+
+.facilityImage {
+    width: 50px !important;
+    height: 50px !important;
+    object-fit: cover !important;
+    border-radius: 4px !important;
+}
+
+/* Action Buttons Container */
+.actionButtons {
+    display: flex !important;
+    gap: 8px !important;
+    align-items: center !important;
+}
+
+.actionButtons button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 8px !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    transition: all 0.3s ease !important;
+    min-width: 32px !important;
+    height: 32px !important;
+}
+
+/* Button styles */
+.editBtn {
+    background-color: #17a2b8 !important;
+    color: white !important;
+    border: none !important;
+    padding: 5px 10px !important;
+    border-radius: 3px !important;
+    cursor: pointer !important;
+    margin-right: 5px !important;
+}
+
+.editBtn:hover {
+    background-color: #138496 !important;
+    transform: translateY(-1px) !important;
+}
+
+.deleteBtn {
+    background-color: #dc3545 !important;
+    color: white !important;
+    border: none !important;
+    padding: 5px 10px !important;
+    border-radius: 3px !important;
+    cursor: pointer !important;
+}
+
+.deleteBtn:hover {
+    background-color: #c82333 !important;
+    transform: translateY(-1px) !important;
+}
+
+.viewBtn {
+    background-color: #28a745 !important;
+    color: white !important;
+    border: none !important;
+    padding: 5px 10px !important;
+    border-radius: 3px !important;
+    cursor: pointer !important;
+    margin-right: 5px !important;
+}
+
+.viewBtn:hover {
+    background-color: #218838 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Modal */
+.modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 1000 !important;
+    padding-left: 250px !important; /* Add left padding equal to your AdminSlideNav width */
+}
+
+/* For smaller screens, adjust the padding */
+@media (max-width: 768px) {
+    .modal {
+        padding-left: 0 !important; /* Remove padding on mobile where sidebar is likely collapsed */
+    }
+}
+
+/* Modal Content */
+.modalContent {
+    background-color: white !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+    width: 90% !important;
+    max-width: 500px !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    position: relative !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Modal Header */
+.modalHeader {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 15px !important;
+    border-bottom: 2px solid #e9ecef !important;
+}
+
+/* Enhanced Close Button */
+.closeBtn {
+    background: #1178d2 !important;
+    border: none !important;
+    color: white !important;
+    padding: 10px 20px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    min-width: 80px !important;
+}
+
+.closeBtn:hover {
+    background: #5a6268 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Form Groups */
+.formGroup {
+    margin-bottom: 1rem !important; /* Reduced spacing between form groups */
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.formGroup label {
+    margin-bottom: 0.25rem !important; /* Reduced spacing below labels */
+    font-weight: 500 !important;
+    color: #444 !important;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+    width: 100% !important;
+    padding: 0.5rem !important; /* Reduced padding for smaller input fields */
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    font-size: 0.9rem !important; /* Slightly smaller font size */
+    box-sizing: border-box !important; /* Ensure padding doesn't affect width */
+}
+
+.formGroup textarea {
+    resize: vertical !important;
+    min-height: 80px !important; /* Reduced height for textareas */
+}
+
+/* Form Row for Side-by-Side Fields */
+.formRow {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 16px !important;
+    margin-bottom: 16px !important;
+}
+
+/* Button Group */
+.buttonGroup {
+    margin-top: 20px !important;
+    display: flex !important;
+}
+
+.submitBtn {
+    background-color: #28a745 !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 15px !important;
+    border-radius: 3px !important;
+    cursor: pointer !important;
+    margin-right: 10px !important;
+}
+
+.cancelBtn {
+    background-color: #6c757d !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 15px !important;
+    border-radius: 3px !important;
+    cursor: pointer !important;
+}
+
+/* Help Text */
+.helpText {
+    font-size: 0.8em !important;
+    color: #6c757d !important;
+    margin-top: 5px !important;
+}
+
+/* Current Image */
+.currentImage {
+    margin: 10px 0 !important;
+}
+
+.previewImage {
+    max-width: 200px !important;
+    max-height: 150px !important;
+    object-fit: cover !important;
+    border-radius: 4px !important;
+    margin-top: 10px !important;
+}
+
+/* Messages */
+.successMessage {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    padding: 10px !important;
+    margin-bottom: 15px !important;
+    border-radius: 4px !important;
+}
+
+.errorMessage {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+    padding: 10px !important;
+    margin-bottom: 15px !important;
+    border-radius: 4px !important;
+}
+
+/* Attendee Count */
+.attendeeCount {
+    background: #f0f8ff !important;
+    color: #2563eb !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+}
+
+/* Attendees Modal */
+.attendeesModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 1000 !important;
+    padding-left: 250px !important;
+}
+
+.attendeesModalContent {
+    background-color: white !important;
+    border-radius: 12px !important;
+    padding: 0 !important;
+    width: 90% !important;
+    max-width: 700px !important;
+    max-height: 80vh !important;
+    overflow: hidden !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+.attendeesModalHeader {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    padding: 20px 24px !important;
+    border-radius: 12px 12px 0 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.attendeesModalHeader h2 {
+    margin: 0 !important;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+.attendeesModalBody {
+    padding: 24px !important;
+    max-height: 500px !important;
+    overflow-y: auto !important;
+}
+
+.eventTitle {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #1a202c !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.attendeesStats {
+    background: #f7fafc !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+    margin-bottom: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.attendeesCount {
+    background: #667eea !important;
+    color: white !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+.attendeesStatsText {
+    color: #4a5568 !important;
+    font-size: 14px !important;
+}
+
+/* Attendees List */
+.attendeesList {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: white !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.attendeesList li {
+    display: flex !important;
+    align-items: center !important;
+    padding: 16px 20px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    transition: all 0.3s ease !important;
+    background: white !important;
+}
+
+.attendeesList li:last-child {
+    border-bottom: none !important;
+}
+
+.attendeesList li:hover {
+    background: #f8fafc !important;
+    transform: translateX(4px) !important;
+}
+
+.attendeeItem {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 16px !important;
+}
+
+.attendeeAvatar {
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
+    flex-shrink: 0 !important;
+}
+
+.attendeeInfo {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+.attendeeInfo strong {
+    color: #1a202c !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+}
+
+.attendeeInfo span {
+    color: #64748b !important;
+    font-size: 13px !important;
+}
+
+.attendeeActions {
+    display: flex !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+}
+
+.attendeeActions button {
+    padding: 6px 8px !important;
+    border: none !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    transition: all 0.3s ease !important;
+}
+
+.contactBtn {
+    background: #10b981 !important;
+    color: white !important;
+}
+
+.contactBtn:hover {
+    background: #059669 !important;
+    transform: translateY(-1px) !important;
+}
+
+.emptyAttendees {
+    text-align: center !important;
+    padding: 40px 20px !important;
+    color: #64748b !important;
+}
+
+.emptyIcon {
+    font-size: 48px !important;
+    color: #cbd5e0 !important;
+    margin-bottom: 16px !important;
+}
+
+.emptyText {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+}
+
+.emptySubtext {
+    font-size: 14px !important;
+    color: #9ca3af !important;
+}
+
+.loadingAttendees {
+    text-align: center !important;
+    padding: 40px 20px !important;
+    color: #667eea !important;
+}
+
+.loadingSpinner {
+    display: inline-block !important;
+    width: 32px !important;
+    height: 32px !important;
+    border: 3px solid #e2e8f0 !important;
+    border-top: 3px solid #667eea !important;
+    border-radius: 50% !important;
+    animation: spin 1s linear infinite !important;
+    margin-bottom: 12px !important;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.attendeesModalFooter {
+    padding: 20px 24px !important;
+    border-top: 1px solid #e2e8f0 !important;
+    background: #f9fafb !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.exportBtn {
+    background: #667eea !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 16px !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.exportBtn:hover {
+    background: #5a67d8 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Application specific styles */
+.searchAndFilter {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.searchBox {
+    position: relative;
+    min-width: 300px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filterSelect {
+    padding: 10px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filterSelect:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.applicantInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.applicantInfo strong {
+    font-weight: 600;
+    color: #1a202c;
+}
+
+.applicantInfo small {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.statusBadge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: white;
+    display: inline-block;
+}
+
+.statusPending {
+    background-color: #6b7280;
+}
+
+.statusApproved {
+    background-color: #10b981;
+}
+
+.statusRejected {
+    background-color: #ef4444;
+}
+
+.statusReview {
+    background-color: #f59e0b;
+}
+
+.approveBtn {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-right: 8px;
+}
+
+.approveBtn:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.rejectBtn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-right: 8px;
+}
+
+.rejectBtn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+.reviewBtn {
+    background: #f59e0b;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-right: 8px;
+}
+
+.reviewBtn:hover {
+    background: #d97706;
+    transform: translateY(-1px);
+}
+
+/* Large modal for application details */
+.largeModal {
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.applicationDetails {
+    padding: 24px;
+}
+
+.detailsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+.detailSection {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.detailSection h3 {
+    margin: 0 0 20px 0;
+    color: #1a202c;
+    font-size: 18px;
+    font-weight: 600;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 8px;
+}
+
+.detailItem {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.detailItem label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.detailItem span {
+    color: #1a202c;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.textArea {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    line-height: 1.6;
+}
+
+.documentsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.documentItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.documentItem svg {
+    color: #667eea;
+    font-size: 16px;
+}
+
+.documentItem span {
+    flex: 1;
+    font-size: 14px;
+    color: #1a202c;
+}
+
+.downloadBtn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.downloadBtn:hover {
+    background: #5a67d8;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 24px;
+    border-top: 1px solid #e2e8f0;
+    background: #f9fafb;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 48px 24px;
+    color: #6b7280;
+}
+
+.emptyIcon {
+    font-size: 48px;
+    color: #cbd5e0;
+    margin-bottom: 16px;
+}
+
+.loadingState {
+    text-align: center;
+    padding: 48px 24px;
+    color: #667eea;
+}
+
+/* Responsive design for application details */
+@media (max-width: 768px) {
+    .container {
+        margin-left: 0 !important;
+        max-width: 100% !important;
+        padding: 15px !important;
+    }
+
+    .tabContainer {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .tabButton {
+        justify-content: center !important;
+    }
+
+    .actionBar {
+        flex-direction: column !important;
+        gap: 16px !important;
+        align-items: stretch !important;
+    }
+
+    .formRow {
+        grid-template-columns: 1fr !important;
+    }
+
+    .detailsGrid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .searchAndFilter {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .searchBox {
+        min-width: auto;
+    }
+    
+    .modalActions {
+        flex-direction: column;
+    }
+    
+    .modalActions button {
+        width: 100%;
+    }
+
+    .facilitiesTable {
+        font-size: 12px !important;
+    }
+
+    .facilitiesTable th,
+    .facilitiesTable td {
+        padding: 8px 6px !important;
+    }
+
+    /* Attendees Modal Responsive */
+    .attendeesModal {
+        padding-left: 0 !important;
+        padding: 10px !important;
+    }
+
+    .attendeesModalContent {
+        max-width: 100% !important;
+        max-height: 95vh !important;
+    }
+
+    .attendeesModalHeader {
+        padding: 16px 20px !important;
+    }
+
+    .attendeesModalHeader h2 {
+        font-size: 18px !important;
+    }
+
+    .attendeesModalBody {
+        padding: 20px !important;
+    }
+
+    .attendeeItem {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    .attendeeAvatar {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 14px !important;
+    }
+
+    .attendeeActions {
+        align-self: flex-end !important;
+    }
+
+    .attendeesModalFooter {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    .attendeesModalFooter button {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px !important;
+        margin-top: 60px !important;
+    }
+
+    .header h1 {
+        font-size: 18px !important;
+    }
+
+    .modalContent {
+        padding: 15px !important;
+        max-width: 95% !important;
+    }
+
+    .actionButtons {
+        flex-direction: column !important;
+        gap: 4px !important;
+    }
+
+    .actionButtons button {
+        width: 100% !important;
+        min-width: auto !important;
+    }
+}

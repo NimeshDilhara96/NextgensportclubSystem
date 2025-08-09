@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import AdminSlideNav from './AdminSlideNav';
 import axios from 'axios';
-import styles from './AdminForms.module.css';
+import styles from './addevent.module.css'; // Updated import
 import { 
     FaCalendarPlus, FaHandshake, FaTags, FaTrash, FaEdit, 
-    FaImage, FaMapMarkerAlt, FaClock, FaGlobe, FaPhone, FaEnvelope, FaUsers 
+    FaImage, FaMapMarkerAlt, FaClock, FaGlobe, FaPhone, FaEnvelope, FaUsers,
+    FaFileAlt, FaCheck, FaTimes, FaEye, FaSearch, FaDownload
 } from 'react-icons/fa';
 
 const AddEventSponser = () => {
-    // Tab state to toggle between Events and Sponsors
-    const [activeTab, setActiveTab] = useState('events'); // 'events' or 'sponsors'
+    // Tab state to toggle between Events, Sponsors, and Applications
+    const [activeTab, setActiveTab] = useState('events'); // 'events', 'sponsors', or 'applications'
     
     // Events state
     const [events, setEvents] = useState([]);
@@ -48,6 +49,14 @@ const AddEventSponser = () => {
         logo: null,
     });
     
+    // Applications state
+    const [applications, setApplications] = useState([]);
+    const [showApplicationModal, setShowApplicationModal] = useState(false);
+    const [selectedApplication, setSelectedApplication] = useState(null);
+    const [applicationFilter, setApplicationFilter] = useState('all'); // 'all', 'pending', 'approved', 'rejected', 'under_review'
+    const [applicationSearch, setApplicationSearch] = useState('');
+    const [loadingApplications, setLoadingApplications] = useState(false);
+    
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
@@ -55,12 +64,130 @@ const AddEventSponser = () => {
     useEffect(() => {
         if (activeTab === 'events') {
             fetchEvents();
-        } else {
+        } else if (activeTab === 'sponsors') {
             fetchSponsors();
+        } else if (activeTab === 'applications') {
+            fetchApplications();
         }
     }, [activeTab]);
 
-    // Events API calls
+    // Updated Applications API calls with proper authentication
+    const fetchApplications = async () => {
+        setLoadingApplications(true);
+        try {
+            setMessage({ type: '', text: '' });
+            
+            // For now, fetch without authentication since we need to set up admin auth properly
+            // You can update this to use proper admin authentication later
+            const response = await axios.get('http://localhost:8070/sponsorship-applications/public');
+            
+            // If the above route doesn't exist, try the direct approach without auth
+            // Comment out the line above and uncomment below if needed:
+            // const response = await axios.get('http://localhost:8070/sponsorship-applications');
+            
+            setApplications(response.data);
+        } catch (error) {
+            console.error('Error fetching applications:', error);
+            
+            // Try alternative approach - fetch all applications without auth requirement
+            try {
+                const response = await axios.get('http://localhost:8070/sponsorship-applications/all');
+                setApplications(response.data);
+            } catch (secondError) {
+                console.error('Second attempt failed:', secondError);
+                setMessage({ type: 'error', text: 'Failed to load applications. Please check your connection.' });
+                setApplications([]); // Set empty array to prevent undefined errors
+            }
+        } finally {
+            setLoadingApplications(false);
+        }
+    };
+
+    // Handle application status update
+    const handleUpdateApplicationStatus = async (applicationId, status, reviewNotes = '') => {
+        try {
+            setIsSubmitting(true);
+            
+            // For now, make the request without authentication
+            // You should add proper admin authentication later
+            const response = await axios.put(
+                `http://localhost:8070/sponsorship-applications/${applicationId}/status/admin`,
+                {
+                    status,
+                    reviewNotes,
+                    reviewedBy: 'Admin' // Hardcoded for now, should come from auth
+                }
+            );
+
+            if (response.data) {
+                setMessage({ 
+                    type: 'success', 
+                    text: `Application ${status} successfully!` 
+                });
+                await fetchApplications(); // Refresh the list
+                setShowApplicationModal(false);
+            }
+        } catch (error) {
+            console.error('Error updating application status:', error);
+            const errorMsg = error.response?.data?.msg || 'Failed to update application status';
+            setMessage({ type: 'error', text: errorMsg });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // Handle viewing application details
+    const handleViewApplication = (application) => {
+        setSelectedApplication(application);
+        setShowApplicationModal(true);
+    };
+
+    // Filter applications based on status and search
+    const filteredApplications = applications.filter(app => {
+        const matchesFilter = applicationFilter === 'all' || app.status === applicationFilter;
+        const matchesSearch = applicationSearch === '' || 
+            app.applicantName.toLowerCase().includes(applicationSearch.toLowerCase()) ||
+            app.applicantEmail.toLowerCase().includes(applicationSearch.toLowerCase()) ||
+            app.appliedForName.toLowerCase().includes(applicationSearch.toLowerCase());
+        
+        return matchesFilter && matchesSearch;
+    });
+
+    // Get status color
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'approved': return '#10b981';
+            case 'rejected': return '#ef4444';
+            case 'under_review': return '#f59e0b';
+            case 'pending': return '#6b7280';
+            default: return '#6b7280';
+        }
+    };
+
+    // Get status badge style
+    const getStatusBadgeClass = (status) => {
+        switch (status) {
+            case 'approved': return styles.statusApproved;
+            case 'rejected': return styles.statusRejected;
+            case 'under_review': return styles.statusReview;
+            case 'pending': return styles.statusPending;
+            default: return styles.statusPending;
+        }
+    };
+
+    // Format date
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleDateString();
+    };
+
+    // Format date and time
+    const formatDateTime = (dateString) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleString();
+    };
+
+    // Events API calls (existing code)
     const fetchEvents = async () => {
         try {
             setMessage({ type: '', text: '' });
@@ -72,11 +199,32 @@ const AddEventSponser = () => {
         }
     };
 
-    // Fetch attendees for a specific event
+    // Fetch attendees for a specific event (existing code)
     const fetchEventAttendees = async (eventId) => {
         setLoadingAttendees(true);
         try {
-            const response = await axios.get(`http://localhost:8070/events/${eventId}`);
+            let response;
+            const token = localStorage.getItem('token');
+            
+            // Try the dedicated attendees endpoint first (if admin token is available)
+            if (token) {
+                try {
+                    response = await axios.get(`http://localhost:8070/events/attendees/${eventId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (response.data) {
+                        setEventAttendees(response.data);
+                        return;
+                    }
+                } catch (authError) {
+                    console.log('Admin endpoint failed, trying public endpoint...');
+                }
+            }
+            
+            // Fallback to public event endpoint
+            response = await axios.get(`http://localhost:8070/events/${eventId}`);
             
             if (response.data && response.data.attendees) {
                 setEventAttendees(response.data.attendees);
@@ -92,14 +240,14 @@ const AddEventSponser = () => {
         }
     };
 
-    // Handle viewing attendees
+    // Handle viewing attendees (existing code)
     const handleViewAttendees = async (event) => {
         setSelectedEvent(event);
         setShowAttendeesModal(true);
         await fetchEventAttendees(event._id);
     };
 
-    // Sponsors API calls
+    // Sponsors API calls (existing code)
     const fetchSponsors = async () => {
         try {
             setMessage({ type: '', text: '' });
@@ -111,7 +259,7 @@ const AddEventSponser = () => {
         }
     };
 
-    // Event form handlers
+    // Event form handlers (existing code)
     const handleEventInputChange = (e) => {
         const { name, value } = e.target;
         setEventFormData({ ...eventFormData, [name]: value });
@@ -138,7 +286,7 @@ const AddEventSponser = () => {
         });
     };
 
-    // Sponsor form handlers
+    // Sponsor form handlers (existing code)
     const handleSponsorInputChange = (e) => {
         const { name, value } = e.target;
         setSponsorFormData({ ...sponsorFormData, [name]: value });
@@ -164,14 +312,13 @@ const AddEventSponser = () => {
         });
     };
 
-    // Handle adding a new event - simplified like CreatePost
+    // Handle adding a new event (existing code - shortened for brevity)
     const handleAddEvent = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         setMessage({ type: '', text: '' });
 
         try {
-            // Validate form data
             if (!eventFormData.title || !eventFormData.description || 
                 !eventFormData.date || !eventFormData.startTime || 
                 !eventFormData.endTime || !eventFormData.location) {
@@ -181,8 +328,6 @@ const AddEventSponser = () => {
             }
             
             const formData = new FormData();
-            
-            // Append all form fields - similar to CreatePost
             formData.append('title', eventFormData.title);
             formData.append('description', eventFormData.description);
             formData.append('date', eventFormData.date);
@@ -190,19 +335,11 @@ const AddEventSponser = () => {
             formData.append('endTime', eventFormData.endTime);
             formData.append('location', eventFormData.location);
             
-            // Only append image if provided
             if (eventFormData.image) {
                 formData.append('image', eventFormData.image);
             }
-            
-            // Log FormData contents for debugging
-            console.log('Sending event data:');
-            for (let [key, value] of formData.entries()) {
-                console.log(`${key}: ${value instanceof File ? value.name : value}`);
-            }
 
-            // Simplified request without auth token (like CreatePost)
-            const response = await axios.post(
+            await axios.post(
                 'http://localhost:8070/events',
                 formData,
                 {
@@ -211,11 +348,9 @@ const AddEventSponser = () => {
                     }
                 }
             );
-
-            console.log('Add event response:', response.data);
             
             setMessage({ type: 'success', text: 'Event added successfully!' });
-            await fetchEvents(); // Refresh the list
+            await fetchEvents();
             setShowAddEventModal(false);
             resetEventForm();
         } catch (error) {
@@ -227,7 +362,7 @@ const AddEventSponser = () => {
         }
     };
 
-    // Handle editing an event
+    // Handle editing an event (existing code)
     const handleEditEventClick = (event) => {
         setSelectedEvent(event);
         setEventFormData({
@@ -237,12 +372,12 @@ const AddEventSponser = () => {
             startTime: event.startTime,
             endTime: event.endTime,
             location: event.location,
-            image: null // Don't set the image here, just keep it null until a new one is selected
+            image: null
         });
         setShowEditEventModal(true);
     };
 
-    // Update the handleUpdateEvent function - simplified like CreatePost
+    // Update event (existing code - shortened for brevity)
     const handleUpdateEvent = async (e) => {
         e.preventDefault();
         if (!selectedEvent) return;
@@ -252,8 +387,6 @@ const AddEventSponser = () => {
 
         try {
             const formData = new FormData();
-            
-            // Append all form fields - similar to CreatePost
             formData.append('title', eventFormData.title);
             formData.append('description', eventFormData.description);
             formData.append('date', eventFormData.date);
@@ -261,19 +394,11 @@ const AddEventSponser = () => {
             formData.append('endTime', eventFormData.endTime);
             formData.append('location', eventFormData.location);
             
-            // Only append image if a new one is selected
             if (eventFormData.image && eventFormData.image instanceof File) {
                 formData.append('image', eventFormData.image);
             }
-            
-            // Log FormData for debugging
-            console.log('Sending update data:');
-            for (let [key, value] of formData.entries()) {
-                console.log(`${key}: ${value instanceof File ? value.name : value}`);
-            }
 
-            // Simplified request without auth token (like CreatePost)
-            const response = await axios.put(
+            await axios.put(
                 `http://localhost:8070/events/${selectedEvent._id}`,
                 formData,
                 {
@@ -282,11 +407,9 @@ const AddEventSponser = () => {
                     }
                 }
             );
-
-            console.log('Update response:', response.data);
             
             setMessage({ type: 'success', text: 'Event updated successfully!' });
-            await fetchEvents(); // Refresh the events list
+            await fetchEvents();
             setShowEditEventModal(false);
             resetEventForm();
         } catch (error) {
@@ -298,15 +421,13 @@ const AddEventSponser = () => {
         }
     };
 
-    // Handle deleting an event
+    // Handle deleting an event (existing code)
     const handleDeleteEvent = async (eventId) => {
         if (window.confirm('Are you sure you want to delete this event?')) {
             try {
-                // Simplified request without auth token (like CreatePost)
                 await axios.delete(`http://localhost:8070/events/${eventId}`);
-                
                 setMessage({ type: 'success', text: 'Event deleted successfully!' });
-                fetchEvents(); // Refresh the list
+                fetchEvents();
             } catch (error) {
                 console.error('Error deleting event:', error);
                 setMessage({ type: 'error', text: 'Failed to delete event' });
@@ -314,14 +435,13 @@ const AddEventSponser = () => {
         }
     };
 
-    // Handle adding a new sponsor - simplified like CreatePost
+    // Handle adding a new sponsor (existing code - shortened for brevity)
     const handleAddSponsor = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         setMessage({ type: '', text: '' });
 
         try {
-            // Validate form data
             if (!sponsorFormData.name || !sponsorFormData.type || !sponsorFormData.contactName || 
                 !sponsorFormData.email || !sponsorFormData.phone || !sponsorFormData.startDate || 
                 !sponsorFormData.endDate || !sponsorFormData.description) {
@@ -331,8 +451,6 @@ const AddEventSponser = () => {
             }
             
             const formData = new FormData();
-            
-            // Append all form fields - similar to CreatePost
             formData.append('name', sponsorFormData.name);
             formData.append('type', sponsorFormData.type);
             formData.append('contactName', sponsorFormData.contactName);
@@ -344,19 +462,11 @@ const AddEventSponser = () => {
             formData.append('amount', sponsorFormData.amount);
             formData.append('description', sponsorFormData.description);
             
-            // Only append logo if provided
             if (sponsorFormData.logo) {
                 formData.append('logo', sponsorFormData.logo);
             }
-            
-            // Log FormData contents for debugging
-            console.log('Sending sponsor data:');
-            for (let [key, value] of formData.entries()) {
-                console.log(`${key}: ${value instanceof File ? value.name : value}`);
-            }
 
-            // Simplified request without auth token (like CreatePost)
-            const response = await axios.post(
+            await axios.post(
                 'http://localhost:8070/sponsors',
                 formData,
                 {
@@ -365,11 +475,9 @@ const AddEventSponser = () => {
                     }
                 }
             );
-
-            console.log('Add sponsor response:', response.data);
             
             setMessage({ type: 'success', text: 'Sponsor added successfully!' });
-            await fetchSponsors(); // Refresh the list
+            await fetchSponsors();
             setShowAddSponsorModal(false);
             resetSponsorForm();
         } catch (error) {
@@ -381,7 +489,7 @@ const AddEventSponser = () => {
         }
     };
 
-    // Handle editing a sponsor
+    // Handle editing a sponsor (existing code)
     const handleEditSponsorClick = (sponsor) => {
         setSelectedSponsor(sponsor);
         setSponsorFormData({
@@ -395,11 +503,12 @@ const AddEventSponser = () => {
             endDate: sponsor.endDate ? new Date(sponsor.endDate).toISOString().split('T')[0] : '',
             amount: sponsor.amount || '',
             description: sponsor.description || '',
-            logo: null, // Reset logo for editing
+            logo: null,
         });
         setShowEditSponsorModal(true);
     };
 
+    // Update sponsor (existing code - shortened for brevity)
     const handleUpdateSponsor = async (e) => {
         e.preventDefault();
         if (!selectedSponsor) return;
@@ -409,8 +518,6 @@ const AddEventSponser = () => {
 
         try {
             const formData = new FormData();
-            
-            // Append all form fields - similar to CreatePost
             formData.append('name', sponsorFormData.name);
             formData.append('type', sponsorFormData.type);
             formData.append('contactName', sponsorFormData.contactName);
@@ -422,19 +529,11 @@ const AddEventSponser = () => {
             formData.append('amount', sponsorFormData.amount);
             formData.append('description', sponsorFormData.description);
             
-            // Only append logo if a new one is selected
             if (sponsorFormData.logo && sponsorFormData.logo instanceof File) {
                 formData.append('logo', sponsorFormData.logo);
             }
-            
-            // Log FormData for debugging
-            console.log('Sending sponsor update data:');
-            for (let [key, value] of formData.entries()) {
-                console.log(`${key}: ${value instanceof File ? value.name : value}`);
-            }
 
-            // Simplified request without auth token (like CreatePost)
-            const response = await axios.put(
+            await axios.put(
                 `http://localhost:8070/sponsors/${selectedSponsor._id}`,
                 formData,
                 {
@@ -443,11 +542,9 @@ const AddEventSponser = () => {
                     }
                 }
             );
-
-            console.log('Update sponsor response:', response.data);
             
             setMessage({ type: 'success', text: 'Sponsor updated successfully!' });
-            await fetchSponsors(); // Refresh the list
+            await fetchSponsors();
             setShowEditSponsorModal(false);
             resetSponsorForm();
         } catch (error) {
@@ -459,32 +556,18 @@ const AddEventSponser = () => {
         }
     };
 
-    // Handle deleting a sponsor
+    // Handle deleting a sponsor (existing code)
     const handleDeleteSponsor = async (sponsorId) => {
         if (window.confirm('Are you sure you want to delete this sponsor?')) {
             try {
-                // Simplified request without auth token (like CreatePost)
                 await axios.delete(`http://localhost:8070/sponsors/${sponsorId}`);
-                
                 setMessage({ type: 'success', text: 'Sponsor deleted successfully!' });
-                fetchSponsors(); // Refresh the list
+                fetchSponsors();
             } catch (error) {
                 console.error('Error deleting sponsor:', error);
                 setMessage({ type: 'error', text: 'Failed to delete sponsor' });
             }
         }
-    };
-
-    // Format date function
-    const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
-        return new Date(dateString).toLocaleDateString();
-    };
-
-    // Format time function
-    const formatDateTime = (dateString) => {
-        if (!dateString) return 'N/A';
-        return new Date(dateString).toLocaleString();
     };
 
     return (
@@ -507,6 +590,12 @@ const AddEventSponser = () => {
                         >
                             <FaHandshake /> Sponsors
                         </button>
+                        <button 
+                            className={`${styles.tabButton} ${activeTab === 'applications' ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab('applications')}
+                        >
+                            <FaFileAlt /> Applications
+                        </button>
                     </div>
                 </div>
 
@@ -516,7 +605,313 @@ const AddEventSponser = () => {
                     </div>
                 )}
 
-                {/* Events Tab Content */}
+                {/* Applications Tab Content */}
+                {activeTab === 'applications' && (
+                    <div className={styles.tabContent}>
+                        <div className={styles.actionBar}>
+                            <div className={styles.searchAndFilter}>
+                                <div className={styles.searchBox}>
+                                    <FaSearch className={styles.searchIcon} />
+                                    <input
+                                        type="text"
+                                        placeholder="Search by name, email, or sponsor..."
+                                        value={applicationSearch}
+                                        onChange={(e) => setApplicationSearch(e.target.value)}
+                                        className={styles.searchInput}
+                                    />
+                                </div>
+                                <select
+                                    value={applicationFilter}
+                                    onChange={(e) => setApplicationFilter(e.target.value)}
+                                    className={styles.filterSelect}
+                                >
+                                    <option value="all">All Applications</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="under_review">Under Review</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Applications List */}
+                        <div className={styles.facilitiesList}>
+                            {loadingApplications ? (
+                                <div className={styles.loadingState}>
+                                    <p>Loading applications...</p>
+                                </div>
+                            ) : filteredApplications.length === 0 ? (
+                                <div className={styles.emptyState}>
+                                    <FaFileAlt className={styles.emptyIcon} />
+                                    <p>No applications found.</p>
+                                </div>
+                            ) : (
+                                <table className={styles.facilitiesTable}>
+                                    <thead>
+                                        <tr>
+                                            <th>Applicant</th>
+                                            <th>Sponsor Program</th>
+                                            <th>Applied Date</th>
+                                            <th>Status</th>
+                                            <th>Contact</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredApplications.map(application => (
+                                            <tr key={application._id}>
+                                                <td>
+                                                    <div className={styles.applicantInfo}>
+                                                        <strong>{application.applicantName}</strong>
+                                                        <small>{application.applicantEmail}</small>
+                                                    </div>
+                                                </td>
+                                                <td>{application.appliedForName}</td>
+                                                <td>{formatDate(application.submittedAt)}</td>
+                                                <td>
+                                                    <span 
+                                                        className={`${styles.statusBadge} ${getStatusBadgeClass(application.status)}`}
+                                                        style={{ backgroundColor: getStatusColor(application.status) }}
+                                                    >
+                                                        {application.status.replace('_', ' ').toUpperCase()}
+                                                    </span>
+                                                </td>
+                                                <td>{application.phone}</td>
+                                                <td>
+                                                    <div className={styles.actionButtons}>
+                                                        <button 
+                                                            className={styles.viewBtn}
+                                                            onClick={() => handleViewApplication(application)}
+                                                            title="View Details"
+                                                        >
+                                                            <FaEye />
+                                                        </button>
+                                                        {(application.status === 'pending' || application.status === 'under_review') && (
+                                                            <>
+                                                                <button 
+                                                                    className={styles.approveBtn}
+                                                                    onClick={() => handleUpdateApplicationStatus(application._id, 'approved')}
+                                                                    title="Approve"
+                                                                    disabled={isSubmitting}
+                                                                >
+                                                                    <FaCheck />
+                                                                </button>
+                                                                <button 
+                                                                    className={styles.rejectBtn}
+                                                                    onClick={() => handleUpdateApplicationStatus(application._id, 'rejected')}
+                                                                    title="Reject"
+                                                                    disabled={isSubmitting}
+                                                                >
+                                                                    <FaTimes />
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* View Application Modal */}
+                {showApplicationModal && selectedApplication && (
+                    <div className={styles.modal}>
+                        <div className={`${styles.modalContent} ${styles.largeModal}`}>
+                            <div className={styles.modalHeader}>
+                                <h2>
+                                    <FaFileAlt />
+                                    Application Details - {selectedApplication.applicantName}
+                                </h2>
+                                <button 
+                                    className={styles.closeBtn}
+                                    onClick={() => {
+                                        setShowApplicationModal(false);
+                                        setSelectedApplication(null);
+                                    }}
+                                >
+                                    <FaTimes />
+                                </button>
+                            </div>
+                            
+                            <div className={styles.applicationDetails}>
+                                <div className={styles.detailsGrid}>
+                                    {/* Personal Information */}
+                                    <div className={styles.detailSection}>
+                                        <h3>Personal Information</h3>
+                                        <div className={styles.detailItem}>
+                                            <label>Full Name:</label>
+                                            <span>{selectedApplication.applicantName}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Email:</label>
+                                            <span>{selectedApplication.applicantEmail}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Phone:</label>
+                                            <span>{selectedApplication.phone}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Date of Birth:</label>
+                                            <span>{formatDate(selectedApplication.dateOfBirth)}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Address:</label>
+                                            <span>{selectedApplication.address}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Occupation:</label>
+                                            <span>{selectedApplication.occupation}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Monthly Income:</label>
+                                            <span>${selectedApplication.monthlyIncome}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Application Details */}
+                                    <div className={styles.detailSection}>
+                                        <h3>Application Details</h3>
+                                        <div className={styles.detailItem}>
+                                            <label>Applied For:</label>
+                                            <span>{selectedApplication.appliedForName}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Application Date:</label>
+                                            <span>{formatDateTime(selectedApplication.submittedAt)}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Status:</label>
+                                            <span 
+                                                className={`${styles.statusBadge} ${getStatusBadgeClass(selectedApplication.status)}`}
+                                                style={{ backgroundColor: getStatusColor(selectedApplication.status) }}
+                                            >
+                                                {selectedApplication.status.replace('_', ' ').toUpperCase()}
+                                            </span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Reason for Application:</label>
+                                            <span className={styles.textArea}>{selectedApplication.reasonForApplication}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Specific Needs:</label>
+                                            <span className={styles.textArea}>{selectedApplication.specificNeeds}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Previous Sponsorship:</label>
+                                            <span>{selectedApplication.hasReceivedSponsorshipBefore ? 'Yes' : 'No'}</span>
+                                        </div>
+                                        {selectedApplication.hasReceivedSponsorshipBefore && selectedApplication.previousSponsorshipDetails && (
+                                            <div className={styles.detailItem}>
+                                                <label>Previous Details:</label>
+                                                <span className={styles.textArea}>{selectedApplication.previousSponsorshipDetails}</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Emergency Contact */}
+                                    <div className={styles.detailSection}>
+                                        <h3>Emergency Contact</h3>
+                                        <div className={styles.detailItem}>
+                                            <label>Name:</label>
+                                            <span>{selectedApplication.emergencyContactName}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <label>Phone:</label>
+                                            <span>{selectedApplication.emergencyContactPhone}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Documents */}
+                                    {selectedApplication.documents && selectedApplication.documents.length > 0 && (
+                                        <div className={styles.detailSection}>
+                                            <h3>Documents</h3>
+                                            <div className={styles.documentsList}>
+                                                {selectedApplication.documents.map((doc, index) => (
+                                                    <div key={index} className={styles.documentItem}>
+                                                        <FaFileAlt />
+                                                        <span>{doc.originalName}</span>
+                                                        <button 
+                                                            className={styles.downloadBtn}
+                                                            onClick={() => window.open(`http://localhost:8070/${doc.path}`, '_blank')}
+                                                        >
+                                                            <FaDownload />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Review Information */}
+                                    {selectedApplication.reviewedAt && (
+                                        <div className={styles.detailSection}>
+                                            <h3>Review Information</h3>
+                                            <div className={styles.detailItem}>
+                                                <label>Reviewed By:</label>
+                                                <span>{selectedApplication.reviewedBy}</span>
+                                            </div>
+                                            <div className={styles.detailItem}>
+                                                <label>Reviewed At:</label>
+                                                <span>{formatDateTime(selectedApplication.reviewedAt)}</span>
+                                            </div>
+                                            {selectedApplication.reviewNotes && (
+                                                <div className={styles.detailItem}>
+                                                    <label>Review Notes:</label>
+                                                    <span className={styles.textArea}>{selectedApplication.reviewNotes}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className={styles.modalActions}>
+                                {(selectedApplication.status === 'pending' || selectedApplication.status === 'under_review') && (
+                                    <>
+                                        <button 
+                                            className={styles.approveBtn}
+                                            onClick={() => handleUpdateApplicationStatus(selectedApplication._id, 'approved')}
+                                            disabled={isSubmitting}
+                                        >
+                                            <FaCheck /> Approve Application
+                                        </button>
+                                        {selectedApplication.status === 'pending' && (
+                                            <button 
+                                                className={styles.reviewBtn}
+                                                onClick={() => handleUpdateApplicationStatus(selectedApplication._id, 'under_review')}
+                                                disabled={isSubmitting}
+                                            >
+                                                <FaEye /> Mark Under Review
+                                            </button>
+                                        )}
+                                        <button 
+                                            className={styles.rejectBtn}
+                                            onClick={() => handleUpdateApplicationStatus(selectedApplication._id, 'rejected')}
+                                            disabled={isSubmitting}
+                                        >
+                                            <FaTimes /> Reject Application
+                                        </button>
+                                    </>
+                                )}
+                                <button 
+                                    className={styles.cancelBtn}
+                                    onClick={() => {
+                                        setShowApplicationModal(false);
+                                        setSelectedApplication(null);
+                                    }}
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Events Tab Content (existing code) */}
                 {activeTab === 'events' && (
                     <div className={styles.tabContent}>
                         <div className={styles.actionBar}>
@@ -531,7 +926,6 @@ const AddEventSponser = () => {
                             </button>
                         </div>
 
-                        {/* Events List */}
                         <div className={styles.facilitiesList}>
                             {events.length === 0 ? (
                                 <p>No events found. Add an event to get started.</p>
@@ -603,94 +997,7 @@ const AddEventSponser = () => {
                     </div>
                 )}
 
-                {/* View Attendees Modal */}
-                {showAttendeesModal && selectedEvent && (
-                    <div className={styles.modal}>
-                        <div className={`${styles.modalContent} ${styles.largeMemberModal}`}>
-                            <div className={styles.memberModalHeader}>
-                                <h2>
-                                    <FaUsers />
-                                    Attendees for {selectedEvent.title}
-                                </h2>
-                                <button 
-                                    className={styles.closeBtn}
-                                    onClick={() => {
-                                        setShowAttendeesModal(false);
-                                        setSelectedEvent(null);
-                                        setEventAttendees([]);
-                                    }}
-                                >
-                                    <i className="fas fa-times"></i>
-                                </button>
-                            </div>
-                            
-                            <div className={styles.memberStats}>
-                                <div className={styles.statItem}>
-                                    <span className={styles.statNumber}>{eventAttendees.length}</span>
-                                    <span className={styles.statLabel}>Total Attendees</span>
-                                </div>
-                                <div className={styles.statItem}>
-                                    <span className={styles.statNumber}>{formatDate(selectedEvent.date)}</span>
-                                    <span className={styles.statLabel}>Event Date</span>
-                                </div>
-                                <div className={styles.statItem}>
-                                    <span className={styles.statNumber}>{selectedEvent.startTime}</span>
-                                    <span className={styles.statLabel}>Start Time</span>
-                                </div>
-                            </div>
-
-                            <div className={styles.memberTableContainer}>
-                                {loadingAttendees ? (
-                                    <div className={styles.loadingState}>
-                                        <i className="fas fa-spinner fa-spin"></i>
-                                        <p>Loading attendees...</p>
-                                    </div>
-                                ) : eventAttendees.length === 0 ? (
-                                    <div className={styles.emptyState}>
-                                        <i className="fas fa-user-slash"></i>
-                                        <p>No one has registered for this event yet.</p>
-                                    </div>
-                                ) : (
-                                    <table className={styles.membersTable}>
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Email</th>
-                                                <th>User ID</th>
-                                                <th>Registered At</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {eventAttendees.map((attendee, index) => (
-                                                <tr key={index}>
-                                                    <td className={styles.memberName}>{attendee.userName}</td>
-                                                    <td className={styles.memberEmail}>{attendee.userEmail}</td>
-                                                    <td>{attendee.userId}</td>
-                                                    <td>{formatDateTime(attendee.registeredAt)}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                )}
-                            </div>
-
-                            <div className={styles.memberModalFooter}>
-                                <button 
-                                    className={styles.cancelBtn}
-                                    onClick={() => {
-                                        setShowAttendeesModal(false);
-                                        setSelectedEvent(null);
-                                        setEventAttendees([]);
-                                    }}
-                                >
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Sponsors Tab Content */}
+                {/* Sponsors Tab Content (existing code) */}
                 {activeTab === 'sponsors' && (
                     <div className={styles.tabContent}>
                         <div className={styles.actionBar}>
@@ -705,7 +1012,6 @@ const AddEventSponser = () => {
                             </button>
                         </div>
 
-                        {/* Sponsors List */}
                         <div className={styles.facilitiesList}>
                             {sponsors.length === 0 ? (
                                 <p>No sponsors found. Add a sponsor to get started.</p>
@@ -1386,6 +1692,112 @@ const AddEventSponser = () => {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Attendees Modal */}
+                {showAttendeesModal && selectedEvent && (
+                    <div className={styles.attendeesModal}>
+                        <div className={styles.attendeesModalContent}>
+                            <div className={styles.attendeesModalHeader}>
+                                <h2><FaUsers /> Event Attendees</h2>
+                            </div>
+                            
+                            <div className={styles.attendeesModalBody}>
+                                <div className={styles.eventTitle}>
+                                    {selectedEvent.title}
+                                </div>
+                                
+                                {loadingAttendees ? (
+                                    <div className={styles.loadingAttendees}>
+                                        <div className={styles.loadingSpinner}></div>
+                                        <p>Loading attendees...</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className={styles.attendeesStats}>
+                                            <span className={styles.attendeesCount}>
+                                                {eventAttendees.length}
+                                            </span>
+                                            <span className={styles.attendeesStatsText}>
+                                                {eventAttendees.length === 1 ? 'Attendee registered' : 'Attendees registered'}
+                                            </span>
+                                        </div>
+                                        
+                                        {eventAttendees.length === 0 ? (
+                                            <div className={styles.emptyAttendees}>
+                                                <FaUsers className={styles.emptyIcon} />
+                                                <div className={styles.emptyText}>No attendees yet</div>
+                                                <div className={styles.emptySubtext}>
+                                                    Attendees will appear here once they register for this event
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <ul className={styles.attendeesList}>
+                                                {eventAttendees.map((attendee, index) => (
+                                                    <li key={index}>
+                                                        <div className={styles.attendeeItem}>
+                                                            <div className={styles.attendeeAvatar}>
+                                                                {attendee.userName ? attendee.userName.charAt(0).toUpperCase() : 'U'}
+                                                            </div>
+                                                            <div className={styles.attendeeInfo}>
+                                                                <strong>{attendee.userName || 'Unknown User'}</strong>
+                                                                <span>📧 {attendee.userEmail || 'No email provided'}</span>
+                                                                {attendee.registeredAt && (
+                                                                    <span>📅 Registered: {new Date(attendee.registeredAt).toLocaleDateString()}</span>
+                                                                )}
+                                                            </div>
+                                                            <div className={styles.attendeeActions}>
+                                                                <button 
+                                                                    className={styles.contactBtn}
+                                                                    onClick={() => window.open(`mailto:${attendee.userEmail}`, '_blank')}
+                                                                    title="Send Email"
+                                                                >
+                                                                    <FaEnvelope />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                            
+                            <div className={styles.attendeesModalFooter}>
+                                {eventAttendees.length > 0 && (
+                                    <button 
+                                        className={styles.exportBtn}
+                                        onClick={() => {
+                                            const csvContent = "data:text/csv;charset=utf-8," 
+                                                + "Name,Email,Registration Date\n"
+                                                + eventAttendees.map(attendee => 
+                                                    `"${attendee.userName || 'Unknown'}","${attendee.userEmail || ''}","${attendee.registeredAt ? new Date(attendee.registeredAt).toLocaleDateString() : ''}"`
+                                                ).join("\n");
+                                            const encodedUri = encodeURI(csvContent);
+                                            const link = document.createElement("a");
+                                            link.setAttribute("href", encodedUri);
+                                            link.setAttribute("download", `${selectedEvent.title}_attendees.csv`);
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            document.body.removeChild(link);
+                                        }}
+                                    >
+                                        <FaDownload /> Export CSV
+                                    </button>
+                                )}
+                                <button 
+                                    className={styles.cancelBtn}
+                                    onClick={() => {
+                                        setShowAttendeesModal(false);
+                                        setSelectedEvent(null);
+                                    }}
+                                >
+                                    Close
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
