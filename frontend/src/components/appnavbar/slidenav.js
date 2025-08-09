@@ -62,10 +62,10 @@ const SlideNav = ({ isSidebarOpen, toggleSidebar }) => {
   return (
     <>
     <div className={`sidebar ${isSidebarOpen ? 'open' : 'closed'}`}>
-      <div className="logo-section">
+      <Link to="/dashboard" className="logo-section">
         <img src={logo} alt="Club FTC" />
         <h2>Club FTC</h2>
-      </div>
+      </Link>
       <nav className="sidebar-nav">
         <ul>
           <li className={isActiveRoute('/dashboard')}>
