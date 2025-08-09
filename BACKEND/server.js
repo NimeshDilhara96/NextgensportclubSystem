@@ -74,6 +74,7 @@ app.use("/products", require("./routes/products"));
 app.use("/facilities", require("./routes/Facilityes"));
 app.use("/messages", require("./routes/messages"));
 app.use("/feedbacks", feedbacksRouter); // Add feedbacks route
+app.use('/sponsorship-applications', require('./routes/sponsorshipApplications'));
 
 // Serve biometric login page directly at root level (for email links)
 app.get('/biometric-login.html', (req, res) => {
