@@ -783,3 +783,145 @@ body.modal-open {
   color: #dc2626 !important;
   font-weight: 700 !important;
 }
+
+/* Footer Styles */
+.settingsFooter {
+  margin-top: 60px;
+  padding: 40px 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-top: 1px solid #e2e8f0;
+  border-radius: 16px 16px 0 0;
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footerBranding {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.brandingItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: none; /* Changed from white to none */
+  border-radius: 12px;
+  box-shadow: none; /* Removed shadow */
+  transition: transform 0.2s ease;
+}
+
+.brandingItem:hover {
+  transform: translateY(-2px);
+}
+
+.clubLogo,
+.mommentxLogo {
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.brandingText h4 {
+  margin: 0 0 2px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1c2b33;
+}
+
+.brandingText p {
+  margin: 0;
+  font-size: 13px;
+  color: #65676b;
+  font-weight: 500;
+}
+
+.brandingDivider {
+  font-size: 24px;
+  color: #000000;
+  font-weight: 500;
+}
+
+.footerInfo {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 24px;
+  margin-top: 24px;
+}
+
+.footerInfo p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.footerInfo p:first-child {
+  font-weight: 600;
+  color: #475569;
+}
+
+.footerInfo strong {
+  color: #1976d2;
+  font-weight: 700;
+}
+
+/* Responsive design for footer */
+@media (max-width: 768px) {
+  .footerBranding {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .brandingDivider {
+    display: none;
+  }
+  
+  .brandingItem {
+    padding: 12px 20px;
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .clubLogo,
+  .mommentxLogo {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .brandingText h4 {
+    font-size: 16px;
+  }
+  
+  .brandingText p {
+    font-size: 12px;
+  }
+  
+  .footerInfo p {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settingsFooter {
+    margin-top: 40px;
+    padding: 24px 16px;
+  }
+  
+  .brandingItem {
+    padding: 10px 16px;
+  }
+  
+  .footerInfo {
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+}

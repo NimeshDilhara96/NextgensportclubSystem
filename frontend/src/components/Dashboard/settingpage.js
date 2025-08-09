@@ -804,14 +804,13 @@ const Settings = () => {
                 <div className={styles.brandingItem}>
                   <img src={mommentxLogo} alt="MommentX" className={styles.mommentxLogo} />
                   <div className={styles.brandingText}>
-                    <h4>MommentX</h4>
                     <p>Platform Developer</p>
                   </div>
                 </div>
               </div>
               <div className={styles.footerInfo}>
                 <p>© {new Date().getFullYear()} Club FTC. All rights reserved.</p>
-                <p>Design & Developed by <strong>MommentX</strong> - nimeshdilhara96</p>
+                <p>Design & Developed by <a href="https://github.com/nimeshdilhara96" target="_blank" rel="noopener noreferrer">MommentX</a> - <a href="https://github.com/nimeshdilhara96" target="_blank" rel="noopener noreferrer">nimeshdilhara96</a></p>
                 <p>Version: v5.0.6</p>
               </div>
             </div>
