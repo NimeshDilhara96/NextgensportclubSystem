@@ -120,12 +120,26 @@
   overflow-y: auto;
   margin-top: 8px;
   padding-right: 4px;
+  min-height: 300px;
+  max-height: 350px;
+  background: linear-gradient(135deg, #f7f9fb 80%, #e3f2fd 100%);
+  border-radius: 16px;
+  padding: 18px 12px 12px 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 12px rgba(25,118,210,0.04);
+  display: flex;
+  flex-direction: column;
+  transition: background 0.3s;
+  gap: 8px; /* Add gap between messages */
 }
 
 .messageUl {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .messageCoach {
@@ -314,53 +328,196 @@
 /* Modern Message Bubbles */
 /* Message Bubbles Alignment */
 .messageBubbleUser {
-  align-self: flex-end;
-  background: linear-gradient(135deg, #1976d2 80%, #42a5f5 100%);
-  color: #fff;
-  border-radius: 18px 18px 4px 18px;
-  padding: 10px 16px;
-  max-width: 75%;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
-  margin-bottom: 8px;
-  margin-left: 40px;
-  margin-right: 0;
-  position: relative;
-  text-align: right;
-  display: block;
-}
-.messageBubbleCoach {
-  align-self: flex-start;
-  background: #fff;
-  color: #222;
-  border-radius: 18px 18px 18px 4px;
-  padding: 10px 16px;
-  max-width: 75%;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
-  margin-bottom: 8px;
-  margin-right: 40px;
-  margin-left: 0;
+  align-self: flex-end; /* Align to right */
+  background: #dcf8c6; /* WhatsApp green color */
+  color: #303030;
+  border-radius: 18px 18px 4px 18px; /* Right-aligned bubble shape */
+  padding: 8px 12px; /* Slightly increased padding for better look */
+  max-width: 85%; /* Increased from 55% for longer messages */
+  min-width: fit-content; /* Auto-resize to content */
+  width: auto; /* Let content determine width */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-bottom: 3px;
+  margin-left: auto; /* Push to right */
+  margin-right: 8px; /* Small margin from edge */
   position: relative;
   text-align: left;
-  display: block;
-  border: 1px solid #e3f2fd;
+  display: inline-block; /* Changed from block to inline-block */
+  border: 1px solid #d1e7dd;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
-.messageHeader {
-  font-size: 12px;
-  color: #888;
+
+/* Tail for user messages (pointing right) */
+.messageBubbleUser::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -5px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid #dcf8c6;
+  border-bottom: 5px solid transparent;
+  border-top: 5px solid transparent;
+}
+
+/* Coach Messages (Receiver) - Auto-resize to content */
+.messageBubbleCoach {
+  align-self: flex-start; /* Align to left */
+  background: #ffffff; /* White background like WhatsApp */
+  color: #303030;
+  border-radius: 18px 18px 18px 4px; /* Left-aligned bubble shape */
+  padding: 8px 12px; /* Slightly increased padding for better look */
+  max-width: 85%; /* Increased from 55% for longer messages */
+  min-width: fit-content; /* Auto-resize to content */
+  width: auto; /* Let content determine width */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-bottom: 3px;
+  margin-left: 8px; /* Small margin from edge */
+  margin-right: auto; /* Push to left */
+  position: relative;
+  text-align: left;
+  display: inline-block; /* Changed from block to inline-block */
+  border: 1px solid #e5e5e5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Tail for coach messages (pointing left) */
+.messageBubbleCoach::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -5px;
+  width: 0;
+  height: 0;
+  border-right: 5px solid #ffffff;
+  border-bottom: 5px solid transparent;
+  border-top: 5px solid transparent;
+}
+
+/* Message header styling for both types */
+.messageBubbleUser .messageHeader,
+.messageBubbleCoach .messageHeader {
+  font-size: 11px; /* Slightly larger for readability */
   margin-bottom: 2px;
-  text-align: right;
+  text-align: left;
+  font-weight: 400;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-width: fit-content;
 }
-.senderName {
-  font-weight: 600;
+
+/* User message header styling */
+.messageBubbleUser .messageHeader {
+  color: #667781;
 }
-.messageBody {
-  font-size: 15px;
+
+/* Coach message header styling */
+.messageBubbleCoach .messageHeader {
+  color: #667781;
 }
-.messageDate {
+
+/* Message body styling */
+.messageBubbleUser .messageBody,
+.messageBubbleCoach .messageBody {
+  font-size: 14px; /* Slightly increased for better readability */
+  line-height: 1.4; /* Better line spacing */
+  color: #303030;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  white-space: pre-wrap; /* Preserve line breaks */
+}
+
+/* Message date styling */
+.messageBubbleUser .messageDate,
+.messageBubbleCoach .messageDate {
   font-size: 10px;
-  color: #aaa;
-  margin-top: 4px;
+  color: #667781;
+  margin-top: 4px; /* Increased margin for better spacing */
   text-align: right;
+  font-weight: 400;
+  opacity: 0.8;
+  white-space: nowrap; /* Prevent date from wrapping */
+}
+
+/* Check marks for user messages only */
+.messageBubbleUser .messageDate::after {
+  content: '✓✓';
+  color: #4fc3f7;
+  margin-left: 3px;
+  font-size: 10px;
+}
+
+/* Remove old conflicting styles */
+.messageCoach,
+.messageUser {
+  display: none; /* Hide old message styles */
+}
+
+/* Mobile responsiveness with proper alignment */
+@media (max-width: 900px) {
+  .messageBubbleUser {
+    max-width: 90%; /* More space on mobile */
+    padding: 6px 10px;
+    margin-left: auto;
+    margin-right: 4px;
+    min-width: 50px; /* Smaller minimum on mobile */
+  }
+  
+  .messageBubbleCoach {
+    max-width: 90%; /* More space on mobile */
+    padding: 6px 10px;
+    margin-left: 4px;
+    margin-right: auto;
+    min-width: 50px; /* Smaller minimum on mobile */
+  }
+  
+  .messageBubbleUser .messageBody,
+  .messageBubbleCoach .messageBody {
+    font-size: 14px; /* Maintain readability on mobile */
+  }
+  
+  .messageBubbleUser .messageDate,
+  .messageBubbleCoach .messageDate {
+    font-size: 9px;
+  }
+}
+
+/* Special handling for very long messages */
+.messageBubbleUser .messageBody,
+.messageBubbleCoach .messageBody {
+  /* Add text overflow handling for extremely long words */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Ensure emojis and special characters display properly */
+.messageBubbleUser,
+.messageBubbleCoach {
+  font-variant-emoji: unicode;
+}
+
+/* Container for each message to handle alignment */
+.messageContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.messageContainer.user {
+  align-items: flex-end;
+}
+
+.messageContainer.coach {
+  align-items: flex-start;
 }
 
 /* Chat Input Bar */
@@ -420,6 +577,7 @@
   display: flex;
   flex-direction: column;
   transition: background 0.3s;
+  gap: 8px; /* Add gap between messages */
 }
 
 /* Message Bubbles Animation */
