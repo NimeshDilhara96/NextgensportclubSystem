@@ -692,7 +692,7 @@ const Dashboard = () => {
                 <p>
                   <span className={styles.developedByLabel}>Developed by</span> <span className={styles.developedBy}>Nimeshdilhara96</span>
                 </p>
-                <p className={styles.versionBadge}>version v5.0.3</p>
+                <p className={styles.versionBadge}>Version: v5.5.6</p>
               </div>
             </div>
           </div>
