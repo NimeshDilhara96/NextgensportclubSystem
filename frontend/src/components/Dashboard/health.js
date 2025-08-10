@@ -464,7 +464,7 @@ const Health = () => {
     try {
       console.log('Initializing Gemini AI...');
       
-      const apiKey = process.env.REACT_APP_GEMINI_API_KEY || 'AIzaSyDqAX9agitzTXAhWvVVNKB-zYTU5kKiQXg';
+      const apiKey = process.env.REACT_APP_GEMINI_API_KEY || 'AIzaSyDqAX9agitzTXAhWvVVNKB-zYTU5kKiQXg'; //use Your API key
       const ai = new GoogleGenAI({ apiKey });
       
       console.log('Gemini AI initialized successfully');
@@ -918,11 +918,11 @@ const Health = () => {
 
   // Test AI function
   const testAI = async () => {
-    console.log('Testing Gemini AI connection...');
+    console.log('Testing MommenttX AI connection...');
     try {
       const ai = initializeGemini();
       if (!ai) {
-        alert('Gemini AI initialization failed');
+        alert('MommenttX AI initialization failed');
         return;
       }
       
@@ -1100,7 +1100,7 @@ const Health = () => {
                 cursor: 'pointer'
               }}
             >
-              Test Gemini AI
+              CHECK
             </button>
           </div>
 
