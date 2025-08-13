@@ -1,4 +1,53 @@
-# NextGen Sports Club - Biometric Authentication System
+# 🏆 NextGen Sports Club – AI-Powered Sports Club Management Platform
+
+An AI-powered full-stack MERN platform designed to transform sports club operations with **intelligent workout & meal plans**, **real-time communication**, and **automated email systems**.
+
+![GitHub last commit](https://img.shields.io/github/last-commit/NimeshDilhara96/NextgensportclubSystem)
+![GitHub repo size](https://img.shields.io/github/repo-size/NimeshDilhara96/NextgensportclubSystem)
+![GitHub issues](https://img.shields.io/github/issues/NimeshDilhara96/NextgensportclubSystem)
+
+---
+
+## 🚀 Features
+
+### 🔑 Core Features
+- **Multi-Role Authentication** – Secure JWT login for Members, Coaches & Admins
+- **Membership Management** – Registration, renewals & dynamic profiles
+- **Sports Facilities Booking** – Instant reservations + QR code entry
+- **Event Management** – Host tournaments, workshops & sponsored events
+- **E-Commerce Store** – Merchandise shop with order management
+- **Coach–Member Portal** – Personal training plans & progress tracking
+- **Health Data Tracking** – Monitor fitness metrics & diet goals
+- **Secure Payments** – Integrated payment gateways
+- **Community Hub** – Sports discussions & networking
+- **Feedback System** – Collect and analyze feedback
+
+### 🌟 Unique Innovations
+- 🔒 **Biometric Login**
+- 📲 **QR Code Integration** for bookings & events
+- 🤖 **AI Workout Plan Generator** – Personalized 7-day plans
+- 🥘 **AI Meal Planner** – Sri Lankan cuisine-focused
+- 📧 **Smart Email Automation** – Branded HTML templates
+- 🤝 **Sponsorship Workflow**
+- 🏐 **Multi-Sport Support**
+- 💬 **Real-time Messaging**
+
+---
+
+## 🛠 Technology Stack
+**Frontend:** React.js (Modular CSS)  
+**Backend:** Node.js + Express.js  
+**Database:** MongoDB + Mongoose  
+**Email:** Nodemailer + Gmail SMTP  
+**Authentication:** JWT + Role-Based Access Control  
+**File Handling:** Multer (File uploads & QR generation)  
+**Testing:** Jest (Unit & Integration)  
+
+
+
+
+
+# NextGen Sports Club - Management System
 
 A modern sports club management system with secure biometric authentication powered by MommentX.
 
